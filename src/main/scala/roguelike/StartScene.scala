@@ -51,6 +51,6 @@ object StartScene extends Scene[Unit, Unit, Unit]:
   def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Text(message, DfTiles.Fonts.fontKey, TerminalText(Assets.tileMap, RGBA.Cyan, RGBA.Blue))
+        Text(message, DfTiles.Fonts.fontKey, TerminalText(Assets.tileMap, RGB.Cyan, RGBA.Blue))
       )
     )

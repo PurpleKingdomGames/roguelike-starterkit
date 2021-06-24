@@ -10,7 +10,10 @@ vec2 UV;
 layout (std140) uniform RogueLikeMapData {
   vec2 GRID_DIMENSIONS;
   vec2 CHAR_SIZE;
+  vec4 MASK;
   float[9] CHARS;
+  vec3[9] FOREGROUND;
+  vec4[9] BACKGROUND;
 };
 
 in vec2 TILEMAP_TL_TEX_COORDS;
@@ -36,8 +39,14 @@ void fragment() {
   // What are the relative UV coords?
   vec2 tileSize = ONE_TEXEL * CHAR_SIZE;
   vec2 relUV = TILEMAP_TL_TEX_COORDS + (cell * TEXTURE_SIZE) + (tileSize * fract(gridSquare));
+  
+  vec4 color = texture(SRC_CHANNEL, relUV);
 
-  COLOR = texture(SRC_CHANNEL, relUV);
+  if(color == MASK) {
+    COLOR = BACKGROUND[index];
+  } else {
+    COLOR = vec4(color.rgb * (FOREGROUND[index].rgb * color.a), color.a);
+  }
 
 }
 //</indigo-fragment>

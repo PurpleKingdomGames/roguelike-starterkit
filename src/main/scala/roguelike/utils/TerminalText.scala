@@ -3,7 +3,7 @@ package roguelike.utils
 import indigo.shared.assets.AssetName
 import indigo.shared.materials.Material
 import indigo.shared.materials.ShaderData
-import indigo.shared.shader.ShaderPrimitive.vec4
+import indigo.shared.shader.ShaderPrimitive.{vec3, vec4}
 import indigo.shared.datatypes.RGBA
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.Uniform
@@ -13,15 +13,13 @@ import indigo.shared.datatypes.RGB
 
 final case class TerminalText(
     tileMap: AssetName,
-    foreground: RGBA,
+    foreground: RGB,
     background: RGBA,
     mask: RGBA
 ) extends Material:
 
-  def withForeground(newColor: RGBA): TerminalText =
-    this.copy(foreground = newColor)
   def withForeground(newColor: RGB): TerminalText =
-    this.copy(foreground = newColor.toRGBA)
+    this.copy(foreground = newColor)
 
   def withBackground(newColor: RGBA): TerminalText =
     this.copy(background = newColor)
@@ -40,7 +38,7 @@ final case class TerminalText(
         UniformBlock(
           "RogueLikeTextData",
           List(
-            Uniform("FOREGROUND") -> vec4(foreground.r, foreground.g, foreground.b, foreground.a),
+            Uniform("FOREGROUND") -> vec3(foreground.r, foreground.g, foreground.b),
             Uniform("BACKGROUND") -> vec4(background.r, background.g, background.b, background.a),
             Uniform("MASK") -> vec4(mask.r, mask.g, mask.b, mask.a)
           )
@@ -62,10 +60,10 @@ object TerminalText:
       .withFragmentProgram(fragProgram)
 
   def apply(tileMap: AssetName): TerminalText =
-    TerminalText(tileMap, RGBA.White, RGBA.Zero, RGBA.Magenta)
+    TerminalText(tileMap, RGB.White, RGBA.Zero, RGBA.Magenta)
 
-  def apply(tileMap: AssetName, color: RGBA): TerminalText =
+  def apply(tileMap: AssetName, color: RGB): TerminalText =
     TerminalText(tileMap, color, RGBA.Zero, RGBA.Magenta)
 
-  def apply(tileMap: AssetName, foreground: RGBA, background: RGBA): TerminalText =
+  def apply(tileMap: AssetName, foreground: RGB, background: RGBA): TerminalText =
     TerminalText(tileMap, foreground, background, RGBA.Magenta)

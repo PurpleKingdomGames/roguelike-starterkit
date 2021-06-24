@@ -18,7 +18,10 @@ vec2 scaleCoordsWithOffset(vec2 texcoord, vec2 offset){
 layout (std140) uniform RogueLikeMapData {
   vec2 GRID_DIMENSIONS;
   vec2 CHAR_SIZE;
+  vec4 MASK;
   float[9] CHARS;
+  vec3[9] FOREGROUND;
+  vec4[9] BACKGROUND;
 };
 
 out vec2 TILEMAP_TL_TEX_COORDS;

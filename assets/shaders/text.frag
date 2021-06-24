@@ -11,7 +11,7 @@ vec2 SIZE;
 
 //<indigo-fragment>
 layout (std140) uniform RogueLikeTextData {
-  vec4 FOREGROUND;
+  vec3 FOREGROUND;
   vec4 BACKGROUND;
   vec4 MASK;
 };

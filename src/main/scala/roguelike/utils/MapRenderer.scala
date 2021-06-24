@@ -7,6 +7,7 @@ final case class MapRenderer(
     tileSheet: AssetName,
     gridSize: Size,
     charSize: Size,
+    mask: RGBA,
     map: List[Int],
     position: Point,
     depth: Depth
@@ -38,6 +39,11 @@ final case class MapRenderer(
   def withCharSize(newCharSize: Size): MapRenderer =
     this.copy(charSize = newCharSize)
 
+  def withMask(newColor: RGBA): MapRenderer =
+    this.copy(mask = newColor)
+  def withMask(newColor: RGB): MapRenderer =
+    this.copy(mask = newColor.toRGBA)
+
   def withMap(newMap: List[Int]): MapRenderer =
     this.copy(map = newMap)
 
@@ -45,6 +51,8 @@ final case class MapRenderer(
     this.copy(depth = newDepth)
 
   def toShaderData: ShaderData =
+    val count = gridSize.width * gridSize.height
+
     ShaderData(
       MapRenderer.shaderId,
       UniformBlock(
@@ -52,8 +60,15 @@ final case class MapRenderer(
         List(
           Uniform("GRID_DIMENSIONS") -> vec2(gridSize.width.toFloat, gridSize.height.toFloat),
           Uniform("CHAR_SIZE")       -> vec2(charSize.width.toFloat, charSize.height.toFloat),
-          Uniform("CHARS") -> array(gridSize.width * gridSize.height)(
+          Uniform("MASK")            -> vec4(mask.r, mask.g, mask.b, mask.a),
+          Uniform("CHARS") -> array(count)(
             map.map(c => float(c.toFloat)): _*
+          ),
+          Uniform("FOREGROUND") -> array(count)(
+            List.fill(count)(vec3(1, 0, 1)): _*
+          ),
+          Uniform("BACKGROUND") -> array(count)(
+            List.fill(count)(vec4(0.5, 0, 0.5, 1)): _*
           )
         )
       )
@@ -62,7 +77,7 @@ final case class MapRenderer(
 object MapRenderer:
 
   def apply(tileSheet: AssetName, gridSize: Size, charSize: Size): MapRenderer =
-    MapRenderer(tileSheet, gridSize, charSize, Nil, Point.zero, Depth(1))
+    MapRenderer(tileSheet, gridSize, charSize, RGBA.Magenta, Nil, Point.zero, Depth(1))
 
   val shaderId: ShaderId =
     ShaderId("map shader")

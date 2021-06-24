@@ -4,8 +4,10 @@ import indigo._
 import indigo.scenes._
 import scala.scalajs.js.annotation.JSExportTopLevel
 
+import roguelike.utils.{MapRenderer, TerminalText}
+
 @JSExportTopLevel("IndigoGame")
-object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit] {
+object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
 
   def initialScene(bootData: Unit): Option[SceneName] =
     None
@@ -24,7 +26,10 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit] {
         )
         .withFonts(DfTiles.Fonts.fontInfo)
         .withAssets(Assets.assets)
-        .withShaders(MapRenderer.shader(Assets.mapVertShader, Assets.mapFragShader))
+        .withShaders(
+          MapRenderer.shader(Assets.Required.mapVertShader, Assets.Required.mapFragShader),
+          TerminalText.shader(Assets.Required.textFragShader)
+        )
     )
 
   def initialModel(startupData: Unit): Outcome[Unit] =
@@ -44,5 +49,3 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit] {
 
   def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
-
-}

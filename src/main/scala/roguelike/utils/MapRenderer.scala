@@ -1,9 +1,10 @@
-package roguelike
+package roguelike.utils
 
 import indigo._
 import indigo.ShaderPrimitive._
 
 final case class MapRenderer(
+    tileSheet: AssetName,
     position: Point,
     size: Size,
     depth: Depth
@@ -37,7 +38,7 @@ final case class MapRenderer(
           )
         )
       )
-    ).withChannel0(Assets.charsName)
+    ).withChannel0(tileSheet)
 
 object MapRenderer:
 

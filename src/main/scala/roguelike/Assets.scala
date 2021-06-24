@@ -4,18 +4,24 @@ import indigo._
 
 object Assets:
 
-  val charsTransparentName = AssetName("Anikki_square_10x10_transparent")
-  val charsName            = AssetName("Anikki_square_10x10")
-  val mapFragShader        = AssetName("map frag")
-  val mapVertShader        = AssetName("map vert")
-
-  def fontMaterial(color: RGBA): Material.ImageEffects =
-    Material.ImageEffects(charsTransparentName).withOverlay(Fill.Color(color))
+  val tileMap = AssetName("Anikki_square_10x10")
 
   val assets: Set[AssetType] =
-    Set(
-      AssetType.Image(charsTransparentName, AssetPath("assets/" + charsTransparentName.toString + ".png")),
-      AssetType.Image(charsName, AssetPath("assets/" + charsName.toString + ".png")),
-      AssetType.Text(mapVertShader, AssetPath("assets/map.vert")),
-      AssetType.Text(mapFragShader, AssetPath("assets/map.frag"))
+    Required.assets ++ Set(
+      AssetType.Image(tileMap, AssetPath("assets/" + tileMap.toString + ".png"))
     )
+
+  object Required:
+    val mapFragShader  = AssetName("map frag")
+    val mapVertShader  = AssetName("map vert")
+    val textFragShader = AssetName("text frag")
+
+    val assets: Set[AssetType] =
+      Set(
+        AssetType.Text(textFragShader, AssetPath("assets/shaders/text.frag")),
+        AssetType.Text(mapVertShader, AssetPath("assets/shaders/map.vert")),
+        AssetType.Text(mapFragShader, AssetPath("assets/shaders/map.frag"))
+      )
+  end Required
+
+end Assets

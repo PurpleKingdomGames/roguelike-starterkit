@@ -33,14 +33,14 @@ object GameScene extends Scene[Unit, Unit, Unit] {
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
+  val size = Size(30)
+
   def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Text("░░░░░\n░░@░░\n░░░░░", DfTiles.Fonts.fontKey, Assets.fontMaterial)
-          .modifyMaterial { case m: Material.ImageEffects =>
-            m.withOverlay(Fill.Color(RGBA.Magenta))
-          },
-        MapRenderer(Point(100, 100), Size(30, 30), Depth(1))
+        Text("░░░░░\n░░@░░\n░░░░░", DfTiles.Fonts.fontKey, Assets.fontMaterial(RGBA.Magenta)),
+        Text("░░░\n░@░\n░░░", DfTiles.Fonts.fontKey, Assets.fontMaterial(RGBA.Cyan)).moveBy(0, 50),
+        MapRenderer(Point(100), size, Depth(1))
       )
     )
 

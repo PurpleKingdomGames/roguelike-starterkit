@@ -9,7 +9,8 @@ object Assets:
   val mapFragShader        = AssetName("map frag")
   val mapVertShader        = AssetName("map vert")
 
-  val fontMaterial: Material.ImageEffects = Material.ImageEffects(charsTransparentName)
+  def fontMaterial(color: RGBA): Material.ImageEffects =
+    Material.ImageEffects(charsTransparentName).withOverlay(Fill.Color(color))
 
   val assets: Set[AssetType] =
     Set(

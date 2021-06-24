@@ -7,6 +7,8 @@ vec4 CHANNEL_0;
 vec4 COLOR;
 vec2 SIZE;
 vec2 UV;
+vec2 CHANNEL_0_TEXTURE_COORDS;
+float TIME;
 
 //<indigo-fragment>
 layout (std140) uniform MapData {
@@ -16,32 +18,30 @@ layout (std140) uniform MapData {
 };
 
 in vec2 TILEMAP_TL_TEX_COORDS;
-in vec2 TILEMAP_BR_TEX_COORDS;
+in vec2 ONE_TEXEL;
+in vec2 TEXTURE_SIZE;
 
 void fragment() {
 
-  /*
-  Right - what I need to do is:
-  Take the UV
-  Use that to work out what box I'm in (x, y)
-  Use the X, y to work out which index I need to look in
-  the index gives me the character on the sheet
-  but I need to turn that back into an X and y of the top left and bottom right of the character on the texture
-  then I use the UV relative to the box I'm in (how far through this grid cell am I?) to
-  read the right texture coords from the texture.
-  */
+  // Which grid square am I in on the map? e.g. 3x3, coords (1,1)
+  vec2 gridSquare = UV * MAP_SIZE;
 
-  // Which char am I looking at?
-  int x = int(UV.x * MAP_SIZE.x);
-  int y = int(UV.y * MAP_SIZE.y);
-  int index = int(float(y) * MAP_SIZE.x) + x;
+  // Which sequential box is that? e.g. 4 of 9
+  int index = int(floor(gridSquare.y) * MAP_SIZE.x + floor(gridSquare.x));
+
+  // Which character is that? e.g. position 4 in the array is for char 64, which is '@'
   int charIndex = int(CHARS[index]);
 
-  // Where on the sheet is that?
-  vec2 tileMapSize = TILEMAP_BR_TEX_COORDS - TILEMAP_TL_TEX_COORDS;
-  float xx = float(charIndex % 16) / 16.0;
-  float yy = float(charIndex / 16) / 16.0;
+  // Where on the texture is the top left of the relevant character cell?
+  float cellX = float(charIndex % 16) / 16.0;
+  float cellY = floor(float(charIndex) / 16.0) * (1.0 / 16.0);
+  vec2 cell = vec2(cellX, cellY);
 
-  COLOR = texture(SRC_CHANNEL, TILEMAP_TL_TEX_COORDS + (tileMapSize * vec2(xx, yy)) + UV);
+  // What are the relative UV coords?
+  vec2 tileSize = ONE_TEXEL * 10.0;
+  vec2 relUV = TILEMAP_TL_TEX_COORDS + (cell * TEXTURE_SIZE) + (tileSize * fract(gridSquare));
+
+  COLOR = texture(SRC_CHANNEL, relUV);
+  
 }
 //</indigo-fragment>

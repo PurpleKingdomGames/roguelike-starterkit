@@ -14,7 +14,7 @@ object TileCharGen {
     |    val fontKey: FontKey = FontKey("DF-Roguelike Font")
     |
     |    val fontInfo: FontInfo =
-    |      FontInfo(fontKey, $sheetWidth, $sheetHeight, FontChar(" ", 0, 0, ${charWidth.toString}, ${charHeight.toString})).isCaseInSensitive
+    |      FontInfo(fontKey, $sheetWidth, $sheetHeight, FontChar(" ", 0, 0, ${charWidth.toString}, ${charHeight.toString})).isCaseSensitive
     |$charString
     |  }
     |""".stripMargin

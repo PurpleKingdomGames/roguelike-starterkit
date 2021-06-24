@@ -5,13 +5,13 @@ import indigo.scenes._
 
 import roguelike.utils.{MapRenderer, TerminalText}
 
-object GameScene extends Scene[Unit, Unit, Unit]:
+object StartScene extends Scene[Unit, Unit, Unit]:
 
   type SceneModel     = Unit
   type SceneViewModel = Unit
 
   val name: SceneName =
-    SceneName("game scene")
+    SceneName("start scene")
 
   val modelLens: Lens[Unit, Unit] =
     Lens.keepLatest
@@ -27,7 +27,7 @@ object GameScene extends Scene[Unit, Unit, Unit]:
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     case KeyboardEvent.KeyUp(Key.SPACE) =>
-      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(StartScene.name))
+      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(GameScene.name))
 
     case _ =>
       Outcome(model)
@@ -41,9 +41,16 @@ object GameScene extends Scene[Unit, Unit, Unit]:
 
   val size = Size(30)
 
+  def message: String =
+    """
+    |╔═════════════════════╗
+    |║ Hit Space to Start! ║
+    |╚═════════════════════╝
+    |""".stripMargin
+
   def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        MapRenderer(Assets.tileMap, Point(100), size, Depth(1))
+        Text(message, DfTiles.Fonts.fontKey, TerminalText(Assets.tileMap, RGBA.Cyan, RGBA.Blue))
       )
     )

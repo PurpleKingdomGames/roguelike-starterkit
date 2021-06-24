@@ -10,10 +10,10 @@ import roguelike.utils.{MapRenderer, TerminalText}
 object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
 
   def initialScene(bootData: Unit): Option[SceneName] =
-    None
+    Option(StartScene.name)
 
   def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Unit, Unit]] =
-    NonEmptyList(GameScene)
+    NonEmptyList(StartScene, GameScene)
 
   val eventFilters: EventFilters =
     EventFilters.Permissive

@@ -2,6 +2,8 @@
 
 A starter project for Indigo to provide some rendering functionality specifically for ASCII art style roguelike games.
 
+![Roguelike ascii art in Indigo](/roguelike.gif "Roguelike ascii art in Indigo")
+
 ## What are roguelikes?
 
 [Roguelike](https://en.wikipedia.org/wiki/Roguelike)'s are a type of game that get their name because they are ...wait for it ..._like_ an 80s game called _Rogue_!

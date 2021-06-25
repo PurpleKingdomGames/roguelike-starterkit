@@ -1,6 +1,6 @@
 # Roguelike Starter Kit for Indigo
 
-A starter project to provide some rendering functionality specifically for ASCII art style roguelike games.
+A starter project for Indigo to provide some rendering functionality specifically for ASCII art style roguelike games.
 
 ## What are roguelikes?
 

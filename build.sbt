@@ -19,23 +19,22 @@ lazy val roguelike =
         "io.indigoengine" %%% "indigo-json-circe" % "0.8.2",
         "io.indigoengine" %%% "indigo"            % "0.8.2",
         "io.indigoengine" %%% "indigo-extras"     % "0.8.2"
-      ),
-      // scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) } // required for parcel.
+      )
+      // scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) } // required for parcel, but will break indigoRun & indigoBuild
     )
     .settings(
       Compile / sourceGenerators += Def.task {
         TileCharGen
           .gen(
-            "DfTiles",
-            "roguelike",
-            (Compile / sourceManaged).value,
-            10,
-            10
+            "DfTiles", // Class/module name.
+            "roguelike", // fully qualified package name
+            (Compile / sourceManaged).value, // Managed sources (output) directory for the generated classes
+            10, // Character width
+            10 // Character height
           )
       }.taskValue
     )
 
-// To use indigoBuild or indigoRun, first comment out:
-// `scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }`
+// To use indigoBuild or indigoRun, first comment out the line above that says: `scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }`
 addCommandAlias("runGame", ";compile;fastOptJS;indigoRun")
 addCommandAlias("buildGame", ";compile;fastOptJS;indigoBuild")

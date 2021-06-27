@@ -61,7 +61,7 @@ class ConsoleEmulatorTests extends munit.FunSuite {
       ConsoleEmulator(Size(3))
 
     val actual =
-      console.toFullList(MapTile(Tile.`.`))
+      console.draw(MapTile(Tile.`.`))
 
     val expected =
       List.fill(9)(MapTile(Tile.`.`))
@@ -86,7 +86,7 @@ class ConsoleEmulatorTests extends munit.FunSuite {
         .put(items)
 
     val actual =
-      console.toFullList(MapTile(Tile.`.`))
+      console.draw(MapTile(Tile.`.`))
 
     val expected =
       List(
@@ -137,7 +137,7 @@ class ConsoleEmulatorTests extends munit.FunSuite {
         .put(itemsWithCoords)
 
     val actual =
-      console.toFullList(MapTile(Tile.`.`))
+      console.draw(MapTile(Tile.`.`))
 
     val expected =
       List(
@@ -155,5 +155,60 @@ class ConsoleEmulatorTests extends munit.FunSuite {
     assertEquals(actual.length, expected.length)
     assertEquals(actual, expected)
   }
+
+  test("combine") {
+    val consoleA =
+      ConsoleEmulator(Size(3))
+        .put(Point(1, 1), Tile.`@`)
+
+    val consoleB =
+      ConsoleEmulator(Size(3))
+        .put(Point(2, 2), Tile.`!`)
+
+    val combined =
+      consoleA combine consoleB
+
+    assert(combined.get(Point(1)).get == MapTile(Tile.`@`))
+    assert(combined.get(Point(2)).get == MapTile(Tile.`!`))
+  }
+
+  test("toList") {
+    val consoleA =
+      ConsoleEmulator(Size(3))
+        .put(Point(1, 1), Tile.`@`)
+
+    val consoleB =
+      ConsoleEmulator(Size(3))
+        .put(Point(2, 2), Tile.`!`)
+
+    val expected =
+      List(MapTile(Tile.`@`), MapTile(Tile.`!`))
+
+    val actual =
+      (consoleA combine consoleB).toList
+
+    assert(actual.length == expected.length)
+    assert(actual.forall(expected.contains))
+  }
+
+  test("toPositionedList") {
+    val consoleA =
+      ConsoleEmulator(Size(3))
+        .put(Point(1, 1), Tile.`@`)
+
+    val consoleB =
+      ConsoleEmulator(Size(3))
+        .put(Point(2, 2), Tile.`!`)
+
+    val expected =
+      List((Point(1), MapTile(Tile.`@`)), (Point(2), MapTile(Tile.`!`)))
+
+    val actual =
+      (consoleA combine consoleB).toPositionedList
+
+    assert(actual.length == expected.length)
+    assert(actual.forall(expected.contains))
+  }
+
 
 }

@@ -11,8 +11,8 @@ import scala.annotation.tailrec
 final case class ConsoleEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
   private val coordsList: List[Point] =
-    (0 until screenSize.width).flatMap { x =>
-      (0 until screenSize.height).map { y =>
+    (0 until screenSize.height).flatMap { y =>
+      (0 until screenSize.width).map { x =>
         Point(x, y)
       }
     }.toList
@@ -102,5 +102,4 @@ final case class ConsoleEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
 object ConsoleEmulator:
   def apply(screenSize: Size): ConsoleEmulator =
-    ConsoleEmulator(screenSize, QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble))
     ConsoleEmulator(screenSize, QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble))

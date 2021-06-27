@@ -72,8 +72,8 @@ class ConsoleEmulatorTests extends munit.FunSuite {
 
   test("continuous list (full)") {
     val coords =
-      (0 to 2).flatMap { x =>
-        (0 to 2).map { y =>
+      (0 to 2).flatMap { y =>
+        (0 to 2).map { x =>
           Point(x, y)
         }
       }.toList
@@ -153,7 +153,7 @@ class ConsoleEmulatorTests extends munit.FunSuite {
       )
 
     assertEquals(actual.length, expected.length)
-    assertEquals(actual, expected)
+    assert(actual.forall(expected.contains))
   }
 
   test("combine") {
@@ -210,5 +210,36 @@ class ConsoleEmulatorTests extends munit.FunSuite {
     assert(actual.forall(expected.contains))
   }
 
+  test("placing something in the center works.") {
+    val console =
+      ConsoleEmulator(Size(80, 50))
+        .put(Point(40, 25), Tile.`@`)
+
+    val expected =
+      Option(MapTile(Tile.`@`, RGB.White, RGBA.Zero))
+
+    val actual =
+      console.get(Point(40, 25))
+
+    assertEquals(expected, actual)
+
+    val list =
+      console.toPositionedList
+
+    assert(list.contains((Point(40, 25), MapTile(Tile.`@`))))
+
+    val drawn =
+      console.draw(MapTile(Tile.LIGHT_SHADE))
+
+    val foundAt =
+      drawn.zipWithIndex.find(p => p._1 == MapTile(Tile.`@`)).map(_._2)
+
+    assert(drawn.contains(MapTile(Tile.`@`)))
+    assert(drawn.filter(_ == MapTile(Tile.`@`)).length == 1)
+    assert(drawn.length == 80 * 50)
+    assert(foundAt.nonEmpty)
+    assert(clue(foundAt.get) == 2040)
+
+  }
 
 }

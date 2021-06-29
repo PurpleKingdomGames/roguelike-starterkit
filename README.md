@@ -2,7 +2,23 @@
 
 A starter project for Indigo to provide some rendering functionality specifically for ASCII art style roguelike games.
 
+It is intended to be used with the [Roguelike tutorials](http://rogueliketutorials.com/).
+
 ![Roguelike ascii art in Indigo](/roguelike.gif "Roguelike ascii art in Indigo")
+
+## What this is and isn't
+
+***This is...***
+A starting point! A loose collection of gizmo's and gadgets that allow you to focus on building your roguelike game! There are low level problems to overcome with rendering ascii art in FP/WebGL, and with using standard Dwarf Fortress assets, but within this project those problems are largely solved!
+
+This is an effort to lower the barrier to entry, allowing you to focus on learning how to build roguelike (or any ascii art) games.
+
+***This is not...***
+Brilliant code. I've pulled this together quite quickly! Some of it may have issues or be terribly naive. I have focused on things like immutability rather than performance and that may turn out to be a mistake - we shall see! (PR's welcome!)
+
+This is also _not_ a full implementation of [tcod](https://python-tcod.readthedocs.io/en/latest/), but I will keep adding to it as I find missing essential features or functions.
+
+*Think of this not as a highly polished library, but more like one of those interview assignments where they give you a half working project and ask you to build something with it.*
 
 ## What are roguelikes?
 

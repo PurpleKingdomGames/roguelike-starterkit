@@ -123,6 +123,11 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     this.copy(
       charMap = charMap.insertElements(otherConsole.toPositionedList.map(p => (p._2, Vertex.fromPoint(p._1))))
     )
+  
+  def inset(otherConsole: TerminalEmulator, offset: Point): TerminalEmulator =
+    this.copy(
+      charMap = charMap.insertElements(otherConsole.toPositionedList.map(p => (p._2, Vertex.fromPoint(p._1 + offset))))
+    )
 
 object TerminalEmulator:
   def apply(screenSize: Size): TerminalEmulator =

@@ -117,6 +117,8 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
     rec(List(charMap), Nil)
 
+  def |+|(otherConsole: TerminalEmulator): TerminalEmulator =
+    combine(otherConsole)
   def combine(otherConsole: TerminalEmulator): TerminalEmulator =
     this.copy(
       charMap = charMap.insertElements(otherConsole.toPositionedList.map(p => (p._2, Vertex.fromPoint(p._1))))

@@ -45,6 +45,22 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
       }
     put(tiles)
 
+  def putLines(startCoords: Point, textLines: List[String], fgColor: RGB, bgColor: RGBA): TerminalEmulator =
+    @tailrec
+    def rec(remaining: List[String], yOffset: Int, term: TerminalEmulator): TerminalEmulator =
+      remaining match
+        case Nil =>
+          term
+
+        case x :: xs =>
+          rec(
+            xs,
+            yOffset + 1,
+            term.putLine(startCoords + Point(0, yOffset), x, fgColor, bgColor)
+          )
+
+    rec(textLines, 0, this)
+
   def get(coords: Point): Option[MapTile] =
     charMap.fetchElementAt(Vertex.fromPoint(coords))
 

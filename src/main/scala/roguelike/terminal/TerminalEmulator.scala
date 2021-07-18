@@ -35,7 +35,13 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def putLine(startCoords: Point, text: String, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
     val tiles: List[(Point, MapTile)] =
       text.toCharArray.toList.zipWithIndex.map { case (c, i) =>
-        (startCoords + Point(i, 0) -> MapTile(DfTiles.Tile(c), fgColor, bgColor))
+        DfTiles.Tile.charCodes.get(if c == '\\' then "\\" else c.toString) match
+          case None =>
+            // Couldn't find character, skip it.
+            (startCoords + Point(i, 0) -> MapTile(DfTiles.Tile.SPACE, fgColor, bgColor))
+
+          case Some(char) =>
+            (startCoords + Point(i, 0) -> MapTile(DfTiles.Tile(char), fgColor, bgColor))
       }
     put(tiles)
 

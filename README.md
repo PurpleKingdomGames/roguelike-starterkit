@@ -4,6 +4,8 @@ A starter project for Indigo to provide some rendering functionality specificall
 
 It is intended to be used with the [Roguelike tutorials](http://rogueliketutorials.com/).
 
+> Please note that the code demonstrated below may be slightly out of date or incomplete as I worked on and updated the code throughout the process of doing the roguelike tutorials. There may be hidden gems if you look closely!
+
 ![Roguelike ascii art in Indigo](/roguelike.gif "Roguelike ascii art in Indigo")
 
 ## What this is and isn't
@@ -187,3 +189,11 @@ However, with some minor tweaks to the `build.sbt` file (see the comments in the
 
 [Parcel instructions can be found here.](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/howto/parcel/README.md)
 
+## Extras
+
+The starter kit also provides:
+
+1. A basic game shell you can use if you like.
+2. An implementation of Bresenham's Line algorithm, used in the tutorial for line of sight across a grid.
+3. A very simplistic path finding algorithm.
+4. The menu background art from the tutorial.

@@ -185,7 +185,14 @@ By default you can just use the build in sbt command aliases, `sbt runGame` and 
 
 However, with some minor tweaks to the `build.sbt` file (see the comments in the file), you can also use parcel.js to run (including some hot-reloading) or bundle up your game for web deployment.
 
-> Important: To use hot reloading with Parcel, you _must_ run `buildGame` so that the file watcher notices your changes.
+Make the following change, then run `yarn build` (or `npm build`) from the command line.
+
+```diff
+-      )
+-      // scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) } // required for parcel, but will break indigoRun & indigoBuild
++      ),
++      scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) } // required for parcel, but will break indigoRun & indigoBuild
+```
 
 [Parcel instructions can be found here.](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/howto/parcel/README.md)
 

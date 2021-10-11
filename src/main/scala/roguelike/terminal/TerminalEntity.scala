@@ -9,7 +9,7 @@ final case class TerminalEntity(
     gridSize: Size,
     charSize: Size,
     mask: RGBA,
-    map: List[MapTile],
+    map: Array[MapTile],
     position: Point,
     depth: Depth
 ) extends EntityNode:
@@ -45,7 +45,7 @@ final case class TerminalEntity(
   def withMask(newColor: RGB): TerminalEntity =
     this.copy(mask = newColor.toRGBA)
 
-  def withMap(newMap: List[MapTile]): TerminalEntity =
+  def withMap(newMap: Array[MapTile]): TerminalEntity =
     this.copy(map = newMap)
 
   def withDepth(newDepth: Depth): TerminalEntity =
@@ -53,18 +53,18 @@ final case class TerminalEntity(
 
   private val count       = gridSize.width * gridSize.height
   private val total       = 4000
-  private val emptyColors = Array.fill(total - count)(vec4(0.0f, 0.0f, 0.0f, 0.0f))
+  private val emptyColors = Array.fill((total - count) * 4)(0.0f)
 
-  private lazy val fgArray =
-    (map.map { t =>
+  private lazy val fgArray: Array[Float] =
+    (map.flatMap { t =>
       val color = t.foreground
-      vec4(t.char.toInt.toFloat, color.r.toFloat, color.g.toFloat, color.b.toFloat)
+      Array(t.char.toInt.toFloat, color.r.toFloat, color.g.toFloat, color.b.toFloat)
     } ++ emptyColors).toArray
 
-  private lazy val bgArray =
-    (map.map { t =>
+  private lazy val bgArray: Array[Float] =
+    (map.flatMap { t =>
       val color = t.background
-      vec4(color.r.toFloat, color.g.toFloat, color.b.toFloat, color.a.toFloat)
+      Array(color.r.toFloat, color.g.toFloat, color.b.toFloat, color.a.toFloat)
     } ++ emptyColors).toArray
 
   def toShaderData: ShaderData =
@@ -85,13 +85,13 @@ final case class TerminalEntity(
       UniformBlock(
         "RogueLikeMapForeground",
         List(
-          Uniform("CHAR_FOREGROUND") -> array(total, fgArray)
+          Uniform("CHAR_FOREGROUND") -> rawArray(fgArray)
         )
       ),
       UniformBlock(
         "RogueLikeMapBackground",
         List(
-          Uniform("BACKGROUND") -> array(total, bgArray)
+          Uniform("BACKGROUND") -> rawArray(bgArray)
         )
       )
     ).withChannel0(tileSheet)
@@ -99,13 +99,13 @@ final case class TerminalEntity(
 object TerminalEntity:
 
   def apply(tileSheet: AssetName, gridSize: Size, charSize: Size): TerminalEntity =
-    TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, Nil, Point.zero, Depth(1))
+    TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, Array(), Point.zero, Depth(1))
 
   def apply(
       tileSheet: AssetName,
       gridSize: Size,
       charSize: Size,
-      map: List[MapTile]
+      map: Array[MapTile]
   ): TerminalEntity =
     TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, map, Point.zero, Depth(1))
 

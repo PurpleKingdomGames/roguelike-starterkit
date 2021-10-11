@@ -12,12 +12,12 @@ import scala.annotation.tailrec
 
 final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
-  private val coordsList: List[Point] =
+  private val coordsList: Array[Point] =
     (0 until screenSize.height).flatMap { y =>
       (0 until screenSize.width).map { x =>
         Point(x, y)
       }
-    }.toList
+    }.toArray
 
   def put(coords: Point, tile: DfTiles.Tile, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
     this.copy(charMap =
@@ -84,7 +84,7 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def optimise: TerminalEmulator =
     this.copy(charMap = charMap.prune)
 
-  def toTileList(default: MapTile): List[MapTile] =
+  def toTileList(default: MapTile): Array[MapTile] =
     coordsList.map(pt => get(pt).getOrElse(default))
 
   def draw(tileSheet: AssetName, charSize: Size, default: MapTile): TerminalEntity =

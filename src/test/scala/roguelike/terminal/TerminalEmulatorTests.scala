@@ -1,10 +1,9 @@
 package roguelike.terminal
 
+import indigo.Point
 import indigo.RGB
 import indigo.RGBA
-import indigo.Point
 import indigo.Size
-
 import roguelike.DfTiles.Tile
 
 class TerminalEmulatorTests extends munit.FunSuite {
@@ -93,7 +92,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
       List.fill(9)(MapTile(Tile.`.`))
 
     assertEquals(actual.length, expected.length)
-    assertEquals(actual, expected)
+    assertEquals(actual.toList, expected)
   }
 
   test("continuous list (full)") {
@@ -128,7 +127,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
       )
 
     assertEquals(actual.length, expected.length)
-    assertEquals(actual, expected)
+    assertEquals(actual.toList, expected)
   }
 
   test("continuous list (sparse)") {

@@ -3,6 +3,7 @@ package roguelike.terminal
 import indigo.ShaderPrimitive._
 import indigo._
 import roguelike.DfTiles
+import roguelike.TerminalShaders
 
 final case class TerminalEntity(
     tileSheet: AssetName,
@@ -110,12 +111,12 @@ object TerminalEntity:
     TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, map, Point.zero, Depth(1))
 
   val shaderId: ShaderId =
-    ShaderId("map shader")
+    ShaderId("roguelike terminal map shader")
 
-  def shader(fragProgram: AssetName): EntityShader =
+  def shader: EntityShader =
     EntityShader
-      .External(shaderId)
-      .withFragmentProgram(fragProgram)
+      .Source(shaderId)
+      .withFragmentProgram(TerminalShaders.TerminalFragment)
 
 final case class MapTile(char: DfTiles.Tile, foreground: RGB, background: RGBA):
   def withChar(newChar: DfTiles.Tile): MapTile =

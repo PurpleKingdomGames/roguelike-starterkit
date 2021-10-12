@@ -11,6 +11,7 @@ import indigo.shared.shader.ShaderPrimitive.vec3
 import indigo.shared.shader.ShaderPrimitive.vec4
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import roguelike.TerminalShaders
 
 final case class TerminalText(
     tileMap: AssetName,
@@ -53,12 +54,13 @@ final case class TerminalText(
 
 object TerminalText:
 
-  val shaderId: ShaderId = ShaderId("roguelike text material")
+  val shaderId: ShaderId =
+    ShaderId("roguelike terminal text")
 
-  def shader(fragProgram: AssetName): EntityShader.External =
+  def shader: EntityShader.Source =
     EntityShader
-      .External(shaderId)
-      .withFragmentProgram(fragProgram)
+      .Source(shaderId)
+      .withFragmentProgram(TerminalShaders.TerminalTextFragment)
 
   def apply(tileMap: AssetName): TerminalText =
     TerminalText(tileMap, RGB.White, RGBA.Zero, RGBA.Magenta)

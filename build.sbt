@@ -49,9 +49,27 @@ lazy val roguelike =
     .settings(
       name := "roguelike-starterkit",
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "indigo" % "0.9.3-SNAPSHOT",
-        "io.indigoengine" %%% "indigo-extras"     % "0.9.3-SNAPSHOT"
+        "io.indigoengine" %%% "indigo"        % "0.9.3-SNAPSHOT",
+        "io.indigoengine" %%% "indigo-extras" % "0.9.3-SNAPSHOT"
       )
+    )
+    .settings(
+      Compile / sourceGenerators += Def.task {
+        val cachedFun = FileFunction.cached(
+          streams.value.cacheDirectory / "shaders"
+        ) { (files: Set[File]) =>
+          ShaderLibraryGen
+            .makeShaderLibrary(
+              "TerminalShaders",
+              "roguelike",
+              files,
+              (Compile / sourceManaged).value
+            )
+            .toSet
+        }
+
+        cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
+      }.taskValue
     )
     .settings(
       Compile / sourceGenerators += Def.task {
@@ -85,13 +103,15 @@ lazy val demo =
       // scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) } // required for parcel, but will break indigoRun & indigoBuild
     )
     .settings(
-      publish := {},
+      publish      := {},
       publishLocal := {}
     )
     .dependsOn(roguelike)
 
 lazy val roguelikeProject =
   (project in file("."))
+    .enablePlugins(ScalaJSPlugin)
+    .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! }
     )

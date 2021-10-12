@@ -56,8 +56,9 @@ object CloneScene extends Scene[Unit, Unit, Unit]:
         Point(2, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue)
       )
 
-  val cloneId    = CloneId("tile clone")
-  val cloneBlank = CloneBlank(cloneId, Graphic(10, 10, TerminalText(Assets.tileMap, RGB.Cyan, RGBA.Blue)))
+  val cloneId = CloneId("tile clone")
+  val cloneBlank =
+    CloneBlank(cloneId, Graphic(10, 10, TerminalText(Assets.tileMap, RGB.Cyan, RGBA.Blue)))
 
   def present(
       context: FrameContext[Unit],

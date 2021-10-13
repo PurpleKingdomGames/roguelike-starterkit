@@ -122,7 +122,7 @@ object TileCharGen {
 
     IO.write(file, newContents)
 
-    println("Written: " + file.getCanonicalPath)
+    // println("Written: " + file.getCanonicalPath)
 
     Seq(file)
   }
@@ -130,40 +130,69 @@ object TileCharGen {
   def gen(
       modulePrefix: String,
       fullyQualifiedPath: String,
-      sourceManagedDir: File,
-      charSizes: Seq[(Int, Int)]
+      sourceManagedDir: File
   ): Seq[File] = {
 
-    val sizes =
-      if (charSizes.isEmpty)
-        Seq(
-          (1, 1),
-          (5, 5),
-          (6, 6),
-          (7, 7),
-          (8, 8),
-          (9, 9),
-          (10, 10),
-          (11, 11),
-          (12, 12),
-          (13, 13),
-          (14, 14),
-          (15, 15),
-          (16, 16),
-          (18, 18),
-          (20, 20),
-          (24, 24),
-          (32, 32),
-          (48, 48),
-          (64, 64)
-        )
-      else charSizes
+    println("Generating Tiles & Fonts")
+
+    // Sizes are from the Dwarf Fortress Tileset Repo
+    // https://dwarffortresswiki.org/Tileset_repository
+
+    val squareSizes =
+      Seq(
+        (1, 1),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (8, 8),
+        (9, 9),
+        (10, 10),
+        (11, 11),
+        (12, 12),
+        (13, 13),
+        (14, 14),
+        (15, 15),
+        (16, 16),
+        (18, 18),
+        (20, 20),
+        (24, 24),
+        (32, 32),
+        (48, 48),
+        (64, 64)
+      )
+
+    val nonSquareSizes =
+      Seq(
+        (4, 6),
+        (5, 6),
+        (6, 8),
+        (6, 9),
+        (6, 10),
+        (8, 12),
+        (8, 14),
+        (8, 15),
+        (8, 16),
+        (9, 12),
+        (9, 14),
+        (9, 16),
+        (10, 12),
+        (10, 16),
+        (12, 20),
+        (14, 16),
+        (16, 20),
+        (16, 24),
+        (16, 32),
+        (20, 32),
+        (24, 32),
+        (24, 36),
+        (48, 72)
+      )
 
     makeTileFile(fullyQualifiedPath, sourceManagedDir) ++
-      sizes.map { case (charWidth, charHeight) =>
+      (squareSizes ++ nonSquareSizes).map { case (charWidth, charHeight) =>
         val sizeString = s"${charWidth}x${charHeight}"
 
-        println("Generating Tiles & Fonts - " + sizeString)
+        // println("Generating Tiles & Fonts - " + sizeString)
 
         val moduleName = modulePrefix + sizeString
 
@@ -182,7 +211,7 @@ object TileCharGen {
 
         IO.write(file, newContents)
 
-        println("Written: " + file.getCanonicalPath)
+        // println("Written: " + file.getCanonicalPath)
 
         file
       }

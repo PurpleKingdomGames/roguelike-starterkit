@@ -78,7 +78,6 @@ lazy val roguelike =
             "RoguelikeTiles",   // Class/module name.
             "roguelike", // fully qualified package name
             (Compile / sourceManaged).value, // Managed sources (output) directory for the generated classes
-            Seq((10, 10)) // By default, will generate lots of square sizes.
           )
       }.taskValue
     )

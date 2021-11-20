@@ -4,7 +4,7 @@ import scala.language.postfixOps
 Global / onChangedBuildSource                              := ReloadOnSourceChanges
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
-val scala3Version = "3.0.2"
+val scala3Version = "3.1.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version      := "0.0.1",
@@ -49,8 +49,8 @@ lazy val roguelike =
     .settings(
       name := "roguelike-starterkit",
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "indigo"        % "0.9.3-SNAPSHOT",
-        "io.indigoengine" %%% "indigo-extras" % "0.9.3-SNAPSHOT"
+        "io.indigoengine" %%% "indigo"        % "0.10.0",
+        "io.indigoengine" %%% "indigo-extras" % "0.10.0"
       )
     )
     .settings(
@@ -75,9 +75,9 @@ lazy val roguelike =
       Compile / sourceGenerators += Def.task {
         TileCharGen
           .gen(
-            "RoguelikeTiles",   // Class/module name.
-            "roguelike", // fully qualified package name
-            (Compile / sourceManaged).value, // Managed sources (output) directory for the generated classes
+            "RoguelikeTiles", // Class/module name.
+            "roguelike",      // fully qualified package name
+            (Compile / sourceManaged).value // Managed sources (output) directory for the generated classes
           )
       }.taskValue
     )
@@ -94,9 +94,9 @@ lazy val demo =
       windowStartWidth    := 550,
       windowStartHeight   := 400,
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "indigo-json-circe" % "0.9.3-SNAPSHOT",
-        "io.indigoengine" %%% "indigo"            % "0.9.3-SNAPSHOT",
-        "io.indigoengine" %%% "indigo-extras"     % "0.9.3-SNAPSHOT"
+        "io.indigoengine" %%% "indigo-json-circe" % "0.10.0",
+        "io.indigoengine" %%% "indigo"            % "0.10.0",
+        "io.indigoengine" %%% "indigo-extras"     % "0.10.0"
       )
       // scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) } // required for parcel, but will break indigoRun & indigoBuild
     )

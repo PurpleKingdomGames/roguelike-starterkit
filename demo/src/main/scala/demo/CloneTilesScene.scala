@@ -66,7 +66,7 @@ object CloneTilesScene extends Scene[Unit, Unit, Unit]:
       SceneUpdateFragment(
         CloneTiles(
           cloneId,
-          terminal.toCloneTileData(Tile.SPACE, RoguelikeTiles.Size10x10.charCrops)
+          terminal.toCloneTileData(Tile.SPACE, Point.zero, RoguelikeTiles.Size10x10.charCrops)
         )
       ).addCloneBlanks(cloneBlank)
     )

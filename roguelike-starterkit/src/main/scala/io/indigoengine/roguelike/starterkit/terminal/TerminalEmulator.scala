@@ -95,12 +95,12 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   ): TerminalEntity =
     TerminalEntity(tileSheet, screenSize, charSize, toTileList(default), maxTileCount)
 
-  def toCloneTileData(default: Tile, charCrops: Array[(Int, Int, Int, Int)]): Array[CloneTileData] =
+  def toCloneTileData(default: Tile, position: Point, charCrops: Array[(Int, Int, Int, Int)]): Array[CloneTileData] =
     toPositionedList.toArray.map { case (pt, t) =>
       val crop = charCrops(t.char.toInt)
       CloneTileData(
-        pt.x * crop._3,
-        pt.y * crop._4,
+        (pt.x * crop._3) + position.x,
+        (pt.y * crop._4) + position.y,
         crop._1,
         crop._2,
         crop._3,

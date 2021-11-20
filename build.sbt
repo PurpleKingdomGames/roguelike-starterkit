@@ -7,7 +7,7 @@ ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports"
 val scala3Version = "3.1.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
-  version      := "0.0.1",
+  version      := "0.1.0-SNAPSHOT",
   scalaVersion := scala3Version,
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
@@ -112,6 +112,10 @@ lazy val roguelikeProject =
     .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! }
+    )
+    .settings(
+      publish      := {},
+      publishLocal := {}
     )
     .aggregate(roguelike, demo)
 

@@ -14,6 +14,9 @@ val MapTile: terminal.MapTile.type = terminal.MapTile
 type TerminalText = terminal.TerminalText
 val TerminalText: terminal.TerminalText.type = terminal.TerminalText
 
+type TerminalClones = terminal.TerminalClones
+val TerminalClones: terminal.TerminalClones.type = terminal.TerminalClones
+
 // Utils
 
 val FOV: utils.FOV.type = utils.FOV

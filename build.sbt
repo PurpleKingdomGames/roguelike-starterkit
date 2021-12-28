@@ -5,6 +5,7 @@ Global / onChangedBuildSource                              := ReloadOnSourceChan
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
 val scala3Version = "3.1.0"
+val indigoVersion = "0.10.1-SNAPSHOT"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version      := "0.1.0-SNAPSHOT",
@@ -49,8 +50,8 @@ lazy val roguelike =
     .settings(
       name := "roguelike-starterkit",
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "indigo"        % "0.10.0",
-        "io.indigoengine" %%% "indigo-extras" % "0.10.0"
+        "io.indigoengine" %%% "indigo"        % indigoVersion,
+        "io.indigoengine" %%% "indigo-extras" % indigoVersion
       )
     )
     .settings(
@@ -94,9 +95,9 @@ lazy val demo =
       windowStartWidth    := 550,
       windowStartHeight   := 400,
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "indigo-json-circe" % "0.10.0",
-        "io.indigoengine" %%% "indigo"            % "0.10.0",
-        "io.indigoengine" %%% "indigo-extras"     % "0.10.0"
+        "io.indigoengine" %%% "indigo-json-circe" % indigoVersion,
+        "io.indigoengine" %%% "indigo"            % indigoVersion,
+        "io.indigoengine" %%% "indigo-extras"     % indigoVersion
       )
       // scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) } // required for parcel, but will break indigoRun & indigoBuild
     )

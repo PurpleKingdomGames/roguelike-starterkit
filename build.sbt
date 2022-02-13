@@ -4,8 +4,8 @@ import scala.language.postfixOps
 Global / onChangedBuildSource                              := ReloadOnSourceChanges
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
-val scala3Version = "3.1.0"
-val indigoVersion = "0.11.0"
+val scala3Version = "3.1.1"
+val indigoVersion = "0.12.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version      := "0.1.0-SNAPSHOT",

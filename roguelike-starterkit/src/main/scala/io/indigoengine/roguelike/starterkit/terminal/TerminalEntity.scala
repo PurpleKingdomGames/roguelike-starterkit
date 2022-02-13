@@ -14,7 +14,7 @@ final case class TerminalEntity(
     position: Point,
     depth: Depth,
     maxTileCount: Int
-) extends EntityNode:
+) extends EntityNode[TerminalEntity]:
   def flip: Flip        = Flip.default
   def ref: Point        = Point.zero
   def rotation: Radians = Radians.zero
@@ -96,6 +96,9 @@ final case class TerminalEntity(
         )
       )
     ).withChannel0(tileSheet)
+
+  def eventHandler: ((TerminalEntity, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
+  def eventHandlerEnabled: Boolean                                         = false
 
 object TerminalEntity:
 

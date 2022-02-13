@@ -21,15 +21,12 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  val fps: Int = 60
-
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
     Outcome(
       BootResult
         .noData(
           GameConfig.default
             .withMagnification(1)
-            .withFrameRate(fps)
         )
         .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)
         .withAssets(Assets.assets)
@@ -38,7 +35,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
           TerminalText.standardShader,
           TerminalText.customShader(ShaderId("my shader"), Assets.textFragShader)
         )
-        .withSubSystems(FPSCounter(Point(10, 350), fps))
+        .withSubSystems(FPSCounter(Point(10, 350)))
     )
 
   def initialModel(startupData: Unit): Outcome[Unit] =

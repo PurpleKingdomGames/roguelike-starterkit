@@ -1,6 +1,7 @@
 package io.indigoengine.roguelike.starterkit.terminal
 
 import indigo.shared.assets.AssetName
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
 import indigo.shared.materials.Material
@@ -40,10 +41,10 @@ final case class TerminalText(
   def toShaderData: ShaderData =
     ShaderData(
       shaderId.getOrElse(TerminalText.shaderId),
-      List(
+      Batch(
         UniformBlock(
           "RogueLikeTextData",
-          List(
+          Batch(
             Uniform("FOREGROUND") -> vec3(foreground.r, foreground.g, foreground.b),
             Uniform("BACKGROUND") -> vec4(background.r, background.g, background.b, background.a),
             Uniform("MASK")       -> vec4(mask.r, mask.g, mask.b, mask.a)

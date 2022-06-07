@@ -1,5 +1,6 @@
 package io.indigoengine.roguelike.starterkit.utils
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Size
 import indigo.shared.dice.Dice
@@ -17,9 +18,9 @@ class PathFinderTests extends munit.FunSuite {
     val end: Point        = Point(0, 2)
     val impassable: Point = Point(1, 0)
 
-    val searchGrid = PathFinder.fromImpassable(Size(3, 3), List(impassable))
+    val searchGrid = PathFinder.fromImpassable(Size(3, 3), Batch(impassable))
 
-    val path: List[Point] = searchGrid.locatePath(Dice.fromSeed(0), start, end, scoreAs)
+    val path: Batch[Point] = searchGrid.locatePath(Dice.fromSeed(0), start, end, scoreAs)
 
     val possiblePaths: List[List[Point]] = List(
       List(start, Point(2, 2), Point(1, 2), end),
@@ -27,14 +28,14 @@ class PathFinderTests extends munit.FunSuite {
       List(start, Point(1, 1), Point(1, 2), end)
     )
 
-    assertEquals(possiblePaths.contains(path), true)
+    assertEquals(possiblePaths.contains(path.toList), true)
   }
 
   test("Finding an unobscured path.should be able to find a route (from walkable)") {
     val start: Point = Point(2, 1)
     val end: Point   = Point(0, 2)
-    val walkable: List[Point] =
-      List(
+    val walkable: Batch[Point] =
+      Batch(
         Point(0, 0),
         // Point(1, 0), // Impassable
         Point(2, 0),
@@ -48,7 +49,7 @@ class PathFinderTests extends munit.FunSuite {
 
     val searchGrid = PathFinder.fromWalkable(Size(3, 3), walkable)
 
-    val path: List[Point] = searchGrid.locatePath(Dice.fromSeed(0), start, end, scoreAs)
+    val path: Batch[Point] = searchGrid.locatePath(Dice.fromSeed(0), start, end, scoreAs)
 
     val possiblePaths: List[List[Point]] = List(
       List(start, Point(2, 2), Point(1, 2), end),
@@ -56,7 +57,7 @@ class PathFinderTests extends munit.FunSuite {
       List(start, Point(1, 1), Point(1, 2), end)
     )
 
-    assertEquals(possiblePaths.contains(path), true)
+    assertEquals(possiblePaths.contains(path.toList), true)
   }
 
   test("Scoring the grid.should be able to score a grid") {
@@ -64,10 +65,10 @@ class PathFinderTests extends munit.FunSuite {
     val end: Point        = Point(0, 2)
     val impassable: Point = Point(1, 0)
 
-    val searchGrid = PathFinder.fromImpassable(Size(3, 3), List(impassable))
+    val searchGrid = PathFinder.fromImpassable(Size(3, 3), Batch(impassable))
 
-    val expected: List[GridSquare] =
-      List(
+    val expected: Batch[GridSquare] =
+      Batch(
         Walkable(0, Point(0, 0), 2),
         Blocked(1, Point(1, 0)),
         Walkable(
@@ -93,10 +94,10 @@ class PathFinderTests extends munit.FunSuite {
   test("Sampling the grid.should be able to take a sample in the middle of the map") {
     val impassable: Point = Point(2, 2)
 
-    val searchGrid = PathFinder.fromImpassable(Size(4, 3), List(impassable))
+    val searchGrid = PathFinder.fromImpassable(Size(4, 3), Batch(impassable))
 
-    val expected: List[GridSquare] =
-      List(
+    val expected: Batch[GridSquare] =
+      Batch(
         Walkable(2, Point(2, 0), -1),
         Walkable(5, Point(1, 1), -1),
         //Sample point
@@ -110,10 +111,10 @@ class PathFinderTests extends munit.FunSuite {
   test("Sampling the grid.should be able to take a sample at the edge of the map") {
     val impassable: Point = Point(2, 2)
 
-    val searchGrid = PathFinder.fromImpassable(Size(4, 3), List(impassable))
+    val searchGrid = PathFinder.fromImpassable(Size(4, 3), Batch(impassable))
 
-    val expected: List[GridSquare] =
-      List(
+    val expected: Batch[GridSquare] =
+      Batch(
         Walkable(3, Point(3, 0), -1),
         Walkable(6, Point(2, 1), -1),
         //Sample point
@@ -126,10 +127,10 @@ class PathFinderTests extends munit.FunSuite {
   test("Sampling the grid.should be able to take a sample at the top left of the map") {
     val impassable: Point = Point(2, 2)
 
-    val searchGrid = PathFinder.fromImpassable(Size(4, 3), List(impassable))
+    val searchGrid = PathFinder.fromImpassable(Size(4, 3), Batch(impassable))
 
-    val expected: List[GridSquare] =
-      List(
+    val expected: Batch[GridSquare] =
+      Batch(
         //Sample point
         Walkable(1, Point(1, 0), -1),
         Walkable(4, Point(0, 1), -1)
@@ -162,7 +163,7 @@ class PathFinderTests extends munit.FunSuite {
   val end: Point        = Point(3, 2)
   val impassable: Point = Point(2, 2)
 
-  val searchGrid = PathFinder.fromImpassable(Size(4, 3), List(impassable))
+  val searchGrid = PathFinder.fromImpassable(Size(4, 3), Batch(impassable))
 
   test("Generating a grid.should be able to generate a simple search grid.impassable") {
     assertEquals(searchGrid.grid(Coords.toGridPosition(impassable, 4)), Blocked(10, impassable))
@@ -171,8 +172,8 @@ class PathFinderTests extends munit.FunSuite {
   test("Real path") {
     val start: Point = Point(20, 23) - Point(17, 21)
     val end: Point   = Point(19, 26) - Point(17, 21)
-    val walkable: List[Point] =
-      List(
+    val walkable: Batch[Point] =
+      Batch(
         Point(4, 6),
         Point(3, 6),
         Point(4, 5),
@@ -203,7 +204,7 @@ class PathFinderTests extends munit.FunSuite {
 
     val searchGrid = PathFinder.fromWalkable(Size(5, 7), walkable)
 
-    val actual: List[Point] =
+    val actual: Batch[Point] =
       searchGrid.locatePath(Dice.fromSeed(0), start, end, scoreAs)
 
     val possiblePaths: List[List[Point]] = List(
@@ -211,7 +212,7 @@ class PathFinderTests extends munit.FunSuite {
       List(Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5))
     )
 
-    assert(possiblePaths.contains(actual), true)
+    assert(clue(possiblePaths.contains(actual.toList)))
   }
 
 }

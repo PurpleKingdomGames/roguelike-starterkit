@@ -1,11 +1,13 @@
 import scala.sys.process._
 import scala.language.postfixOps
 
+import sbtwelcome._
+
 Global / onChangedBuildSource                              := ReloadOnSourceChanges
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
-val scala3Version = "3.1.1"
-val indigoVersion = "0.12.0"
+val scala3Version = "3.1.2"
+val indigoVersion = "0.13.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version      := "0.1.0-SNAPSHOT",
@@ -119,6 +121,18 @@ lazy val roguelikeStarterKit =
       publishLocal := {}
     )
     .aggregate(roguelike, demo)
+    .settings(
+      logo := rawLogo + "(v" + version.value.toString + ")",
+      usefulTasks := Seq(
+        UsefulTask("r", "runGame", "Run the game (requires Electron)"),
+        UsefulTask("p", "publishLocal", "Local publish"),
+        UsefulTask("c", "code", "Launch VSCode")
+      ),
+      logoColor        := scala.Console.YELLOW,
+      aliasColor       := scala.Console.BLUE,
+      commandColor     := scala.Console.CYAN,
+      descriptionColor := scala.Console.WHITE
+    )
 
 // To use indigoBuild or indigoRun, first comment out the line above that says: `scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }`
 addCommandAlias("runGame", ";demo/compile;demo/fastOptJS;demo/indigoRun")
@@ -126,3 +140,16 @@ addCommandAlias("buildGame", ";demo/compile;demo/fastOptJS;demo/indigoBuild")
 
 lazy val code =
   taskKey[Unit]("Launch VSCode in the current directory")
+
+// format: off
+lazy val rawLogo: String =
+"""
+                          ___ __               
+  _______  ___ ___ _____ / (_) /_____          
+ / __/ _ \/ _ `/ // / -_) / /  '_/ -_)         
+/_/  \___/\_, /\_,_/\__/_/_/_/\_\\__/_    _ __ 
+  ___ / //___/_____/ /____ ________/ /__ (_) /_
+ (_-</ __/ _ `/ __/ __/ -_) __/___/  '_// / __/
+/___/\__/\_,_/_/  \__/\__/_/     /_/\_\/_/\__/ 
+                                               
+"""

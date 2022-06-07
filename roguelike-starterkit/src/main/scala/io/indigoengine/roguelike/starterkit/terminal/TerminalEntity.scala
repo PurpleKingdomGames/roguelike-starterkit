@@ -10,7 +10,7 @@ final case class TerminalEntity(
     gridSize: Size,
     charSize: Size,
     mask: RGBA,
-    map: Array[MapTile],
+    map: Batch[MapTile],
     position: Point,
     depth: Depth,
     maxTileCount: Int
@@ -47,33 +47,33 @@ final case class TerminalEntity(
   def withMask(newColor: RGB): TerminalEntity =
     this.copy(mask = newColor.toRGBA)
 
-  def withMap(newMap: Array[MapTile]): TerminalEntity =
+  def withMap(newMap: Batch[MapTile]): TerminalEntity =
     this.copy(map = newMap)
 
   def withDepth(newDepth: Depth): TerminalEntity =
     this.copy(depth = newDepth)
 
   private val count       = gridSize.width * gridSize.height
-  private val emptyColors = Array.fill((maxTileCount - count) * 4)(0.0f)
+  private val emptyColors = Batch.fromArray(Array.fill((maxTileCount - count) * 4)(0.0f))
 
-  private lazy val fgArray: Array[Float] =
+  private lazy val fgArray: scalajs.js.Array[Float] =
     (map.flatMap { t =>
       val color = t.foreground
-      Array(t.char.toFloat, color.r.toFloat, color.g.toFloat, color.b.toFloat)
-    } ++ emptyColors).toArray
+      Batch(t.char.toFloat, color.r.toFloat, color.g.toFloat, color.b.toFloat)
+    } ++ emptyColors).toJSArray
 
-  private lazy val bgArray: Array[Float] =
+  private lazy val bgArray: scalajs.js.Array[Float] =
     (map.flatMap { t =>
       val color = t.background
-      Array(color.r.toFloat, color.g.toFloat, color.b.toFloat, color.a.toFloat)
-    } ++ emptyColors).toArray
+      Batch(color.r.toFloat, color.g.toFloat, color.b.toFloat, color.a.toFloat)
+    } ++ emptyColors).toJSArray
 
   def toShaderData: ShaderData =
     ShaderData(
       TerminalEntity.shaderId,
       UniformBlock(
         "RogueLikeData",
-        List(
+        Batch(
           Uniform("GRID_DIMENSIONS_CHAR_SIZE") -> vec4(
             gridSize.width.toFloat,
             gridSize.height.toFloat,
@@ -85,14 +85,14 @@ final case class TerminalEntity(
       ),
       UniformBlock(
         "RogueLikeMapForeground",
-        List(
-          Uniform("CHAR_FOREGROUND") -> rawArray(fgArray)
+        Batch(
+          Uniform("CHAR_FOREGROUND") -> rawJSArray(fgArray)
         )
       ),
       UniformBlock(
         "RogueLikeMapBackground",
-        List(
-          Uniform("BACKGROUND") -> rawArray(bgArray)
+        Batch(
+          Uniform("BACKGROUND") -> rawJSArray(bgArray)
         )
       )
     ).withChannel0(tileSheet)
@@ -113,7 +113,7 @@ object TerminalEntity:
       gridSize,
       charSize,
       RGBA.Magenta,
-      Array(),
+      Batch.empty,
       Point.zero,
       Depth.zero,
       maxTileCount
@@ -123,7 +123,7 @@ object TerminalEntity:
       tileSheet: AssetName,
       gridSize: Size,
       charSize: Size,
-      map: Array[MapTile],
+      map: Batch[MapTile],
       maxTileCount: Int
   ): TerminalEntity =
     TerminalEntity(

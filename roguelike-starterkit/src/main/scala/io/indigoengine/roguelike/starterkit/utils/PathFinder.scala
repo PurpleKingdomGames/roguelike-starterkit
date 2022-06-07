@@ -1,12 +1,13 @@
 package io.indigoengine.roguelike.starterkit.utils
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Size
 import indigo.shared.dice.Dice
 
 import scala.annotation.tailrec
 
-final case class PathFinder(size: Size, grid: List[GridSquare]):
+final case class PathFinder(size: Size, grid: Batch[GridSquare]):
 
   def contains(coords: Point): Boolean =
     coords.x >= 0 && coords.y >= 0 && coords.x < size.width && coords.y < size.height
@@ -16,7 +17,7 @@ final case class PathFinder(size: Size, grid: List[GridSquare]):
       start: Point,
       end: Point,
       scoreAmount: GridSquare => Int
-  ): List[Point] =
+  ): Batch[Point] =
     PathFinder.locatePath(
       dice,
       start,
@@ -26,8 +27,8 @@ final case class PathFinder(size: Size, grid: List[GridSquare]):
 
 object PathFinder:
 
-  def sampleAt(searchGrid: PathFinder, coords: Point, gridWidth: Int): List[GridSquare] =
-    List(
+  def sampleAt(searchGrid: PathFinder, coords: Point, gridWidth: Int): Batch[GridSquare] =
+    Batch(
       coords + Coords.relativeUp,
       coords + Coords.relativeLeft,
       coords + Coords.relativeRight,
@@ -35,27 +36,29 @@ object PathFinder:
     ).filter(c => searchGrid.contains(c))
       .map(c => searchGrid.grid(Coords.toGridPosition(c, gridWidth)))
 
-  def fromImpassable(size: Size, impassable: List[Point]): PathFinder =
-    val grid: List[GridSquare] = (0 until (size.width * size.height)).toList.map { index =>
-      Coords.fromIndex(index, size.width) match
-        case c: Point if impassable.contains(c) =>
-          GridSquare.Blocked(index, c)
+  def fromImpassable(size: Size, impassable: Batch[Point]): PathFinder =
+    val grid: Batch[GridSquare] =
+      Batch.fromIndexedSeq(0 until (size.width * size.height)).map { index =>
+        Coords.fromIndex(index, size.width) match
+          case c: Point if impassable.contains(c) =>
+            GridSquare.Blocked(index, c)
 
-        case c: Point =>
-          GridSquare.Walkable(index, c, -1)
-    }
+          case c: Point =>
+            GridSquare.Walkable(index, c, -1)
+      }
 
     PathFinder(size, grid)
 
-  def fromWalkable(size: Size, walkable: List[Point]): PathFinder =
-    val grid: List[GridSquare] = (0 until (size.width * size.height)).toList.map { index =>
-      Coords.fromIndex(index, size.width) match
-        case c: Point if walkable.contains(c) =>
-          GridSquare.Walkable(index, c, -1)
+  def fromWalkable(size: Size, walkable: Batch[Point]): PathFinder =
+    val grid: Batch[GridSquare] =
+      Batch.fromIndexedSeq(0 until (size.width * size.height)).map { index =>
+        Coords.fromIndex(index, size.width) match
+          case c: Point if walkable.contains(c) =>
+            GridSquare.Walkable(index, c, -1)
 
-        case c: Point =>
-          GridSquare.Blocked(index, c)
-    }
+          case c: Point =>
+            GridSquare.Blocked(index, c)
+      }
 
     PathFinder(size, grid)
 
@@ -64,17 +67,17 @@ object PathFinder:
       end: Point,
       searchGrid: PathFinder,
       scoreAmount: GridSquare => Int
-  ): List[GridSquare] = {
+  ): Batch[GridSquare] = {
     @tailrec
     def rec(
         target: Point,
-        unscored: List[GridSquare],
+        unscored: Batch[GridSquare],
         scoreValue: Int,
-        lastCoords: List[Point],
-        scored: List[GridSquare]
-    ): List[GridSquare] =
+        lastCoords: Batch[Point],
+        scored: Batch[GridSquare]
+    ): Batch[GridSquare] =
       (unscored, lastCoords) match
-        case (Nil, _) | (_, Nil) =>
+        case (a, b) if a.isEmpty || b.isEmpty =>
           scored ++ unscored
 
         case (_, last) if last.exists(_ == target) =>
@@ -82,18 +85,18 @@ object PathFinder:
 
         case (remainingSquares, lastScoredLocations) =>
           // Find the squares from the remaining pile that the previous scores squares touched.
-          val roughEdges: List[List[GridSquare]] =
+          val roughEdges: Batch[Batch[GridSquare]] =
             lastScoredLocations.map(c => sampleAt(searchGrid, c, searchGrid.size.width))
 
           // Filter out any squares that aren't in the remainingSquares list
-          val edges: List[GridSquare] =
+          val edges: Batch[GridSquare] =
             roughEdges.flatMap(_.filter(c => remainingSquares.contains(c)))
 
           // Deduplicate and score
-          val next: List[GridSquare] =
+          val next: Batch[GridSquare] =
             edges
-              .foldLeft[List[GridSquare]](Nil) { (l, x) =>
-                if (l.exists(p => p.coords == x.coords)) l else l ++ List(x)
+              .foldLeft(Batch.empty[GridSquare]) { (l, x) =>
+                if (l.exists(p => p.coords == x.coords)) l else l ++ Batch(x)
               }
               .map(gs => gs.withScore(scoreValue + scoreAmount(gs)))
 
@@ -107,38 +110,36 @@ object PathFinder:
 
     val (done, todo) = searchGrid.grid.partition(_.coords == end)
 
-    rec(start, todo, 0, List(end), done.map(_.withScore(0))).sortBy(_.index)
+    rec(start, todo, 0, Batch(end), done.map(_.withScore(0))).sortBy(_.index)
   }
 
-  def locatePath(dice: Dice, start: Point, end: Point, searchGrid: PathFinder): List[Point] = {
+  def locatePath(dice: Dice, start: Point, end: Point, searchGrid: PathFinder): Batch[Point] = {
     val width: Int = searchGrid.size.width
 
     @tailrec
     def rec(
         currentPosition: Point,
         currentScore: Int,
-        acc: List[Point]
-    ): List[Point] =
+        acc: Batch[Point]
+    ): Batch[Point] =
       if (currentPosition == end) acc
       else
-        sampleAt(searchGrid, currentPosition, width).filter(c =>
+        val squares = sampleAt(searchGrid, currentPosition, width).filter(c =>
           c.score != -1 && c.score < currentScore
-        ) match {
-          case Nil =>
-            acc
+        )
 
-          case next :: Nil =>
-            rec(next.coords, next.score, acc ++ List(next.coords))
-
-          case xs =>
-            val next = xs(dice.rollFromZero(xs.length - 1))
-            rec(next.coords, next.score, acc ++ List(next.coords))
-        }
+        if squares.isEmpty then acc
+        else if squares.size == 1 then
+          val next = squares.head
+          rec(next.coords, next.score, acc ++ Batch(next.coords))
+        else
+          val next = squares(dice.rollFromZero(squares.length - 1))
+          rec(next.coords, next.score, acc ++ Batch(next.coords))
 
     rec(
       start,
       GridSquare.Max,
-      List(start)
+      Batch(start)
     )
   }
 

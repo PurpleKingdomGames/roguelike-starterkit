@@ -4,6 +4,7 @@ import indigo.Point
 import indigo.RGB
 import indigo.RGBA
 import indigo.Size
+import indigo.shared.collections.Batch
 import io.indigoengine.roguelike.starterkit.Tile
 
 class TerminalEmulatorTests extends munit.FunSuite {
@@ -38,7 +39,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
 
   test("should be able insert multiple items") {
     val list =
-      List(
+      Batch(
         (Point(8, 2), MapTile(Tile.`@`)),
         (Point(0, 0), MapTile(Tile.`!`)),
         (Point(9, 9), MapTile(Tile.`?`))
@@ -49,7 +50,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
         .put(list)
 
     assert(
-      List(Point(8, 2), Point(0, 0), Point(9, 9)).forall { v =>
+      Batch(Point(8, 2), Point(0, 0), Point(9, 9)).forall { v =>
         clue(console.get(clue(v))) == list.find(p => p._1 == v).map(_._2)
       }
     )
@@ -61,7 +62,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
         .putLine(Point(1, 3), "Hello", RGB.Red, RGBA.Blue)
 
     val actual =
-      List(
+      Batch(
         console.get(Point(1, 3)),
         console.get(Point(2, 3)),
         console.get(Point(3, 3)),
@@ -70,7 +71,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
       ).collect { case Some(s) => s }
 
     val expected =
-      List(
+      Batch(
         MapTile(Tile.`H`, RGB.Red, RGBA.Blue),
         MapTile(Tile.`e`, RGB.Red, RGBA.Blue),
         MapTile(Tile.`l`, RGB.Red, RGBA.Blue),
@@ -86,7 +87,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
       TerminalEmulator(Size(3))
 
     val actual =
-      console.toTileList(MapTile(Tile.`.`))
+      console.toTileBatch(MapTile(Tile.`.`))
 
     val expected =
       List.fill(9)(MapTile(Tile.`.`))
@@ -103,15 +104,15 @@ class TerminalEmulatorTests extends munit.FunSuite {
         }
       }.toList
 
-    val items: List[(Point, MapTile)] =
-      coords.zip(List.fill(8)(MapTile(Tile.`!`)) :+ MapTile(Tile.`@`))
+    val items: Batch[(Point, MapTile)] =
+      Batch.fromList(coords.zip(List.fill(8)(MapTile(Tile.`!`)) :+ MapTile(Tile.`@`)))
 
     val console =
       TerminalEmulator(Size(3))
         .put(items)
 
     val actual =
-      console.toTileList(MapTile(Tile.`.`))
+      console.toTileBatch(MapTile(Tile.`.`))
 
     val expected =
       List(
@@ -154,15 +155,15 @@ class TerminalEmulatorTests extends munit.FunSuite {
         MapTile(Tile.`f`)
       )
 
-    val itemsWithCoords: List[(Point, MapTile)] =
-      coords.zip(items)
+    val itemsWithCoords: Batch[(Point, MapTile)] =
+      Batch.fromList(coords.zip(items))
 
     val console =
       TerminalEmulator(Size(3))
         .put(itemsWithCoords)
 
     val actual =
-      console.toTileList(MapTile(Tile.`.`))
+      console.toTileBatch(MapTile(Tile.`.`))
 
     val expected =
       List(
@@ -210,7 +211,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
       List(MapTile(Tile.`@`), MapTile(Tile.`!`))
 
     val actual =
-      (consoleA combine consoleB).toList
+      (consoleA combine consoleB).toBatch
 
     assert(actual.length == expected.length)
     assert(actual.forall(expected.contains))
@@ -229,7 +230,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
       List((Point(1), MapTile(Tile.`@`)), (Point(2), MapTile(Tile.`!`)))
 
     val actual =
-      (consoleA combine consoleB).toPositionedList
+      (consoleA combine consoleB).toPositionedBatch
 
     assert(actual.length == expected.length)
     assert(actual.forall(expected.contains))
@@ -249,12 +250,12 @@ class TerminalEmulatorTests extends munit.FunSuite {
     assertEquals(expected, actual)
 
     val list =
-      console.toPositionedList
+      console.toPositionedBatch
 
     assert(list.contains((Point(40, 25), MapTile(Tile.`@`))))
 
     val drawn =
-      console.toTileList(MapTile(Tile.LIGHT_SHADE))
+      console.toTileBatch(MapTile(Tile.LIGHT_SHADE))
 
     val foundAt =
       drawn.zipWithIndex.find(p => p._1 == MapTile(Tile.`@`)).map(_._2)

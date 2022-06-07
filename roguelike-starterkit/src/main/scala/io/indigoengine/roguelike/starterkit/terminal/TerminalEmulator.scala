@@ -12,12 +12,12 @@ import scala.annotation.tailrec
 
 final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
-  private val coordsList: Array[Point] =
-    (0 until screenSize.height).flatMap { y =>
+  private val coordsBatch: Batch[Point] =
+    Batch.fromIndexedSeq((0 until screenSize.height).flatMap { y =>
       (0 until screenSize.width).map { x =>
         Point(x, y)
       }
-    }.toArray
+    })
 
   def put(coords: Point, tile: Tile, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
     this.copy(charMap =
@@ -28,17 +28,17 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def put(coords: Point, tile: Tile): TerminalEmulator =
     this.copy(charMap = charMap.insertElement(MapTile(tile), Vertex.fromPoint(coords)))
 
-  def put(tiles: List[(Point, MapTile)]): TerminalEmulator =
+  def put(tiles: Batch[(Point, MapTile)]): TerminalEmulator =
     this.copy(charMap = charMap.insertElements(tiles.map(p => (p._2, Vertex.fromPoint(p._1)))))
   def put(tiles: (Point, MapTile)*): TerminalEmulator =
-    put(tiles.toList)
+    put(Batch.fromSeq(tiles))
   def put(coords: Point, mapTile: MapTile): TerminalEmulator =
-    put(List(coords -> mapTile))
+    put(Batch(coords -> mapTile))
 
   // TODO: Wrap text if too long for line
   def putLine(startCoords: Point, text: String, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
-    val tiles: List[(Point, MapTile)] =
-      text.toCharArray.toList.zipWithIndex.map { case (c, i) =>
+    val tiles: Batch[(Point, MapTile)] =
+      Batch.fromArray(text.toCharArray).zipWithIndex.map { case (c, i) =>
         Tile.charCodes.get(if c == '\\' then "\\" else c.toString) match
           case None =>
             // Couldn't find character, skip it.
@@ -51,7 +51,7 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
   def putLines(
       startCoords: Point,
-      textLines: List[String],
+      textLines: Batch[String],
       fgColor: RGB,
       bgColor: RGBA
   ): TerminalEmulator =
@@ -68,7 +68,7 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
             term.putLine(startCoords + Point(0, yOffset), x, fgColor, bgColor)
           )
 
-    rec(textLines, 0, this)
+    rec(textLines.toList, 0, this)
 
   def get(coords: Point): Option[MapTile] =
     charMap.fetchElementAt(Vertex.fromPoint(coords))
@@ -84,8 +84,8 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def optimise: TerminalEmulator =
     this.copy(charMap = charMap.prune)
 
-  def toTileList(default: MapTile): Array[MapTile] =
-    coordsList.map(pt => get(pt).getOrElse(default))
+  def toTileBatch(default: MapTile): Batch[MapTile] =
+    coordsBatch.map(pt => get(pt).getOrElse(default))
 
   def draw(
       tileSheet: AssetName,
@@ -93,13 +93,13 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
       default: MapTile,
       maxTileCount: Int
   ): TerminalEntity =
-    TerminalEntity(tileSheet, screenSize, charSize, toTileList(default), maxTileCount)
+    TerminalEntity(tileSheet, screenSize, charSize, toTileBatch(default), maxTileCount)
 
   private def toCloneTileData(
       position: Point,
-      charCrops: Array[(Int, Int, Int, Int)],
-      data: Array[(Point, MapTile)]
-  ): Array[CloneTileData] =
+      charCrops: Batch[(Int, Int, Int, Int)],
+      data: Batch[(Point, MapTile)]
+  ): Batch[CloneTileData] =
     data.map { case (pt, t) =>
       val crop = charCrops(t.char.toInt)
       CloneTileData(
@@ -114,15 +114,18 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
   def toCloneTiles(
       position: Point,
-      charCrops: Array[(Int, Int, Int, Int)]
+      charCrops: Batch[(Int, Int, Int, Int)]
   )(makeBlank: (RGB, RGBA) => Cloneable): TerminalClones =
     val makeId: (RGB, RGBA) => CloneId = (rgb, rgba) =>
       CloneId(s"""term_cb_${rgb.hashCode}_${rgba.hashCode}""")
 
-    val combinations: List[((CloneId, RGB, RGBA), Array[(Point, MapTile)])] =
-      toPositionedList.toArray
-        .groupBy(p => (makeId(p._2.foreground, p._2.background), p._2.foreground, p._2.background))
-        .toList
+    val combinations: Batch[((CloneId, RGB, RGBA), Batch[(Point, MapTile)])] =
+      Batch.fromMap(
+        toPositionedBatch
+          .groupBy(p =>
+            (makeId(p._2.foreground, p._2.background), p._2.foreground, p._2.background)
+          )
+      )
 
     val stuff =
       combinations.map { c =>
@@ -134,9 +137,9 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
     TerminalClones(stuff.map(_._1), stuff.map(_._2))
 
-  def toList: List[MapTile] =
+  def toBatch: Batch[MapTile] =
     @tailrec
-    def rec(open: List[QuadTree[MapTile]], acc: List[MapTile]): List[MapTile] =
+    def rec(open: List[QuadTree[MapTile]], acc: Batch[MapTile]): Batch[MapTile] =
       open match
         case Nil =>
           acc
@@ -162,11 +165,11 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
               rec(xs ++ next, acc)
           }
 
-    rec(List(charMap), Nil)
+    rec(List(charMap), Batch.empty)
 
-  def toPositionedList: List[(Point, MapTile)] =
+  def toPositionedBatch: Batch[(Point, MapTile)] =
     @tailrec
-    def rec(open: List[QuadTree[MapTile]], acc: List[(Point, MapTile)]): List[(Point, MapTile)] =
+    def rec(open: List[QuadTree[MapTile]], acc: Batch[(Point, MapTile)]): Batch[(Point, MapTile)] =
       open match
         case Nil =>
           acc
@@ -192,21 +195,21 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
               rec(xs ++ next, acc)
           }
 
-    rec(List(charMap), Nil)
+    rec(List(charMap), Batch.empty)
 
   def |+|(otherConsole: TerminalEmulator): TerminalEmulator =
     combine(otherConsole)
   def combine(otherConsole: TerminalEmulator): TerminalEmulator =
     this.copy(
       charMap = charMap.insertElements(
-        otherConsole.toPositionedList.map(p => (p._2, Vertex.fromPoint(p._1)))
+        otherConsole.toPositionedBatch.map(p => (p._2, Vertex.fromPoint(p._1)))
       )
     )
 
   def inset(otherConsole: TerminalEmulator, offset: Point): TerminalEmulator =
     this.copy(
       charMap = charMap.insertElements(
-        otherConsole.toPositionedList.map(p => (p._2, Vertex.fromPoint(p._1 + offset)))
+        otherConsole.toPositionedBatch.map(p => (p._2, Vertex.fromPoint(p._1 + offset)))
       )
     )
 
@@ -217,8 +220,8 @@ object TerminalEmulator:
       QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble)
     )
 
-final case class TerminalClones(blanks: List[CloneBlank], clones: List[CloneTiles])
+final case class TerminalClones(blanks: Batch[CloneBlank], clones: Batch[CloneTiles])
 
 object TerminalClones:
   def empty: TerminalClones =
-    TerminalClones(Nil, Nil)
+    TerminalClones(Batch.empty, Batch.empty)

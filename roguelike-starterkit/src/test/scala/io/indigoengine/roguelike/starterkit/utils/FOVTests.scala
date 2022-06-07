@@ -11,7 +11,7 @@ class FOVTests extends munit.FunSuite {
     val expected =
       List(Point(1, 1), Point(0, 0))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toList, expected)
   }
 
   test("bresenhams line - vertical") {
@@ -31,7 +31,7 @@ class FOVTests extends munit.FunSuite {
         Point(10, 13)
       )
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toList, expected)
   }
 
   test("bresenhams line - horizontal") {
@@ -48,7 +48,7 @@ class FOVTests extends munit.FunSuite {
         Point(7, 13)
       )
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toList, expected)
   }
 
   test("bresenhams line - diagonal") {
@@ -66,7 +66,7 @@ class FOVTests extends munit.FunSuite {
         Point(0, 1)
       )
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toList, expected)
   }
 
   test("bresenhams line - same") {
@@ -78,7 +78,7 @@ class FOVTests extends munit.FunSuite {
         Point(0, 1)
       )
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toList, expected)
   }
 
   test("bresenhams line - tricky - misses target") {
@@ -96,7 +96,7 @@ class FOVTests extends munit.FunSuite {
         ) // The line would in fact go past this, but the destination is artificially added.
       ).reverse
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toList, expected)
   }
 
 }

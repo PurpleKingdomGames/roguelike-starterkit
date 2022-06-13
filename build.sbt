@@ -10,7 +10,7 @@ val scala3Version = "3.1.2"
 val indigoVersion = "0.13.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
-  version      := "0.1.0-SNAPSHOT",
+  version      := "0.1.0",
   scalaVersion := scala3Version,
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
@@ -104,8 +104,8 @@ lazy val demo =
       // scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) } // required for parcel, but will break indigoRun & indigoBuild
     )
     .settings(
-      publish      := {},
-      publishLocal := {}
+      publish / skip      := true,
+      publishLocal / skip := true
     )
     .dependsOn(roguelike)
 
@@ -117,8 +117,8 @@ lazy val roguelikeStarterKit =
       code := { "code ." ! }
     )
     .settings(
-      publish      := {},
-      publishLocal := {}
+      publish / skip      := true,
+      publishLocal / skip := true
     )
     .aggregate(roguelike, demo)
     .settings(

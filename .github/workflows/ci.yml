@@ -1,0 +1,15 @@
+name: CI
+on: [workflow_dispatch, push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: olafurpg/setup-scala@v11
+      with:
+        java-version: adopt@1.11
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '17'
+    - name: Roguelike-StarterKit Compile & Test
+      run: sbt clean compile test

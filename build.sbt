@@ -7,7 +7,7 @@ Global / onChangedBuildSource                              := ReloadOnSourceChan
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
 val scala3Version = "3.2.0"
-val indigoVersion = "0.13.0"
+val indigoVersion = "0.14.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version      := "0.1.1-SNAPSHOT",
@@ -96,6 +96,11 @@ lazy val demo =
       gameAssetsDirectory := "assets",
       windowStartWidth    := 550,
       windowStartHeight   := 400,
+      disableFrameRateLimit := (sys.props("os.name").toLowerCase match {
+        case x if x contains "windows" => false
+        case _                         => true
+      }),
+      electronInstall := indigoplugin.ElectronInstall.Version("^18.0.0"),
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % indigoVersion,
         "io.indigoengine" %%% "indigo"            % indigoVersion,

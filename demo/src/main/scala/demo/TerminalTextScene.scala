@@ -1,7 +1,7 @@
 package demo
 
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 import io.indigoengine.roguelike.starterkit.*
 
 object TerminalTextScene extends Scene[Unit, Unit, Unit]:
@@ -24,7 +24,7 @@ object TerminalTextScene extends Scene[Unit, Unit, Unit]:
   val subSystems: Set[SubSystem] =
     Set()
 
-  def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
+  def updateModel(context: SceneContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     case KeyboardEvent.KeyUp(Key.SPACE) =>
       Outcome(model).addGlobalEvents(SceneEvent.JumpTo(TerminalEmulatorScene.name))
 
@@ -32,7 +32,7 @@ object TerminalTextScene extends Scene[Unit, Unit, Unit]:
       Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[Unit],
+      context: SceneContext[Unit],
       model: Unit,
       viewModel: Unit
   ): GlobalEvent => Outcome[Unit] =
@@ -48,7 +48,7 @@ object TerminalTextScene extends Scene[Unit, Unit, Unit]:
     |""".stripMargin
 
   def present(
-      context: FrameContext[Unit],
+      context: SceneContext[Unit],
       model: Unit,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =

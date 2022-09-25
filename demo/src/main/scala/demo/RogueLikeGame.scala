@@ -1,7 +1,7 @@
 package demo
 
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 import indigoextras.subsystems.FPSCounter
 import io.indigoengine.roguelike.starterkit.*
 

@@ -10,7 +10,7 @@ val scala3Version = "3.2.0"
 val indigoVersion = "0.14.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
-  version      := "0.2.0",
+  version      := "0.2.1-SNAPSHOT",
   scalaVersion := scala3Version,
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(

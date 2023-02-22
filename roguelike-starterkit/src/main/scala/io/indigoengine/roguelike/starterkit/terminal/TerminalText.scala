@@ -1,18 +1,6 @@
 package io.indigoengine.roguelike.starterkit.terminal
 
-import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
-import indigo.shared.datatypes.RGB
-import indigo.shared.datatypes.RGBA
-import indigo.shared.materials.Material
-import indigo.shared.materials.ShaderData
-import indigo.shared.shader.EntityShader
-import indigo.shared.shader.ShaderId
-import indigo.shared.shader.ShaderPrimitive.vec3
-import indigo.shared.shader.ShaderPrimitive.vec4
-import indigo.shared.shader.Uniform
-import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.UniformBlockName
+import indigo.*
 import io.indigoengine.roguelike.starterkit.TerminalShaders
 
 final case class TerminalText(
@@ -66,15 +54,14 @@ object TerminalText:
   val shaderId: ShaderId =
     ShaderId("roguelike standard terminal text")
 
-  def standardShader: EntityShader.Source =
-    EntityShader
-      .Source(shaderId)
-      .withFragmentProgram(TerminalShaders.TerminalTextFragment)
-
-  def customShader(shaderId: ShaderId, fragProgram: AssetName): EntityShader.External =
-    EntityShader
-      .External(shaderId)
-      .withFragmentProgram(fragProgram)
+  def standardShader: UltravioletShader =
+    UltravioletShader.entityFragment(
+      shaderId,
+      EntityShader.fragment[ShaderImpl.Env](
+        ShaderImpl.frag,
+        ShaderImpl.Env.ref
+      )
+    )
 
   def apply(tileMap: AssetName): TerminalText =
     TerminalText(tileMap, RGB.White, RGBA.Zero, defaultMask, None)
@@ -87,3 +74,40 @@ object TerminalText:
 
   def apply(tileMap: AssetName, foreground: RGB, background: RGBA, mask: RGBA): TerminalText =
     TerminalText(tileMap, foreground, background, mask, None)
+
+  object ShaderImpl:
+
+    import ultraviolet.syntax.*
+
+    final case class Env(
+        FOREGROUND: vec3,
+        BACKGROUND: vec4,
+        MASK: vec4
+    ) extends FragmentEnvReference
+
+    object Env:
+      val ref =
+        Env(vec3(0.0f), vec4(0.0f), vec4(0.0f))
+
+    final case class RogueLikeTextData(
+        FOREGROUND: vec3,
+        BACKGROUND: vec4,
+        MASK: vec4
+    )
+
+    inline def frag: Shader[Env, Unit] =
+      Shader[Env] { env =>
+        ubo[RogueLikeTextData]
+
+        def fragment(color: vec4): vec4 =
+          val maskDiff: Boolean = abs(env.CHANNEL_0.x - env.MASK.x) < 0.001f &&
+            abs(env.CHANNEL_0.y - env.MASK.y) < 0.001f &&
+            abs(env.CHANNEL_0.z - env.MASK.z) < 0.001f &&
+            abs(env.CHANNEL_0.w - env.MASK.w) < 0.001f
+
+          if (maskDiff) {
+            env.BACKGROUND
+          } else {
+            vec4(env.CHANNEL_0.rgb * (env.FOREGROUND.rgb * env.CHANNEL_0.a), env.CHANNEL_0.a)
+          }
+      }

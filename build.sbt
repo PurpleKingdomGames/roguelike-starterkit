@@ -7,7 +7,7 @@ Global / onChangedBuildSource                              := ReloadOnSourceChan
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
 val scala3Version = "3.2.2"
-val indigoVersion = "0.14.1-SNAPSHOT"
+val indigoVersion = "0.15.0-RC1"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version      := "0.2.1-SNAPSHOT",

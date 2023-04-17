@@ -128,9 +128,9 @@ object TerminalText:
           // Create a look-up pointing at the pixel diagonally up and left from the current one,
           // and pass it to the fragment shader.
           val onePixel: vec2 = vec2(1.0f) / env.SIZE
-          val adjustedUV     = env.UV + (onePixel * vec2(-1.0f, -1.0f))
-          v_shadowLookupCoord =
-            clamp((adjustedUV * env.FRAME_SIZE) + env.CHANNEL_0_ATLAS_OFFSET, vec2(0.0), vec2(1.0f))
+          val adjustedUV     = clamp(env.UV - (onePixel * vec2(1.0f, 1.0f)), vec2(0.0), vec2(1.0))
+
+          v_shadowLookupCoord = (adjustedUV * env.FRAME_SIZE) + env.CHANNEL_0_ATLAS_OFFSET
 
           v
       }

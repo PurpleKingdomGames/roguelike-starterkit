@@ -47,11 +47,6 @@ object TerminalTextScene extends Scene[Unit, Unit, Unit]:
     |╚═════════════════════╝
     |""".stripMargin
 
-  def messageNoBorder: String =
-    """
-    |  Hit Space to Start! 
-    |""".stripMargin
-
   def present(
       context: SceneContext[Unit],
       model: Unit,
@@ -70,7 +65,7 @@ object TerminalTextScene extends Scene[Unit, Unit, Unit]:
           TerminalText(Assets.tileMap, RGBA.Yellow, RGBA.Red).withShaderId(ShaderId("my shader"))
         ).moveBy(0, 40),
         Text(
-          messageNoBorder,
+          message,
           RoguelikeTiles.Size10x10.Fonts.fontKey,
           TerminalText(Assets.tileMap, RGBA.White, RGBA.Zero, RGBA.Magenta.withAlpha(0.75))
         ).moveBy(0, 80)

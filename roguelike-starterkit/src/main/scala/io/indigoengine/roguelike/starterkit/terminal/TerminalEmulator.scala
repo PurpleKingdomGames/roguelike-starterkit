@@ -1,7 +1,6 @@
 package io.indigoengine.roguelike.starterkit.terminal
 
-import indigo._
-import indigoextras.geometry.Vertex
+import indigo.*
 import indigoextras.trees.QuadTree
 import indigoextras.trees.QuadTree.QuadBranch
 import indigoextras.trees.QuadTree.QuadEmpty

@@ -1,7 +1,6 @@
 package io.indigoengine.roguelike.starterkit.utils
 
-import indigo.shared.collections.Batch
-import indigo.shared.datatypes.Point
+import indigo.*
 
 import scala.annotation.tailrec
 

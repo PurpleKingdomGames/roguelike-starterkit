@@ -2,12 +2,13 @@ import scala.sys.process._
 import scala.language.postfixOps
 
 import sbtwelcome._
+import indigoplugin.IndigoOptions
 
 Global / onChangedBuildSource                              := ReloadOnSourceChanges
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
-val scala3Version = "3.3.0"
-val indigoVersion = "0.15.0-RC2"
+val scala3Version = "3.3.1"
+val indigoVersion = "0.15.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version      := "0.3.0-RC3",
@@ -67,20 +68,19 @@ lazy val roguelike =
       }.taskValue
     )
 
+lazy val demoOptions: IndigoOptions =
+  IndigoOptions.defaults
+    .withTitle("Indigo Roguelike!")
+    .withBackgroundColor("black")
+    .withAssetDirectory("demo/assets")
+
 lazy val demo =
   (project in file("demo"))
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(commonSettings: _*)
     .settings(
-      name                  := "roguelike-demo",
-      showCursor            := true,
-      title                 := "Indigo Roguelike!",
-      gameAssetsDirectory   := "assets",
-      windowStartWidth      := 550,
-      windowStartHeight     := 400,
-      disableFrameRateLimit := false,
-      electronInstall       := indigoplugin.ElectronInstall.Latest,
-      backgroundColor       := "black",
+      name          := "roguelike-demo",
+      indigoOptions := demoOptions,
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % indigoVersion,
         "io.indigoengine" %%% "indigo"            % indigoVersion,

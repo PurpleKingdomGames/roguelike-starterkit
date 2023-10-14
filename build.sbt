@@ -109,7 +109,7 @@ lazy val roguelikeStarterKit =
     .settings(
       logo := rawLogo + "(v" + version.value.toString + ")",
       usefulTasks := Seq(
-        UsefulTask("runGame", "Run the game (requires Electron)").noAlias,
+        UsefulTask("runGame", "Run the game").noAlias,
         UsefulTask("publishLocal", "Local publish").noAlias,
         UsefulTask("code", "Launch VSCode").noAlias
       ),

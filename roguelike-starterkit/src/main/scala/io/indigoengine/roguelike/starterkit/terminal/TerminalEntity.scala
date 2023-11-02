@@ -148,7 +148,7 @@ object TerminalEntity:
         ShaderImpl.Env.ref
       )
     )
-     // TODO: Remove old shader + shader gen code.
+    // TODO: Remove old shader + shader gen code.
 
   object ShaderImpl:
 
@@ -206,7 +206,7 @@ object TerminalEntity:
           val charIndex: Int = env.CHAR_FOREGROUND(index).x.toInt
 
           // Where on the texture is the top left of the relevant character cell?
-          val cellX: Float = (charIndex % 16).toFloat / 16.0f  // TODO: Problem with modulus?
+          val cellX: Float = (charIndex % 16).toFloat / 16.0f // TODO: Problem with modulus?
           val cellY: Float = floor(charIndex.toFloat / 16.0f) * (1.0f / 16.0f)
           val cell: vec2   = vec2(cellX, cellY)
 

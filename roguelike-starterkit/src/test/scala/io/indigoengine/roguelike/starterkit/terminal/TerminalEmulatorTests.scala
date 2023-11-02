@@ -1,10 +1,6 @@
 package io.indigoengine.roguelike.starterkit.terminal
 
-import indigo.Point
-import indigo.RGB
-import indigo.RGBA
-import indigo.Size
-import indigo.shared.collections.Batch
+import indigo.*
 import io.indigoengine.roguelike.starterkit.Tile
 
 class TerminalEmulatorTests extends munit.FunSuite {
@@ -266,6 +262,37 @@ class TerminalEmulatorTests extends munit.FunSuite {
     assert(foundAt.nonEmpty)
     assert(clue(foundAt.get) == 2040)
 
+  }
+
+  test("Terminal clones are monoids") {
+    val actual =
+      List(
+        TerminalClones(
+          Batch(CloneBlank(CloneId("a"), Graphic(1, 1, Material.Bitmap(AssetName("a"))))),
+          Batch(CloneTiles(CloneId("a"), CloneTileData(0, 0, Radians.zero, 0, 0, 0, 0)))
+        ),
+        TerminalClones(
+          Batch(CloneBlank(CloneId("b"), Graphic(1, 1, Material.Bitmap(AssetName("b"))))),
+          Batch(CloneTiles(CloneId("b"), CloneTileData(0, 0, Radians.zero, 0, 0, 0, 0)))
+        )
+      ).foldLeft(TerminalClones.empty)(_ |+| _)
+
+    val expected =
+      TerminalClones(
+        Batch(
+          CloneBlank(CloneId("a"), Graphic(1, 1, Material.Bitmap(AssetName("a")))),
+          CloneBlank(CloneId("b"), Graphic(1, 1, Material.Bitmap(AssetName("b"))))
+        ),
+        Batch(
+          CloneTiles(CloneId("a"), CloneTileData(0, 0, Radians.zero, 0, 0, 0, 0)),
+          CloneTiles(CloneId("b"), CloneTileData(0, 0, Radians.zero, 0, 0, 0, 0))
+        )
+      )
+
+    assert(actual.blanks.length == expected.blanks.length)
+    assert(actual.clones.length == expected.clones.length)
+    assertEquals(actual.blanks.map(_.id), expected.blanks.map(_.id))
+    assertEquals(actual.clones.map(_.id), expected.clones.map(_.id))
   }
 
 }

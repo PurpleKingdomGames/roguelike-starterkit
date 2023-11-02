@@ -41,10 +41,10 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
         Tile.charCodes.get(if c == '\\' then "\\" else c.toString) match
           case None =>
             // Couldn't find character, skip it.
-            (startCoords + Point(i, 0) -> MapTile(Tile.SPACE, fgColor, bgColor))
+            startCoords + Point(i, 0) -> MapTile(Tile.SPACE, fgColor, bgColor)
 
           case Some(char) =>
-            (startCoords + Point(i, 0) -> MapTile(Tile(char), fgColor, bgColor))
+            startCoords + Point(i, 0) -> MapTile(Tile(char), fgColor, bgColor)
       }
     put(tiles)
 
@@ -219,7 +219,11 @@ object TerminalEmulator:
       QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble)
     )
 
-final case class TerminalClones(blanks: Batch[CloneBlank], clones: Batch[CloneTiles])
+final case class TerminalClones(blanks: Batch[CloneBlank], clones: Batch[CloneTiles]):
+  def |+|(other: TerminalClones): TerminalClones =
+    combine(other)
+  def combine(other: TerminalClones): TerminalClones =
+    TerminalClones(blanks ++ other.blanks, clones ++ other.clones)
 
 object TerminalClones:
   def empty: TerminalClones =

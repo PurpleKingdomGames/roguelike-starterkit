@@ -11,5 +11,6 @@ object Main:
   def main(): Unit =
     val body = document.getElementById("body")
     BenchmarkGUI.renderMenu(body)(
-      TerminalEmulatorBenchmarks.suite
+      TerminalEmulatorBenchmarks.suite,
+      MutableTerminalEmulatorBenchmarks.suite
     )

@@ -9,8 +9,9 @@ import scalajs.js
 
 /** `RogueTerminalEmulator` is like the `TerminalEmulator` but a little more daring and dangerous.
   * Represents an mutable, packed populated terminal. It is more performant, relative to
-  * `TerminalEmulator`, but also requires more care since it's a mutable structure. There are no empty
-  * spaces in this terminal, empty tiles are filled with the Tile.Null value and RGBA.Zero colors.
+  * `TerminalEmulator`, but also requires more care since it's a mutable structure. There are no
+  * empty spaces in this terminal, empty tiles are filled with the Tile.Null value and RGBA.Zero
+  * colors.
   */
 final class RogueTerminalEmulator(
     val size: Size,

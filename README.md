@@ -94,7 +94,7 @@ Great for pop-up menus, and monochrome sections of ASCII art, or maps that aren'
 The terminal emulators are the basis of the library, and provide a simple 'terminal-like' object you and interact with to represent grids of ASCII tiles. They come in two flavours, both of which have the same interface but behave differently:
 
 1. The `TerminalEmulator` is the recommended default. It is safe and immutable and easy to use, perfect for getting started. The drawback of the `TerminalEmulator` is that is not very performant, and at some point you may find it necessary to start caching results.
-2. The `RogueTerminalEmulator` is a more dangerous version of the `TerminalEmulator`! It is a mutable structure, as as such, much more performant. As with all mutable data types, it must be handled with more care.
+2. The `RogueTerminalEmulator` is a more dangerous version of the `TerminalEmulator`! It is a mutable structure, and as such, much more performant. As with all mutable data types, it must be handled with more care. Generally speaking though, you should be able to use it as a drop in replacement for the `TerminalEmulator`.
 
 ### `TerminalEmulator` with `TerminalEntity`
 

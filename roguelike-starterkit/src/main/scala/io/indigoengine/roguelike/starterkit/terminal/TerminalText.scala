@@ -3,6 +3,8 @@ package io.indigoengine.roguelike.starterkit.terminal
 import indigo.*
 import indigo.syntax.shaders.*
 
+/** The original Terminal text material, designed for use with `Text` entities. Supports approximate drop shadows.
+  */
 final case class TerminalText(
     tileMap: AssetName,
     foreground: RGBA,

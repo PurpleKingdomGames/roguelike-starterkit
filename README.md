@@ -78,12 +78,9 @@ This library provides three mechanisms to do that:
 
 ### `TerminalText`
 
-This is a material for use with Indigo's standard `Text` primitive.
+This is a material for use with Indigo's standard `Text` primitive. In addition to foreground and background `TerminalText` also supports a solid colour dropshadow.
 
-Looks great but has two problems:
-
-1. Changing colors mid-artwork (e.g. setting the text red and the border blue) is a pain, you need to use another `Text` instance and make them line up!.
-2. This process allocates a lot during the rendering process, and probably won't scale very well.
+Looks great but has a glaring problem: Changing colors mid-artwork (e.g. setting the text red and the border blue) is a pain, you need to use another `Text` instance and make them line up!
 
 Great for pop-up menus, and monochrome sections of ASCII art, or maps that aren't too big. After that, a new strategy may be needed.
 
@@ -98,9 +95,7 @@ The terminal emulators are the basis of the library, and provide a simple 'termi
 
 ### `TerminalEmulator` with `TerminalEntity`
 
-This is the most flexible way to render, but not the fastest.
-
-The `TerminalEmulator` in conjunction with the `TerminalEntity` works in a completely different way. Here a special shader is going to draw all the ASCII characters out in a continuous image, and you can interleave colors any time you like with no performance cost. This moves processing costs away from the rendering pipeline but incurs a penalty on the CPU side.
+The `TerminalEmulator` in conjunction with the `TerminalEntity` works in a completely different way to the other methods. Here a special shader (does not support foreground alpha or drop shadows!) is going to draw all the ASCII characters out in a continuous image, and you can interleave colors any time you like with no performance cost. This moves processing costs away from the rendering pipeline but incurs a penalty on the CPU side.
 
 The terminal emulator... emulates a simple terminal interface allowing you to put and get characters. Terminals can be merged and drawn.
 
@@ -123,6 +118,10 @@ Another way to use the `TerminalEmulator` is to have is output a `CloneTiles`.
 This is as capable as the previous method, but does not have the 4096 tile limit. Performance will vary by scene complexity, specifically how many unique colour combinations you have in place. Please note that this method allows much more flexible rendering, but will not work well with primitives of difference sizes as it is designed to render a grid.
 
 [Example](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/CloneTilesScene.scala)
+
+### `TerminalMaterial`
+
+This material is a near drop-in replacement for `TerminalText`. It does not support the drop shadow feature, but has a leaner implementation for performance sensitive contexts. Supposed to be used with the `TerminalEmulator`'s `toCloneTiles` method.
 
 ## Extras
 

@@ -194,7 +194,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
     assert(combined.get(Point(2)).get == MapTile(Tile.`!`))
   }
 
-  test("toList") {
+  test("toBatch") {
     val consoleA =
       TerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
@@ -213,7 +213,50 @@ class TerminalEmulatorTests extends munit.FunSuite {
     assert(actual.forall(expected.contains))
   }
 
-  test("toPositionedList") {
+  test("toBatch - region") {
+    val console =
+      TerminalEmulator(Size(3))
+        .fill(MapTile(Tile.`!`))
+        .put(Point(1), Tile.`@`)
+
+    val expected =
+      Batch(
+        MapTile(Tile.`@`),
+        MapTile(Tile.`!`),
+        MapTile(Tile.`!`),
+        MapTile(Tile.`!`)
+      )
+
+    val actual =
+      console.toBatch(Rectangle(1, 1, 2, 2))
+
+    assert(clue(actual.length) == clue(expected.length))
+    assert(clue(actual).forall(clue(expected).contains))
+  }
+
+  test("toTileBatch - region") {
+    val console =
+      TerminalEmulator(Size(3))
+        .fill(MapTile(Tile.`!`))
+        .put(Point(1), Tile.`@`)
+
+    val expected =
+      Batch(
+        MapTile(Tile.`@`),
+        MapTile(Tile.`!`),
+        MapTile(Tile.`!`),
+        MapTile(Tile.`!`)
+      )
+
+    val actual =
+      console.toTileBatch(Rectangle(1, 1, 2, 2))
+
+    assert(clue(actual.length) == clue(expected.length))
+    assert(clue(actual).forall(clue(expected).contains))
+    assert(clue(actual).head.char == Tile.`@`)
+  }
+
+  test("toPositionedBatch") {
     val consoleA =
       TerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
@@ -230,6 +273,28 @@ class TerminalEmulatorTests extends munit.FunSuite {
 
     assert(actual.length == expected.length)
     assert(actual.forall(expected.contains))
+  }
+
+  test("toPositionedBatch - region") {
+    val console =
+      TerminalEmulator(Size(3))
+        .fill(MapTile(Tile.`!`))
+        .put(Point(1), Tile.`@`)
+
+    val expected =
+      Batch(
+        Point(1, 1) -> MapTile(Tile.`@`),
+        Point(2, 1) -> MapTile(Tile.`!`),
+        Point(1, 2) -> MapTile(Tile.`!`),
+        Point(2, 2) -> MapTile(Tile.`!`)
+      )
+
+    val actual =
+      console.toPositionedBatch(Rectangle(1, 1, 2, 2))
+
+    assert(clue(actual.length) == clue(expected.length))
+    assert(clue(actual).forall(clue(expected).contains))
+    assert(clue(actual).exists(p => p._1 == Point(1) && p._2.char == Tile.`@`))
   }
 
   test("placing something in the center works.") {

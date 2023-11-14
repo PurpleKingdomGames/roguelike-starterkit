@@ -155,6 +155,7 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
 
     TerminalClones(results.map(_._1), results.map(_._2))
 
+  /** Creates a `TerminalClones` instance of the given map. */
   def toCloneTiles(
       idPrefix: CloneId,
       position: Point,
@@ -162,6 +163,7 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
   )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
     toCloneTilesFromBatch(idPrefix, position, charCrops, toPositionedBatch, makeBlank)
 
+  /** Creates a `TerminalClones` instance of a defined region of the given map. */
   def toCloneTiles(
       idPrefix: CloneId,
       position: Point,
@@ -170,26 +172,37 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
   )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
     toCloneTilesFromBatch(idPrefix, position, charCrops, toPositionedBatch(region), makeBlank)
 
+  /** Returns all MapTiles, guarantees order, inserts a default where there is a gap. */
   def toTileBatch: Batch[MapTile] =
     coordsBatch.map(pt => get(pt).getOrElse(Terminal.EmptyTile))
 
+  /** Returns all MapTiles in a given region, guarantees order, inserts a default where there is a
+    * gap.
+    */
   def toTileBatch(region: Rectangle): Batch[MapTile] =
-    coordsBatch.map { pt =>
-      if region.contains(pt) then get(pt).getOrElse(Terminal.EmptyTile)
-      else Terminal.EmptyTile
+    coordsBatch.filter(pt => region.contains(pt)).map { pt =>
+      get(pt).getOrElse(Terminal.EmptyTile)
     }
 
+  /** Returns all MapTiles, does not guarantee order, does not fill in gaps. */
   def toBatch: Batch[MapTile] =
     charMap.toBatch
 
+  /** Returns all MapTiles in a given region, does not guarantee order, does not fill in gaps. */
   def toBatch(region: Rectangle): Batch[MapTile] =
     charMap.searchByBoundingBox(region.toBoundingBox)
 
+  /** Returns all MapTiles with their grid positions, does not guarantee order (but the position is
+    * given), does not fill in gaps.
+    */
   def toPositionedBatch: Batch[(Point, MapTile)] =
     charMap.toBatchWithPosition.map(p => p._1.toPoint -> p._2)
 
+  /** Returns all MapTiles with their grid positions in a given region, does not guarantee order
+    * (but the position is given), does not fill in gaps.
+    */
   def toPositionedBatch(region: Rectangle): Batch[(Point, MapTile)] =
-    charMap.searchByBoundingBoxWithPosition(region.toBoundingBox).map(p => p._1.toPoint -> p._2)
+    charMap.toBatchWithPosition.filter(p => region.contains(p._1.toPoint)).map(p => p._1.toPoint -> p._2)
 
   def |+|(otherConsole: Terminal): TerminalEmulator =
     combine(otherConsole)

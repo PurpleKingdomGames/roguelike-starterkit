@@ -252,6 +252,9 @@ final class RogueTerminalEmulator(
   def inset(otherConsole: Terminal, offset: Point): RogueTerminalEmulator =
     put(otherConsole.toPositionedBatch.filterNot(_._2 == Terminal.EmptyTile), offset)
 
+  def toTerminalEmulator: TerminalEmulator =
+    TerminalEmulator(size).inset(this, Point.zero)
+
 object RogueTerminalEmulator:
 
   inline def pointToIndex(point: Point, gridWidth: Int): Int =

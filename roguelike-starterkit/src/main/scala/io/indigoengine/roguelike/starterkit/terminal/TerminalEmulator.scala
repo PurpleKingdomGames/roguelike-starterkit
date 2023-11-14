@@ -90,9 +90,7 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
     this.copy(charMap = charMap.removeElement(Vertex.fromPoint(coords)))
 
   def clear: TerminalEmulator =
-    this.copy(charMap =
-      QuadTree.empty[MapTile](size.width.toDouble, size.height.toDouble)
-    )
+    this.copy(charMap = QuadTree.empty[MapTile](size.width.toDouble, size.height.toDouble))
 
   def optimise: TerminalEmulator =
     this.copy(charMap = charMap.prune)
@@ -221,6 +219,9 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
 
   def inset(otherConsole: Terminal, offset: Point): TerminalEmulator =
     put(otherConsole.toPositionedBatch, offset)
+
+  def toRogueTerminalEmulator: RogueTerminalEmulator =
+    RogueTerminalEmulator(size).inset(this, Point.zero)
 
 object TerminalEmulator:
   def apply(screenSize: Size): TerminalEmulator =

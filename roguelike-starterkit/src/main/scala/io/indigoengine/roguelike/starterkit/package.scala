@@ -31,8 +31,6 @@ val FOV: utils.FOV.type = utils.FOV
 type PathFinder = utils.PathFinder
 val PathFinder: utils.PathFinder.type = utils.PathFinder
 
-val Coords: utils.Coords.type = utils.Coords
-
 type GridSquare = utils.GridSquare
 val GridSquare: utils.GridSquare.type = utils.GridSquare
 

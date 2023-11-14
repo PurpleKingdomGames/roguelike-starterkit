@@ -29,17 +29,17 @@ object PathFinder:
 
   def sampleAt(searchGrid: PathFinder, coords: Point, gridWidth: Int): Batch[GridSquare] =
     Batch(
-      coords + Coords.relativeUp,
-      coords + Coords.relativeLeft,
-      coords + Coords.relativeRight,
-      coords + Coords.relativeDown
+      coords + GridSquare.relativeUp,
+      coords + GridSquare.relativeLeft,
+      coords + GridSquare.relativeRight,
+      coords + GridSquare.relativeDown
     ).filter(c => searchGrid.contains(c))
-      .map(c => searchGrid.grid(Coords.toGridPosition(c, gridWidth)))
+      .map(c => searchGrid.grid(GridSquare.toIndex(c, gridWidth)))
 
   def fromImpassable(size: Size, impassable: Batch[Point]): PathFinder =
     val grid: Batch[GridSquare] =
       Batch.fromIndexedSeq(0 until (size.width * size.height)).map { index =>
-        Coords.fromIndex(index, size.width) match
+        GridSquare.fromIndex(index, size.width) match
           case c: Point if impassable.contains(c) =>
             GridSquare.Blocked(index, c)
 
@@ -52,7 +52,7 @@ object PathFinder:
   def fromWalkable(size: Size, walkable: Batch[Point]): PathFinder =
     val grid: Batch[GridSquare] =
       Batch.fromIndexedSeq(0 until (size.width * size.height)).map { index =>
-        Coords.fromIndex(index, size.width) match
+        GridSquare.fromIndex(index, size.width) match
           case c: Point if walkable.contains(c) =>
             GridSquare.Walkable(index, c, -1)
 
@@ -143,30 +143,6 @@ object PathFinder:
     )
   }
 
-end PathFinder
-
-object Coords:
-  val relativeUpLeft: Point    = Point(-1, -1)
-  val relativeUp: Point        = Point(0, -1)
-  val relativeUpRight: Point   = Point(1, -1)
-  val relativeLeft: Point      = Point(-1, 0)
-  val relativeRight: Point     = Point(1, 0)
-  val relativeDownLeft: Point  = Point(-1, 1)
-  val relativeDown: Point      = Point(0, 1)
-  val relativeDownRight: Point = Point(1, 1)
-
-  def toGridPosition(coords: Point, gridWidth: Int): Int =
-    coords.x + (coords.y * gridWidth)
-
-  def fromIndex(index: Int, gridWidth: Int): Point =
-    Point(
-      x = index % gridWidth,
-      y = index / gridWidth
-    )
-
-  def add(a: Point, b: Point): Point =
-    Point(a.x + b.x, a.y + b.y)
-
 sealed trait GridSquare:
   val index: Int
   val coords: Point
@@ -182,3 +158,24 @@ object GridSquare:
   final case class Blocked(index: Int, coords: Point) extends GridSquare:
     val score: Int                     = Int.MaxValue
     def withScore(score: Int): Blocked = this
+
+  val relativeUpLeft: Point    = Point(-1, -1)
+  val relativeUp: Point        = Point(0, -1)
+  val relativeUpRight: Point   = Point(1, -1)
+  val relativeLeft: Point      = Point(-1, 0)
+  val relativeRight: Point     = Point(1, 0)
+  val relativeDownLeft: Point  = Point(-1, 1)
+  val relativeDown: Point      = Point(0, 1)
+  val relativeDownRight: Point = Point(1, 1)
+
+  def toIndex(coords: Point, gridWidth: Int): Int =
+    coords.x + (coords.y * gridWidth)
+
+  def fromIndex(index: Int, gridWidth: Int): Point =
+    Point(
+      x = index % gridWidth,
+      y = index / gridWidth
+    )
+
+  def add(a: Point, b: Point): Point =
+    Point(a.x + b.x, a.y + b.y)

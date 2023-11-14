@@ -78,7 +78,7 @@ class PathFinderTests extends munit.FunSuite {
         ), // Unscored squares are returned to keep sampleAt working correctly
         Walkable(3, Point(0, 1), 1),
         Walkable(4, Point(1, 1), 2),
-        Walkable(5, Point(2, 1), 3), //start
+        Walkable(5, Point(2, 1), 3), // start
         Walkable(6, Point(0, 2), 0), // end
         Walkable(7, Point(1, 2), 1),
         Walkable(8, Point(2, 2), 2)
@@ -100,7 +100,7 @@ class PathFinderTests extends munit.FunSuite {
       Batch(
         Walkable(2, Point(2, 0), -1),
         Walkable(5, Point(1, 1), -1),
-        //Sample point
+        // Sample point
         Walkable(7, Point(3, 1), -1),
         Blocked(10, Point(2, 2))
       )
@@ -117,7 +117,7 @@ class PathFinderTests extends munit.FunSuite {
       Batch(
         Walkable(3, Point(3, 0), -1),
         Walkable(6, Point(2, 1), -1),
-        //Sample point
+        // Sample point
         Walkable(11, Point(3, 2), -1)
       )
 
@@ -131,7 +131,7 @@ class PathFinderTests extends munit.FunSuite {
 
     val expected: Batch[GridSquare] =
       Batch(
-        //Sample point
+        // Sample point
         Walkable(1, Point(1, 0), -1),
         Walkable(4, Point(0, 1), -1)
       )
@@ -143,19 +143,19 @@ class PathFinderTests extends munit.FunSuite {
     "Point.should be able to convert zero indexed coordinates into a one dimensional array position"
   ) {
 
-    assertEquals(Coords.toGridPosition(Point(0, 0), 4), 0)
-    assertEquals(Coords.toGridPosition(Point(1, 1), 4), 5)
-    assertEquals(Coords.toGridPosition(Point(2, 3), 4), 14)
-    assertEquals(Coords.toGridPosition(Point(2, 2), 3), 8)
+    assertEquals(GridSquare.toIndex(Point(0, 0), 4), 0)
+    assertEquals(GridSquare.toIndex(Point(1, 1), 4), 5)
+    assertEquals(GridSquare.toIndex(Point(2, 3), 4), 14)
+    assertEquals(GridSquare.toIndex(Point(2, 2), 3), 8)
 
   }
 
   test("Point.should be able to convert a zero indexed array position into coordinates") {
 
-    assertEquals(Coords.fromIndex(0, 4), Point(0, 0))
-    assertEquals(Coords.fromIndex(5, 4), Point(1, 1))
-    assertEquals(Coords.fromIndex(14, 4), Point(2, 3))
-    assertEquals(Coords.fromIndex(8, 3), Point(2, 2))
+    assertEquals(GridSquare.fromIndex(0, 4), Point(0, 0))
+    assertEquals(GridSquare.fromIndex(5, 4), Point(1, 1))
+    assertEquals(GridSquare.fromIndex(14, 4), Point(2, 3))
+    assertEquals(GridSquare.fromIndex(8, 3), Point(2, 2))
 
   }
 
@@ -166,7 +166,7 @@ class PathFinderTests extends munit.FunSuite {
   val searchGrid = PathFinder.fromImpassable(Size(4, 3), Batch(impassable))
 
   test("Generating a grid.should be able to generate a simple search grid.impassable") {
-    assertEquals(searchGrid.grid(Coords.toGridPosition(impassable, 4)), Blocked(10, impassable))
+    assertEquals(searchGrid.grid(GridSquare.toIndex(impassable, 4)), Blocked(10, impassable))
   }
 
   test("Real path") {

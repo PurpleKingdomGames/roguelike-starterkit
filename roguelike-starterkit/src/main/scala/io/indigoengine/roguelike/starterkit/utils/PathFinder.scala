@@ -143,21 +143,20 @@ object PathFinder:
     )
   }
 
-sealed trait GridSquare:
+enum GridSquare(val score: Int):
   val index: Int
   val coords: Point
-  val score: Int
-  def withScore(score: Int): GridSquare
+
+  case Walkable(index: Int, coords: Point, weight: Int) extends GridSquare(weight)
+  case Blocked(index: Int, coords: Point)               extends GridSquare(GridSquare.Max)
+
+  def withScore(newScore: Int): GridSquare =
+    this match
+      case gs: Walkable => gs.copy(weight = newScore)
+      case gs: Blocked  => gs
 
 object GridSquare:
   val Max: Int = Int.MaxValue
-
-  final case class Walkable(index: Int, coords: Point, score: Int) extends GridSquare:
-    def withScore(newScore: Int): Walkable = this.copy(score = newScore)
-
-  final case class Blocked(index: Int, coords: Point) extends GridSquare:
-    val score: Int                     = Int.MaxValue
-    def withScore(score: Int): Blocked = this
 
   val relativeUpLeft: Point    = Point(-1, -1)
   val relativeUp: Point        = Point(0, -1)

@@ -11,11 +11,11 @@ import scala.annotation.tailrec
 
 /** TerminalEmulator represents an immutable, sparsely populated terminal.
   */
-final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]) extends Terminal:
+final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extends Terminal:
 
   private lazy val coordsBatch: Batch[Point] =
-    Batch.fromIndexedSeq((0 until screenSize.height).flatMap { y =>
-      (0 until screenSize.width).map { x =>
+    Batch.fromIndexedSeq((0 until size.height).flatMap { y =>
+      (0 until size.width).map { x =>
         Point(x, y)
       }
     })
@@ -91,7 +91,7 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]) 
 
   def clear: TerminalEmulator =
     this.copy(charMap =
-      QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble)
+      QuadTree.empty[MapTile](size.width.toDouble, size.height.toDouble)
     )
 
   def optimise: TerminalEmulator =
@@ -105,7 +105,7 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]) 
       charSize: Size,
       maxTileCount: Int
   ): TerminalEntity =
-    TerminalEntity(tileSheet, screenSize, charSize, toTileBatch, maxTileCount)
+    TerminalEntity(tileSheet, size, charSize, toTileBatch, maxTileCount)
 
   private def toCloneTileData(
       position: Point,

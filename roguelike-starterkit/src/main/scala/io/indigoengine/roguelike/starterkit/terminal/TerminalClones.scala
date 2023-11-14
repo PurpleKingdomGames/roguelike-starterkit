@@ -11,6 +11,9 @@ final case class TerminalClones(blanks: Batch[CloneBlank], clones: Batch[CloneTi
   def combine(other: TerminalClones): TerminalClones =
     TerminalClones(blanks ++ other.blanks, clones ++ other.clones)
 
+  def toSceneUpdateFragment: SceneUpdateFragment =
+    SceneUpdateFragment(clones).addCloneBlanks(blanks)
+
 object TerminalClones:
   def empty: TerminalClones =
     TerminalClones(Batch.empty, Batch.empty)

@@ -67,7 +67,4 @@ object RogueTerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
         Graphic(10, 10, TerminalMaterial(Assets.tileMap, fg, bg))
       }
 
-    Outcome(
-      SceneUpdateFragment(tiles.clones)
-        .addCloneBlanks(tiles.blanks)
-    )
+    Outcome(tiles.toSceneUpdateFragment)

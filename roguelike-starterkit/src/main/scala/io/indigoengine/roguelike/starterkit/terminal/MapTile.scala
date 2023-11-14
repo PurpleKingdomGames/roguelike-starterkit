@@ -15,6 +15,9 @@ final case class MapTile(char: Tile, foreground: RGBA, background: RGBA):
   def withBackgroundColor(newColor: RGBA): MapTile =
     this.copy(background = newColor)
 
+  def withColors(newForeground: RGBA, newBackground: RGBA): MapTile =
+    this.copy(foreground = newForeground, background = newBackground)
+
 object MapTile:
   def apply(char: Tile): MapTile =
     MapTile(char, RGBA.White, RGBA.Zero)

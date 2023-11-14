@@ -223,6 +223,7 @@ final class RogueTerminalEmulator(
 
     TerminalClones(results.map(_._1), results.map(_._2))
 
+  /** Creates a `TerminalClones` instance of the given map. */
   def toCloneTiles(
       idPrefix: CloneId,
       position: Point,
@@ -230,6 +231,7 @@ final class RogueTerminalEmulator(
   )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
     toCloneTilesFromBatch(idPrefix, position, charCrops, toPositionedBatch, makeBlank)
 
+  /** Creates a `TerminalClones` instance of a defined region of the given map. */
   def toCloneTiles(
       idPrefix: CloneId,
       position: Point,
@@ -238,9 +240,15 @@ final class RogueTerminalEmulator(
   )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
     toCloneTilesFromBatch(idPrefix, position, charCrops, toPositionedBatch(region), makeBlank)
 
+  /** Returns all MapTiles, guarantees order. */
   def toBatch: Batch[MapTile] =
     toTileBatch
 
+  /** Returns all MapTiles in a given region, guarantees order. */
+  def toBatch(region: Rectangle): Batch[MapTile] =
+    toTileBatch(region)
+
+  /** Returns all MapTiles, guarantees order. */
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def toTileBatch: Batch[MapTile] =
     val count = length
@@ -253,12 +261,13 @@ final class RogueTerminalEmulator(
 
     Batch(acc)
 
+  /** Returns all MapTiles in a given region, guarantees order. */
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def toTileBatch(region: Rectangle): Batch[MapTile] =
     val count = length
     var i     = 0
     var j     = 0
-    val acc   = new js.Array[MapTile](count)
+    val acc   = new js.Array[MapTile](region.size.width * region.size.height)
 
     while i < count do
       if region.contains(RogueTerminalEmulator.indexToPoint(i, size.width)) then
@@ -268,6 +277,8 @@ final class RogueTerminalEmulator(
 
     Batch(acc)
 
+  /** Returns all MapTiles with their grid positions, guarantees order.
+    */
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def toPositionedBatch: Batch[(Point, MapTile)] =
     val count = length
@@ -284,12 +295,14 @@ final class RogueTerminalEmulator(
 
     Batch(acc)
 
+  /** Returns all MapTiles with their grid positions in a given region, guarantees order.
+    */
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def toPositionedBatch(region: Rectangle): Batch[(Point, MapTile)] =
     val count = length
     var i     = 0
     var j     = 0
-    val acc   = new js.Array[(Point, MapTile)](count)
+    val acc   = new js.Array[(Point, MapTile)](region.size.width * region.size.height)
 
     while i < count do
       val pt = RogueTerminalEmulator.indexToPoint(i, size.width)

@@ -13,7 +13,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
   val maxTileCount: Int = 4000
 
   def initialScene(bootData: Unit): Option[SceneName] =
-    Option(TerminalTextScene.name)
+    Option(RogueTerminalEmulatorScene.name)
 
   def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Unit, Unit]] =
     NonEmptyList(TerminalTextScene, TerminalEmulatorScene, RogueTerminalEmulatorScene)

@@ -145,7 +145,7 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
   def toRogueTerminalEmulator: RogueTerminalEmulator =
     RogueTerminalEmulator(size).inset(this, Point.zero)
 
-  def modifyAt(position: Point)(modifier: MapTile => MapTile): Terminal =
+  def modifyAt(position: Point)(modifier: MapTile => MapTile): TerminalEmulator =
     get(position) match
       case None =>
         this
@@ -153,14 +153,14 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
       case Some(value) =>
         put(position, modifier(value))
 
-  def map(modifier: MapTile => MapTile): Terminal =
+  def map(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
       charMap = charMap.toBatchWithPosition.foldLeft(charMap) { case (acc, (pos, char)) =>
-        acc.insertElement(modifier(char), pos)
+        acc.insertElement(modifier(pos.toPoint, char), pos)
       }
     )
 
-  def mapRectangle(region: Rectangle)(modifier: MapTile => MapTile): Terminal =
+  def mapRectangle(region: Rectangle)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
       charMap = charMap.toBatchWithPosition.foldLeft(charMap) { case (acc, (pos, char)) =>
         if region.contains(pos.toPoint) then acc.insertElement(char, pos)
@@ -168,15 +168,38 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
       }
     )
 
-  def mapCircle(circle: Circle)(modifier: MapTile => MapTile): Terminal =
+  def fillRectangle(region: Rectangle, mapTile: MapTile): TerminalEmulator =
+    mapRectangle(region)((_, _) => mapTile)
+  def fillRectangle(region: Rectangle, tile: Tile): TerminalEmulator =
+    mapRectangle(region)((_, mt) => mt.withChar(tile))
+  def fillRectangle(region: Rectangle, tile: Tile, foreground: RGBA): TerminalEmulator =
+    mapRectangle(region)((_, mt) => MapTile(tile, foreground, mt.background))
+  def fillRectangle(
+      region: Rectangle,
+      tile: Tile,
+      foreground: RGBA,
+      background: RGBA
+  ): TerminalEmulator =
+    mapRectangle(region)((_, mt) => MapTile(tile, foreground, background))
+
+  def mapCircle(circle: Circle)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
       charMap = charMap.toBatchWithPosition.foldLeft(charMap) { case (acc, (pos, char)) =>
-        if circle.contains(pos.toPoint) then acc.insertElement(modifier(char), pos)
+        if circle.contains(pos.toPoint) then acc.insertElement(modifier(pos.toPoint, char), pos)
         else acc
       }
     )
 
-  def mapLine(from: Point, to: Point)(modifier: MapTile => MapTile): Terminal =
+  def fillCircle(circle: Circle, mapTile: MapTile): TerminalEmulator =
+    mapCircle(circle)((_, _) => mapTile)
+  def fillCircle(circle: Circle, tile: Tile): TerminalEmulator =
+    mapCircle(circle)((_, mt) => mt.withChar(tile))
+  def fillCircle(circle: Circle, tile: Tile, foreground: RGBA): TerminalEmulator =
+    mapCircle(circle)((_, mt) => MapTile(tile, foreground, mt.background))
+  def fillCircle(circle: Circle, tile: Tile, foreground: RGBA, background: RGBA): TerminalEmulator =
+    mapCircle(circle)((_, mt) => MapTile(tile, foreground, background))
+
+  def mapLine(from: Point, to: Point)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
       charMap = FOV.bresenhamLine(from, to).foldLeft(charMap) { case (acc, pos) =>
         get(pos) match
@@ -184,9 +207,41 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
             acc
 
           case Some(value) =>
-            acc.insertElement(modifier(value), pos.toVertex)
+            acc.insertElement(modifier(pos, value), pos.toVertex)
       }
     )
+
+  def mapLine(line: LineSegment)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
+    mapLine(line.start.toPoint, line.end.toPoint)(modifier)
+  def fillLine(line: LineSegment, mapTile: MapTile): TerminalEmulator =
+    mapLine(line.start.toPoint, line.end.toPoint)((_, _) => mapTile)
+  def fillLine(line: LineSegment, tile: Tile): TerminalEmulator =
+    mapLine(line.start.toPoint, line.end.toPoint)((_, mt) => mt.withChar(tile))
+  def fillLine(line: LineSegment, tile: Tile, foreground: RGBA): TerminalEmulator =
+    mapLine(line.start.toPoint, line.end.toPoint)((_, mt) =>
+      MapTile(tile, foreground, mt.background)
+    )
+  def fillLine(
+      line: LineSegment,
+      tile: Tile,
+      foreground: RGBA,
+      background: RGBA
+  ): TerminalEmulator =
+    mapLine(line.start.toPoint, line.end.toPoint)((_, mt) => MapTile(tile, foreground, background))
+  def fillLine(from: Point, to: Point, mapTile: MapTile): TerminalEmulator =
+    mapLine(from, to)((_, _) => mapTile)
+  def fillLine(from: Point, to: Point, tile: Tile): TerminalEmulator =
+    mapLine(from, to)((_, mt) => mt.withChar(tile))
+  def fillLine(from: Point, to: Point, tile: Tile, foreground: RGBA): TerminalEmulator =
+    mapLine(from, to)((_, mt) => MapTile(tile, foreground, mt.background))
+  def fillLine(
+      from: Point,
+      to: Point,
+      tile: Tile,
+      foreground: RGBA,
+      background: RGBA
+  ): TerminalEmulator =
+    mapLine(from, to)((_, mt) => MapTile(tile, foreground, background))
 
 object TerminalEmulator:
   def apply(screenSize: Size): TerminalEmulator =

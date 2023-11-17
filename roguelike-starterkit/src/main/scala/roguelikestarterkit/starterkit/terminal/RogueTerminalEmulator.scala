@@ -252,7 +252,7 @@ final class RogueTerminalEmulator(
   def toTerminalEmulator: TerminalEmulator =
     TerminalEmulator(size).inset(this, Point.zero)
 
-  def modifyAt(position: Point)(modifier: MapTile => MapTile): Terminal =
+  def modifyAt(position: Point)(modifier: MapTile => MapTile): RogueTerminalEmulator =
     val idx = RogueTerminalEmulator.pointToIndex(position, size.width)
     val t   = _tiles(idx)
     val f   = _foreground(idx)
@@ -263,7 +263,7 @@ final class RogueTerminalEmulator(
     this
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
-  def map(modifier: MapTile => MapTile): Terminal =
+  def map(modifier: (Point, MapTile) => MapTile): RogueTerminalEmulator =
     val count = length
     var i     = 0
 
@@ -271,7 +271,7 @@ final class RogueTerminalEmulator(
       val t  = _tiles(i)
       val f  = _foreground(i)
       val b  = _background(i)
-      val mt = modifier(MapTile(t, f, b))
+      val mt = modifier(RogueTerminalEmulator.indexToPoint(i, size.width), MapTile(t, f, b))
 
       updateAt(i, mt.char, mt.foreground, mt.background)
 
@@ -280,16 +280,19 @@ final class RogueTerminalEmulator(
     this
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
-  def mapRectangle(region: Rectangle)(modifier: MapTile => MapTile): Terminal =
+  def mapRectangle(region: Rectangle)(
+      modifier: (Point, MapTile) => MapTile
+  ): RogueTerminalEmulator =
     val count = length
     var i     = 0
 
     while i < count do
-      if region.contains(RogueTerminalEmulator.indexToPoint(i, size.width)) then
+      val pos = RogueTerminalEmulator.indexToPoint(i, size.width)
+      if region.contains(pos) then
         val t  = _tiles(i)
         val f  = _foreground(i)
         val b  = _background(i)
-        val mt = modifier(MapTile(t, f, b))
+        val mt = modifier(pos, MapTile(t, f, b))
 
         updateAt(i, mt.char, mt.foreground, mt.background)
 
@@ -297,17 +300,32 @@ final class RogueTerminalEmulator(
 
     this
 
+  def fillRectangle(region: Rectangle, mapTile: MapTile): RogueTerminalEmulator =
+    mapRectangle(region)((_, _) => mapTile)
+  def fillRectangle(region: Rectangle, tile: Tile): RogueTerminalEmulator =
+    mapRectangle(region)((_, mt) => mt.withChar(tile))
+  def fillRectangle(region: Rectangle, tile: Tile, foreground: RGBA): RogueTerminalEmulator =
+    mapRectangle(region)((_, mt) => MapTile(tile, foreground, mt.background))
+  def fillRectangle(
+      region: Rectangle,
+      tile: Tile,
+      foreground: RGBA,
+      background: RGBA
+  ): RogueTerminalEmulator =
+    mapRectangle(region)((_, mt) => MapTile(tile, foreground, background))
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
-  def mapCircle(circle: Circle)(modifier: MapTile => MapTile): Terminal =
+  def mapCircle(circle: Circle)(modifier: (Point, MapTile) => MapTile): RogueTerminalEmulator =
     val count = length
     var i     = 0
 
     while i < count do
-      if circle.contains(RogueTerminalEmulator.indexToPoint(i, size.width)) then
+      val pos = RogueTerminalEmulator.indexToPoint(i, size.width)
+      if circle.contains(pos) then
         val t  = _tiles(i)
         val f  = _foreground(i)
         val b  = _background(i)
-        val mt = modifier(MapTile(t, f, b))
+        val mt = modifier(pos, MapTile(t, f, b))
 
         updateAt(i, mt.char, mt.foreground, mt.background)
 
@@ -315,24 +333,73 @@ final class RogueTerminalEmulator(
 
     this
 
+  def fillCircle(circle: Circle, mapTile: MapTile): RogueTerminalEmulator =
+    mapCircle(circle)((_, _) => mapTile)
+  def fillCircle(circle: Circle, tile: Tile): RogueTerminalEmulator =
+    mapCircle(circle)((_, mt) => mt.withChar(tile))
+  def fillCircle(circle: Circle, tile: Tile, foreground: RGBA): RogueTerminalEmulator =
+    mapCircle(circle)((_, mt) => MapTile(tile, foreground, mt.background))
+  def fillCircle(
+      circle: Circle,
+      tile: Tile,
+      foreground: RGBA,
+      background: RGBA
+  ): RogueTerminalEmulator =
+    mapCircle(circle)((_, mt) => MapTile(tile, foreground, background))
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
-  def mapLine(from: Point, to: Point)(modifier: MapTile => MapTile): Terminal =
+  def mapLine(from: Point, to: Point)(
+      modifier: (Point, MapTile) => MapTile
+  ): RogueTerminalEmulator =
     val pts   = FOV.bresenhamLine(from, to)
     val count = length
     var i     = 0
 
     while i < count do
-      if pts.contains(RogueTerminalEmulator.indexToPoint(i, size.width)) then
+      val pos = RogueTerminalEmulator.indexToPoint(i, size.width)
+      if pts.contains(pos) then
         val t  = _tiles(i)
         val f  = _foreground(i)
         val b  = _background(i)
-        val mt = modifier(MapTile(t, f, b))
+        val mt = modifier(pos, MapTile(t, f, b))
 
         updateAt(i, mt.char, mt.foreground, mt.background)
 
       i += 1
 
     this
+
+  def mapLine(line: LineSegment)(modifier: (Point, MapTile) => MapTile): RogueTerminalEmulator =
+    mapLine(line.start.toPoint, line.end.toPoint)(modifier)
+  def fillLine(line: LineSegment, mapTile: MapTile): RogueTerminalEmulator =
+    mapLine(line.start.toPoint, line.end.toPoint)((_, _) => mapTile)
+  def fillLine(line: LineSegment, tile: Tile): RogueTerminalEmulator =
+    mapLine(line.start.toPoint, line.end.toPoint)((_, mt) => mt.withChar(tile))
+  def fillLine(line: LineSegment, tile: Tile, foreground: RGBA): RogueTerminalEmulator =
+    mapLine(line.start.toPoint, line.end.toPoint)((_, mt) =>
+      MapTile(tile, foreground, mt.background)
+    )
+  def fillLine(
+      line: LineSegment,
+      tile: Tile,
+      foreground: RGBA,
+      background: RGBA
+  ): RogueTerminalEmulator =
+    mapLine(line.start.toPoint, line.end.toPoint)((_, mt) => MapTile(tile, foreground, background))
+  def fillLine(from: Point, to: Point, mapTile: MapTile): RogueTerminalEmulator =
+    mapLine(from, to)((_, _) => mapTile)
+  def fillLine(from: Point, to: Point, tile: Tile): RogueTerminalEmulator =
+    mapLine(from, to)((_, mt) => mt.withChar(tile))
+  def fillLine(from: Point, to: Point, tile: Tile, foreground: RGBA): RogueTerminalEmulator =
+    mapLine(from, to)((_, mt) => MapTile(tile, foreground, mt.background))
+  def fillLine(
+      from: Point,
+      to: Point,
+      tile: Tile,
+      foreground: RGBA,
+      background: RGBA
+  ): RogueTerminalEmulator =
+    mapLine(from, to)((_, mt) => MapTile(tile, foreground, background))
 
 object RogueTerminalEmulator:
 

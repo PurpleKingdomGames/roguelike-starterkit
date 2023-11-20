@@ -1,5 +1,23 @@
 package roguelikestarterkit
 
+import indigo.shared.collections.Batch
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
+
+object syntax:
+
+  extension (r: Rectangle)
+    def toPoints: Batch[Point] =
+      Batch.fromIndexedSeq(
+        (0 until r.height).flatMap { y =>
+          (0 until r.width).map { x =>
+            Point(r.x + x, r.y + y)
+          }
+        }
+      )
+
+end syntax
+
 // Terminal
 
 type TerminalEmulator = terminal.TerminalEmulator

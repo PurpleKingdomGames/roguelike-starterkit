@@ -23,7 +23,9 @@ final case class PathFinder(area: Rectangle, grid: Batch[GridSquare]):
     PathFinder.locatePath(
       start,
       end,
-      this.copy(grid = PathFinder.scoreGridSquares(start: Point, end: Point, this, scoreAmount))
+      this.copy(
+        grid = PathFinder.scoreGridSquares(start, end, this, scoreAmount)
+      )
     )
 
   def locatePath(
@@ -33,14 +35,30 @@ final case class PathFinder(area: Rectangle, grid: Batch[GridSquare]):
     PathFinder.locatePath(
       start,
       end,
-      this.copy(grid = PathFinder.scoreGridSquares(start: Point, end: Point, this, _ => 1))
+      this.copy(
+        grid = PathFinder.scoreGridSquares(start, end, this, _ => 1)
+      )
     )
 
   def withImpassable(blocked: Batch[Point]): PathFinder =
-    this.copy(grid = grid.filter(gs => blocked.contains(gs.coords)))
+    this.copy(
+      grid = grid.map { gs =>
+        if blocked.contains(gs.coords) then gs.toBlocked
+        else gs
+      }
+    )
+  def withImpassable(blocked: Point*): PathFinder =
+    withImpassable(Batch.fromSeq(blocked))
 
-  def withWalkable(blocked: Batch[Point]): PathFinder =
-    this.copy(grid = grid.filter(gs => blocked.contains(gs.coords)))
+  def withWalkable(accessible: Batch[Point], scoreAmount: GridSquare => Int): PathFinder =
+    this.copy(
+      grid = grid.map { gs =>
+        if accessible.contains(gs.coords) then gs.toWalkable(scoreAmount(gs))
+        else gs
+      }
+    )
+  def withWalkable(scoreAmount: GridSquare => Int, accessible: Point*): PathFinder =
+    withWalkable(Batch.fromSeq(accessible), scoreAmount)
 
 /** A simple path finding implementation for a grid. */
 object PathFinder:
@@ -52,21 +70,13 @@ object PathFinder:
   def fromRectangles(rectangles: Rectangle*): PathFinder =
     fromRectangles(Batch.fromSeq(rectangles))
 
-  def fromImpassable(area: Rectangle, impassable: Batch[Point]): PathFinder =
-    val grid: Batch[GridSquare] =
-      Batch.fromIndexedSeq(0 until (area.size.width * area.size.height)).map { index =>
-        GridSquare.fromIndex(index, area.size.width) match
-          case c: Point if impassable.contains(c) =>
-            GridSquare.Blocked(index, c)
-
-          case c: Point =>
-            GridSquare.Walkable(index, c, -1)
-      }
-
-    PathFinder(area, grid)
+  def fromRectangle(rectangle: Rectangle): PathFinder =
+    fromRectangles(Batch(rectangle))
 
   def fromWalkable(walkable: Batch[Point]): PathFinder =
-    val area = Rectangle.fromPointCloud(walkable)
+    val a    = Rectangle.fromPointCloud(walkable)
+    val area = a.resize(a.size + 1)
+
     val grid: Batch[GridSquare] =
       Batch.fromIndexedSeq(0 until (area.size.width * area.size.height)).map { index =>
         GridSquare.fromIndex(index, area.size.width) match
@@ -184,6 +194,16 @@ enum GridSquare(val score: Int):
     this match
       case gs: Walkable => gs.copy(weight = newScore)
       case gs: Blocked  => gs
+
+  def toBlocked: Blocked =
+    this match
+      case Walkable(index, coords, _) => Blocked(index, coords)
+      case b @ Blocked(_, _)          => b
+
+  def toWalkable(score: Int): Walkable =
+    this match
+      case w @ Walkable(_, _, _)      => w
+      case b @ Blocked(index, coords) => Walkable(index, coords, score)
 
 /** A GridSquare represents a position on the gird in the PathFinder implementation. */
 object GridSquare:

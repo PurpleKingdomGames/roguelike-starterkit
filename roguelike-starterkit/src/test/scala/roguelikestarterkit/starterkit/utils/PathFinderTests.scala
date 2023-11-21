@@ -19,7 +19,7 @@ class PathFinderTests extends munit.FunSuite {
     val end: Point        = Point(0, 2)
     val impassable: Point = Point(1, 0)
 
-    val searchGrid = PathFinder.fromImpassable(Rectangle(Size(3, 3)), Batch(impassable))
+    val searchGrid = PathFinder.fromRectangles(Rectangle(Size(3, 3))).withImpassable(impassable)
 
     val actual   = searchGrid.locatePath(start, end, scoreAs).toList
     val expected = List(start, Point(1, 1), Point(0, 1), end)
@@ -55,7 +55,7 @@ class PathFinderTests extends munit.FunSuite {
     val end: Point        = Point(0, 2)
     val impassable: Point = Point(1, 0)
 
-    val searchGrid = PathFinder.fromImpassable(Rectangle(Size(3, 3)), Batch(impassable))
+    val searchGrid = PathFinder.fromRectangles(Rectangle(Size(3, 3))).withImpassable(impassable)
 
     val expected: Batch[GridSquare] =
       Batch(
@@ -84,7 +84,7 @@ class PathFinderTests extends munit.FunSuite {
   test("Sampling the grid.should be able to take a sample in the middle of the map") {
     val impassable: Point = Point(2, 2)
 
-    val searchGrid = PathFinder.fromImpassable(Rectangle(Size(4, 3)), Batch(impassable))
+    val searchGrid = PathFinder.fromRectangles(Rectangle(Size(4, 3))).withImpassable(impassable)
 
     val expected: Batch[GridSquare] =
       Batch(
@@ -101,7 +101,7 @@ class PathFinderTests extends munit.FunSuite {
   test("Sampling the grid.should be able to take a sample at the edge of the map") {
     val impassable: Point = Point(2, 2)
 
-    val searchGrid = PathFinder.fromImpassable(Rectangle(Size(4, 3)), Batch(impassable))
+    val searchGrid = PathFinder.fromRectangles(Rectangle(Size(4, 3))).withImpassable(impassable)
 
     val expected: Batch[GridSquare] =
       Batch(
@@ -117,7 +117,7 @@ class PathFinderTests extends munit.FunSuite {
   test("Sampling the grid.should be able to take a sample at the top left of the map") {
     val impassable: Point = Point(2, 2)
 
-    val searchGrid = PathFinder.fromImpassable(Rectangle(Size(4, 3)), Batch(impassable))
+    val searchGrid = PathFinder.fromRectangles(Rectangle(Size(4, 3))).withImpassable(impassable)
 
     val expected: Batch[GridSquare] =
       Batch(
@@ -149,13 +149,11 @@ class PathFinderTests extends munit.FunSuite {
 
   }
 
-  val start: Point      = Point(1, 1)
-  val end: Point        = Point(3, 2)
-  val impassable: Point = Point(2, 2)
-
-  val searchGrid = PathFinder.fromImpassable(Rectangle(Size(4, 3)), Batch(impassable))
-
   test("Generating a grid.should be able to generate a simple search grid.impassable") {
+    val impassable: Point = Point(2, 2)
+
+    val searchGrid = PathFinder.fromRectangles(Rectangle(Size(4, 3))).withImpassable(impassable)
+
     assertEquals(searchGrid.grid(GridSquare.toIndex(impassable, 4)), Blocked(10, impassable))
   }
 
@@ -201,11 +199,6 @@ class PathFinderTests extends munit.FunSuite {
       List(Point(3, 2), Point(3, 3), Point(3, 4), Point(2, 4), Point(2, 5))
 
     assertEquals(actual.toList, expected)
-  }
-
-  test("fromRectangles") {
-    // TODO
-    assert(1 == 2)
   }
 
 }

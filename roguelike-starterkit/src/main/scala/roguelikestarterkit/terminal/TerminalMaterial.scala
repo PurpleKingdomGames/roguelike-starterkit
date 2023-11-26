@@ -115,10 +115,16 @@ object TerminalMaterial:
           val v = abs(color - mask)
           step(0.001f, v.x + v.y + v.z + v.w)
 
+        // Calculate the distance to greyscale, so that we can preserve colours.
+        // 0 means use the tint, 1 means use the original colour.
+        def distanceToGreyscale(color: vec4): Float =
+          step(0.001f, abs(((color.x + color.y + color.z) / 3.0f) - color.x))
+
         def fragment(color: vec4): vec4 =
-          val bg   = vec4(env.BACKGROUND.rgb * env.BACKGROUND.a, env.BACKGROUND.a)
-          val tint = env.CHANNEL_0 * env.FOREGROUND
-          val fg   = vec4(tint.rgb * tint.a, tint.a)
+          val bg = vec4(env.BACKGROUND.rgb * env.BACKGROUND.a, env.BACKGROUND.a)
+          val tint =
+            mix(env.CHANNEL_0 * env.FOREGROUND, env.CHANNEL_0, distanceToGreyscale(env.CHANNEL_0))
+          val fg = vec4(tint.rgb * tint.a, tint.a)
 
           mix(bg, fg, maskAmount(env.CHANNEL_0, env.MASK))
       }

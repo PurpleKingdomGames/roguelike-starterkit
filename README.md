@@ -88,6 +88,8 @@ Great for pop-up menus, and monochrome sections of ASCII art, or maps that aren'
 
 This material is a near drop-in replacement for `TerminalText`. It does not support the drop shadow feature, but has a leaner implementation for performance sensitive contexts. Supposed to be used with the `TerminalEmulator`/`RogueTerminalEmulator`'s `toCloneTiles` method.
 
+Additionally, `TerminalMaterial` will attempt to preserve tile colours. If you apply a foreground colour to a tile, it will only apply the tint to greyscale pixel values. This means you can have a tree with a brown trunk, but tint just the leaf colours to autumn reds, yellows, and greens.
+
 ## The `TerminalEmulator` and the `RogueTerminalEmulator`
 
 The terminal emulators are the basis of the library, and provide a simple 'terminal-like' object you and interact with to represent grids of ASCII tiles. They come in two flavours, both of which have the same interface but behave differently:

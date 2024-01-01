@@ -386,7 +386,7 @@ class SparseGridTests extends munit.FunSuite {
     assert(clue(foundAt.get) == 2040)
   }
 
-  test("inset".only) {
+  test("inset") {
     val gridA =
       SparseGrid(Size(3))
         .put(Point(0), "@")
@@ -415,232 +415,226 @@ class SparseGridTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
-  // test("modifyAt") {
-  //   val actual =
-  //     SparseGrid(Size(3))
-  //       .fill(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       .modifyAt(Point(1))(mt => mt.withBackgroundColor(RGBA.Red))
-  //       .toBatch
+  test("modifyAt") {
+    val actual =
+      SparseGrid(Size(3))
+        .fill(".")
+        .modifyAt(Point(1))(s => s + "!")
+        .toBatch
 
-  //   val expected =
-  //     Batch(
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Red),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       )
-  //     ).flatten
+    val expected =
+      Batch(
+        Batch(
+          ".",
+          ".",
+          "."
+        ),
+        Batch(
+          ".",
+          ".!",
+          "."
+        ),
+        Batch(
+          ".",
+          ".",
+          "."
+        )
+      ).flatten
 
-  //   assert(actual.length == expected.length)
-  //   assert(actual.zip(expected).forall(_ == _))
-  // }
+    assert(actual.length == expected.length)
+    assert(actual.map(_.get).zip(expected).forall(_ == _))
+  }
 
-  // test("map") {
-  //   val actual =
-  //     SparseGrid(Size(3))
-  //       .fill(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       .map {
-  //         case (pt, _) if pt == Point(0) || pt == Point(1) || pt == Point(2) =>
-  //           String(Tile.DARK_SHADE, RGBA.White, RGBA.Black)
+  test("map") {
+    val actual =
+      SparseGrid(Size(3))
+        .fill(".")
+        .map {
+          case (pt, _) if pt == Point(0) || pt == Point(1) || pt == Point(2) =>
+            "?"
 
-  //         case (_, mt) =>
-  //           mt
-  //       }
-  //       .toBatch
+          case (_, mt) =>
+            mt
+        }
+        .toBatch
 
-  //   val expected =
-  //     Batch(
-  //       Batch(
-  //         String(Tile.DARK_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.White, RGBA.Black)
-  //       )
-  //     ).flatten
+    val expected =
+      Batch(
+        Batch(
+          "?",
+          ".",
+          "."
+        ),
+        Batch(
+          ".",
+          "?",
+          "."
+        ),
+        Batch(
+          ".",
+          ".",
+          "?"
+        )
+      ).flatten
 
-  //   assert(actual.length == expected.length)
-  //   assert(actual.zip(expected).forall(_ == _))
-  // }
+    assert(actual.length == expected.length)
+    assert(actual.map(_.get).zip(expected).forall(_ == _))
+  }
 
-  // test("mapRectangle") {
-  //   val actual =
-  //     SparseGrid(Size(5))
-  //       .fill(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       .mapRectangle(Rectangle(1, 1, 3, 3)) { (_, _) =>
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue)
-  //       }
-  //       .toBatch
+  test("mapRectangle") {
+    val actual =
+      SparseGrid(Size(5))
+        .fill("-")
+        .mapRectangle(Rectangle(1, 1, 3, 3)) { (_, _) =>
+          "."
+        }
+        .toBatch
 
-  //   val expected =
-  //     Batch(
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       )
-  //     ).flatten
+    val expected =
+      Batch(
+        Batch(
+          "-",
+          "-",
+          "-",
+          "-",
+          "-"
+        ),
+        Batch(
+          "-",
+          ".",
+          ".",
+          ".",
+          "-"
+        ),
+        Batch(
+          "-",
+          ".",
+          ".",
+          ".",
+          "-"
+        ),
+        Batch(
+          "-",
+          ".",
+          ".",
+          ".",
+          "-"
+        ),
+        Batch(
+          "-",
+          "-",
+          "-",
+          "-",
+          "-"
+        )
+      ).flatten
 
-  //   // actual.zip(expected).foreach(p => println(s"$p - ${p._1 == p._2}"))
+    assert(actual.length == expected.length)
+    assert(actual.map(_.get).zip(expected).forall(_ == _))
+  }
 
-  //   assert(actual.length == expected.length)
-  //   assert(actual.zip(expected).forall(_ == _))
-  // }
+  test("mapCircle") {
+    val actual =
+      SparseGrid(Size(5))
+        .fill("-")
+        .mapCircle(Circle(2, 2, 2)) { (_, _) =>
+          "."
+        }
+        .toBatch
 
-  // test("mapCircle") {
-  //   val actual =
-  //     SparseGrid(Size(5))
-  //       .fill(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       .mapCircle(Circle(2, 2, 2)) { (_, _) =>
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue)
-  //       }
-  //       .toBatch
+    val expected =
+      Batch(
+        Batch(
+          "-",
+          "-",
+          ".",
+          "-",
+          "-"
+        ),
+        Batch(
+          "-",
+          ".",
+          ".",
+          ".",
+          "-"
+        ),
+        Batch(
+          ".",
+          ".",
+          ".",
+          ".",
+          "."
+        ),
+        Batch(
+          "-",
+          ".",
+          ".",
+          ".",
+          "-"
+        ),
+        Batch(
+          "-",
+          "-",
+          ".",
+          "-",
+          "-"
+        )
+      ).flatten
 
-  //   val expected =
-  //     Batch(
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       )
-  //     ).flatten
+    assert(actual.length == expected.length)
+    assert(actual.map(_.get).zip(expected).forall(_ == _))
+  }
 
-  //   // actual.zip(expected).foreach(p => println(s"$p - ${p._1 == p._2}"))
+  test("mapLine") {
+    val actual =
+      SparseGrid(Size(5))
+        .fill("-")
+        .mapLine(Point(0), Point(4)) { (_, _) =>
+          "."
+        }
+        .toBatch
 
-  //   assert(actual.length == expected.length)
-  //   assert(actual.zip(expected).forall(_ == _))
-  // }
+    val expected =
+      Batch(
+        Batch(
+          ".",
+          "-",
+          "-",
+          "-",
+          "-"
+        ),
+        Batch(
+          "-",
+          ".",
+          "-",
+          "-",
+          "-"
+        ),
+        Batch(
+          "-",
+          "-",
+          ".",
+          "-",
+          "-"
+        ),
+        Batch(
+          "-",
+          "-",
+          "-",
+          ".",
+          "-"
+        ),
+        Batch(
+          "-",
+          "-",
+          "-",
+          "-",
+          "."
+        )
+      ).flatten
 
-  // test("mapLine") {
-  //   val actual =
-  //     SparseGrid(Size(5))
-  //       .fill(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       .mapLine(Point(0), Point(4)) { (_, _) =>
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue)
-  //       }
-  //       .toBatch
-
-  //   val expected =
-  //     Batch(
-  //       Batch(
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
-  //       ),
-  //       Batch(
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
-  //         String(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue)
-  //       )
-  //     ).flatten
-
-  //   // actual.zip(expected).foreach(p => println(s"$p - ${p._1 == p._2}"))
-
-  //   assert(actual.length == expected.length)
-  //   assert(actual.zip(expected).forall(_ == _))
-  // }
+    assert(actual.length == expected.length)
+    assert(actual.map(_.get).zip(expected).forall(_ == _))
+  }
 
 }

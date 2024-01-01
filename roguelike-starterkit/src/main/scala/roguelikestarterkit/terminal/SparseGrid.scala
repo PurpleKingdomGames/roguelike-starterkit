@@ -144,6 +144,7 @@ final class SparseGrid[A](
   /** */
   def |+|(other: SparseGrid[A]): SparseGrid[A] =
     combine(other)
+
   /** */
   def combine(other: SparseGrid[A]): SparseGrid[A] =
     put(other.toPositionedBatch)
@@ -153,165 +154,81 @@ final class SparseGrid[A](
     put(other.toPositionedBatch, offset)
 
   /** */
-//   def modifyAt(position: Point)(modifier: A => A): SparseGrid[A] =
-//     val idx = SparseGrid.pointToIndex(position, size.width)
-//     val t   = _values(idx)
-//     val mt  = modifier(t)
+  def modifyAt(coords: Point)(modifier: A => A): SparseGrid[A] =
+    val idx = SparseGrid.pointToIndex(coords, size.width)
+    val t   = values(idx)
 
-//     updateAt(idx, mt)
-//     this
-
-  /** */
-//   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
-//   def map(modifier: (Point, A) => A): SparseGrid[A] =
-//     val count = length
-//     var i     = 0
-
-//     while i < count do
-//       val t  = _values(i)
-//       val mt = modifier(SparseGrid.indexToPoint(i, size.width), A(t))
-
-//       updateAt(i, mt.char, mt.foreground, mt.background)
-
-//       i += 1
-
-//     this
+    if t.isDefined then put(coords, modifier(t.get))
+    else this
 
   /** */
-//   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
-//   def mapRectangle(region: Rectangle)(
-//       modifier: (Point, A) => A
-//   ): SparseGrid[A] =
-//     val count = length
-//     var i     = 0
-
-//     while i < count do
-//       val pos = SparseGrid.indexToPoint(i, size.width)
-//       if region.contains(pos) then
-//         val t  = _values(i)
-//         val mt = modifier(pos, A(t))
-
-//         updateAt(i, mt.char, mt.foreground, mt.background)
-
-//       i += 1
-
-//     this
+  def map(modifier: (Point, A) => A): SparseGrid[A] =
+    new SparseGrid[A](
+      size,
+      values.zipWithIndex.map { case (v, i) =>
+        if v.isDefined then modifier(SparseGrid.indexToPoint(i, size.width), v.get)
+        else v
+      }
+    )
 
   /** */
-//   def fillRectangle(region: Rectangle, mapTile: A): SparseGrid[A] =
-//     mapRectangle(region)((_, _) => mapTile)
-  /** */
-//   def fillRectangle(region: Rectangle, value: A): SparseGrid[A] =
-//     mapRectangle(region)((_, mt) => mt.withChar(value))
-  /** */
-//   def fillRectangle(region: Rectangle, value: A, foreground: RGBA): SparseGrid[A] =
-//     mapRectangle(region)((_, mt) => A(value, foreground, mt.background))
-  /** */
-//   def fillRectangle(
-//       region: Rectangle,
-//       value: A,
-//       foreground: RGBA,
-//       background: RGBA
-//   ): SparseGrid[A] =
-//     mapRectangle(region)((_, mt) => A(value, foreground, background))
+  def mapRectangle(region: Rectangle)(
+      modifier: (Point, A) => A
+  ): SparseGrid[A] =
+    new SparseGrid[A](
+      size,
+      values.zipWithIndex.map { case (v, i) =>
+        val pt = SparseGrid.indexToPoint(i, size.width)
+        if v.isDefined && region.contains(pt) then modifier(pt, v.get)
+        else v
+      }
+    )
 
   /** */
-//   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
-//   def mapCircle(circle: Circle)(modifier: (Point, A) => A): SparseGrid[A] =
-//     val count = length
-//     var i     = 0
-
-//     while i < count do
-//       val pos = SparseGrid.indexToPoint(i, size.width)
-//       if circle.contains(pos) then
-//         val t  = _values(i)
-//         val mt = modifier(pos, A(t))
-
-//         updateAt(i, mt.char, mt.foreground, mt.background)
-
-//       i += 1
-
-//     this
+  def fillRectangle(region: Rectangle, value: A): SparseGrid[A] =
+    mapRectangle(region)((_, _) => value)
 
   /** */
-//   def fillCircle(circle: Circle, mapTile: A): SparseGrid[A] =
-//     mapCircle(circle)((_, _) => mapTile)
-  /** */
-//   def fillCircle(circle: Circle, value: A): SparseGrid[A] =
-//     mapCircle(circle)((_, mt) => mt.withChar(value))
-  /** */
-//   def fillCircle(circle: Circle, value: A, foreground: RGBA): SparseGrid[A] =
-//     mapCircle(circle)((_, mt) => A(value, foreground, mt.background))
-  /** */
-//   def fillCircle(
-//       circle: Circle,
-//       value: A,
-//       foreground: RGBA,
-//       background: RGBA
-//   ): SparseGrid[A] =
-//     mapCircle(circle)((_, mt) => A(value, foreground, background))
+  def mapCircle(circle: Circle)(modifier: (Point, A) => A): SparseGrid[A] =
+    new SparseGrid[A](
+      size,
+      values.zipWithIndex.map { case (v, i) =>
+        val pt = SparseGrid.indexToPoint(i, size.width)
+        if v.isDefined && circle.contains(pt) then modifier(pt, v.get)
+        else v
+      }
+    )
 
   /** */
-//   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
-//   def mapLine(from: Point, to: Point)(
-//       modifier: (Point, A) => A
-//   ): SparseGrid[A] =
-//     val pts   = FOV.bresenhamLine(from, to)
-//     val count = length
-//     var i     = 0
-
-//     while i < count do
-//       val pos = SparseGrid.indexToPoint(i, size.width)
-//       if pts.contains(pos) then
-//         val t  = _values(i)
-//         val mt = modifier(pos, A(t))
-
-//         updateAt(i, mt.char, mt.foreground, mt.background)
-
-//       i += 1
-
-//     this
+  def fillCircle(circle: Circle, value: A): SparseGrid[A] =
+    mapCircle(circle)((_, _) => value)
 
   /** */
-//   def mapLine(line: LineSegment)(modifier: (Point, A) => A): SparseGrid[A] =
-//     mapLine(line.start.toPoint, line.end.toPoint)(modifier)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
+  def mapLine(from: Point, to: Point)(
+      modifier: (Point, A) => A
+  ): SparseGrid[A] =
+    val pts = FOV.bresenhamLine(from, to)
+    new SparseGrid[A](
+      size,
+      values.zipWithIndex.map { case (v, i) =>
+        val pt = SparseGrid.indexToPoint(i, size.width)
+        if v.isDefined && pts.contains(pt) then modifier(pt, v.get)
+        else v
+      }
+    )
+
   /** */
-//   def fillLine(line: LineSegment, mapTile: A): SparseGrid[A] =
-//     mapLine(line.start.toPoint, line.end.toPoint)((_, _) => mapTile)
+  def mapLine(line: LineSegment)(modifier: (Point, A) => A): SparseGrid[A] =
+    mapLine(line.start.toPoint, line.end.toPoint)(modifier)
+
   /** */
-//   def fillLine(line: LineSegment, value: A): SparseGrid[A] =
-//     mapLine(line.start.toPoint, line.end.toPoint)((_, mt) => mt.withChar(value))
+  def fillLine(line: LineSegment, value: A): SparseGrid[A] =
+    mapLine(line.start.toPoint, line.end.toPoint)((_, _) => value)
+
   /** */
-//   def fillLine(line: LineSegment, value: A, foreground: RGBA): SparseGrid[A] =
-//     mapLine(line.start.toPoint, line.end.toPoint)((_, mt) =>
-//       A(value, foreground, mt.background)
-//     )
-  /** */
-//   def fillLine(
-//       line: LineSegment,
-//       value: A,
-//       foreground: RGBA,
-//       background: RGBA
-//   ): SparseGrid[A] =
-//     mapLine(line.start.toPoint, line.end.toPoint)((_, mt) => A(value, foreground, background))
-  /** */
-//   def fillLine(from: Point, to: Point, mapTile: A): SparseGrid[A] =
-//     mapLine(from, to)((_, _) => mapTile)
-  /** */
-//   def fillLine(from: Point, to: Point, value: A): SparseGrid[A] =
-//     mapLine(from, to)((_, mt) => mt.withChar(value))
-  /** */
-//   def fillLine(from: Point, to: Point, value: A, foreground: RGBA): SparseGrid[A] =
-//     mapLine(from, to)((_, mt) => A(value, foreground, mt.background))
-  /** */
-//   def fillLine(
-//       from: Point,
-//       to: Point,
-//       value: A,
-//       foreground: RGBA,
-//       background: RGBA
-//   ): SparseGrid[A] =
-//     mapLine(from, to)((_, mt) => A(value, foreground, background))
+  def fillLine(from: Point, to: Point, value: A): SparseGrid[A] =
+    mapLine(from, to)((_, _) => value)
 
 object SparseGrid:
 

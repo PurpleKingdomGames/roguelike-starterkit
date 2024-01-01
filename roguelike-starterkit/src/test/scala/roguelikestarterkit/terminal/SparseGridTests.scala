@@ -419,7 +419,7 @@ class SparseGridTests extends munit.FunSuite {
     val actual =
       SparseGrid(Size(3))
         .fill(".")
-        .modifyAt(Point(1))(s => s + "!")
+        .modifyAt(Point(1))(_.map(_ + "!"))
         .toBatch
 
     val expected =
@@ -451,7 +451,7 @@ class SparseGridTests extends munit.FunSuite {
         .fill(".")
         .map {
           case (pt, _) if pt == Point(0) || pt == Point(1) || pt == Point(2) =>
-            "?"
+            Option("?")
 
           case (_, mt) =>
             mt
@@ -486,7 +486,7 @@ class SparseGridTests extends munit.FunSuite {
       SparseGrid(Size(5))
         .fill("-")
         .mapRectangle(Rectangle(1, 1, 3, 3)) { (_, _) =>
-          "."
+          Option(".")
         }
         .toBatch
 
@@ -538,7 +538,7 @@ class SparseGridTests extends munit.FunSuite {
       SparseGrid(Size(5))
         .fill("-")
         .mapCircle(Circle(2, 2, 2)) { (_, _) =>
-          "."
+          Option(".")
         }
         .toBatch
 
@@ -590,7 +590,7 @@ class SparseGridTests extends munit.FunSuite {
       SparseGrid(Size(5))
         .fill("-")
         .mapLine(Point(0), Point(4)) { (_, _) =>
-          "."
+          Option(".")
         }
         .toBatch
 

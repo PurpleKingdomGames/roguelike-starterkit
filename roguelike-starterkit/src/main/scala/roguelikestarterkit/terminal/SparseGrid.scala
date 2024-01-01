@@ -6,6 +6,7 @@ import roguelikestarterkit.FOV
 import scala.annotation.tailrec
 
 import scalajs.js
+import js.JSConverters._
 
 /** */
 final class SparseGrid[A](
@@ -154,81 +155,82 @@ final class SparseGrid[A](
     put(other.toPositionedBatch, offset)
 
   /** */
-  def modifyAt(coords: Point)(modifier: A => A): SparseGrid[A] =
+  def modifyAt(coords: Point)(modifier: Option[A] => Option[A]): SparseGrid[A] =
     val idx = SparseGrid.pointToIndex(coords, size.width)
     val t   = values(idx)
 
-    if t.isDefined then put(coords, modifier(t.get))
-    else this
+    modifier(t.toOption) match
+      case None        => remove(coords)
+      case Some(value) => put(coords, value)
 
   /** */
-  def map(modifier: (Point, A) => A): SparseGrid[A] =
+  def map(modifier: (Point, Option[A]) => Option[A]): SparseGrid[A] =
     new SparseGrid[A](
       size,
       values.zipWithIndex.map { case (v, i) =>
-        if v.isDefined then modifier(SparseGrid.indexToPoint(i, size.width), v.get)
-        else v
+        val pt = SparseGrid.indexToPoint(i, size.width)
+        modifier(pt, v.toOption).orUndefined
       }
     )
 
   /** */
   def mapRectangle(region: Rectangle)(
-      modifier: (Point, A) => A
+      modifier: (Point, Option[A]) => Option[A]
   ): SparseGrid[A] =
     new SparseGrid[A](
       size,
       values.zipWithIndex.map { case (v, i) =>
         val pt = SparseGrid.indexToPoint(i, size.width)
-        if v.isDefined && region.contains(pt) then modifier(pt, v.get)
+        if region.contains(pt) then modifier(pt, v.toOption).orUndefined
         else v
       }
     )
 
   /** */
   def fillRectangle(region: Rectangle, value: A): SparseGrid[A] =
-    mapRectangle(region)((_, _) => value)
+    mapRectangle(region)((_, _) => Option(value))
 
   /** */
-  def mapCircle(circle: Circle)(modifier: (Point, A) => A): SparseGrid[A] =
+  def mapCircle(circle: Circle)(modifier: (Point, Option[A]) => Option[A]): SparseGrid[A] =
     new SparseGrid[A](
       size,
       values.zipWithIndex.map { case (v, i) =>
         val pt = SparseGrid.indexToPoint(i, size.width)
-        if v.isDefined && circle.contains(pt) then modifier(pt, v.get)
+        if circle.contains(pt) then modifier(pt, v.toOption).orUndefined
         else v
       }
     )
 
   /** */
   def fillCircle(circle: Circle, value: A): SparseGrid[A] =
-    mapCircle(circle)((_, _) => value)
+    mapCircle(circle)((_, _) => Option(value))
 
   /** */
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def mapLine(from: Point, to: Point)(
-      modifier: (Point, A) => A
+      modifier: (Point, Option[A]) => Option[A]
   ): SparseGrid[A] =
     val pts = FOV.bresenhamLine(from, to)
     new SparseGrid[A](
       size,
       values.zipWithIndex.map { case (v, i) =>
         val pt = SparseGrid.indexToPoint(i, size.width)
-        if v.isDefined && pts.contains(pt) then modifier(pt, v.get)
+        if pts.contains(pt) then modifier(pt, v.toOption).orUndefined
         else v
       }
     )
 
   /** */
-  def mapLine(line: LineSegment)(modifier: (Point, A) => A): SparseGrid[A] =
+  def mapLine(line: LineSegment)(modifier: (Point, Option[A]) => Option[A]): SparseGrid[A] =
     mapLine(line.start.toPoint, line.end.toPoint)(modifier)
 
   /** */
   def fillLine(line: LineSegment, value: A): SparseGrid[A] =
-    mapLine(line.start.toPoint, line.end.toPoint)((_, _) => value)
+    mapLine(line.start.toPoint, line.end.toPoint)((_, _) => Option(value))
 
   /** */
   def fillLine(from: Point, to: Point, value: A): SparseGrid[A] =
-    mapLine(from, to)((_, _) => value)
+    mapLine(from, to)((_, _) => Option(value))
 
 object SparseGrid:
 

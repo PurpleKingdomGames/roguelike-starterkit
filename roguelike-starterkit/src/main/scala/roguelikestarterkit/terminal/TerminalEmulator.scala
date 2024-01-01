@@ -1,10 +1,6 @@
 package roguelikestarterkit.terminal
 
 import indigo.*
-import indigoextras.trees.QuadTree
-import indigoextras.trees.QuadTree.QuadBranch
-import indigoextras.trees.QuadTree.QuadEmpty
-import indigoextras.trees.QuadTree.QuadLeaf
 import roguelikestarterkit.FOV
 import roguelikestarterkit.Tile
 
@@ -12,7 +8,7 @@ import scala.annotation.tailrec
 
 /** TerminalEmulator represents an immutable, sparsely populated terminal.
   */
-final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extends Terminal:
+final case class TerminalEmulator(size: Size, charMap: SparseGrid[MapTile]) extends Terminal:
 
   private lazy val coordsBatch: Batch[Point] =
     Batch.fromIndexedSeq((0 until size.height).flatMap { y =>
@@ -22,20 +18,18 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
     })
 
   def put(coords: Point, tile: Tile, fgColor: RGBA, bgColor: RGBA): TerminalEmulator =
-    this.copy(charMap =
-      charMap.insertElement(MapTile(tile, fgColor, bgColor), Vertex.fromPoint(coords))
-    )
+    this.copy(charMap = charMap.put(coords, MapTile(tile, fgColor, bgColor)))
   def put(coords: Point, tile: Tile, fgColor: RGBA): TerminalEmulator =
-    this.copy(charMap = charMap.insertElement(MapTile(tile, fgColor), Vertex.fromPoint(coords)))
+    this.copy(charMap = charMap.put(coords, MapTile(tile, fgColor)))
   def put(coords: Point, tile: Tile): TerminalEmulator =
-    this.copy(charMap = charMap.insertElement(MapTile(tile), Vertex.fromPoint(coords)))
+    this.copy(charMap = charMap.put(coords, MapTile(tile)))
 
   def put(tiles: Batch[(Point, MapTile)]): TerminalEmulator =
-    this.copy(charMap = charMap.insertElements(tiles.map(p => (p._2, Vertex.fromPoint(p._1)))))
+    this.copy(charMap = charMap.put(tiles.map(p => (p._1, p._2))))
   def put(tiles: Batch[(Point, MapTile)], offset: Point): TerminalEmulator =
     this.copy(
-      charMap = charMap.insertElements(
-        tiles.map(p => (p._2, Vertex.fromPoint(p._1 + offset)))
+      charMap = charMap.put(
+        tiles.map(p => (p._1 + offset, p._2))
       )
     )
   def put(tiles: (Point, MapTile)*): TerminalEmulator =
@@ -45,7 +39,7 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
 
   def fill(mapTile: MapTile): TerminalEmulator =
     this.copy(
-      charMap = charMap.insertElements(coordsBatch.map(pt => mapTile -> pt.toVertex))
+      charMap = charMap.put(coordsBatch.map(pt => pt -> mapTile))
     )
   def fill(tile: Tile, foregroundColor: RGBA, backgroundColor: RGBA): TerminalEmulator =
     fill(MapTile(tile, foregroundColor, backgroundColor))
@@ -85,57 +79,50 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
     rec(textLines.toList, 0, this)
 
   def get(coords: Point): Option[MapTile] =
-    charMap.fetchElementAt(Vertex.fromPoint(coords))
+    charMap.get(coords)
 
   def delete(coords: Point): TerminalEmulator =
-    this.copy(charMap = charMap.removeElement(Vertex.fromPoint(coords)))
+    this.copy(charMap = charMap.remove(coords))
 
   def clear: TerminalEmulator =
-    this.copy(charMap = QuadTree.empty[MapTile](size.width.toDouble, size.height.toDouble))
-
-  def optimise: TerminalEmulator =
-    this.copy(charMap = charMap.prune)
+    this.copy(charMap = charMap.clear)
 
   /** Returns all MapTiles, guarantees order, inserts a default where there is a gap. */
   def toTileBatch: Batch[MapTile] =
-    coordsBatch.map(pt => get(pt).getOrElse(Terminal.EmptyTile))
+    charMap.toBatch(Terminal.EmptyTile)
 
   /** Returns all MapTiles in a given region, guarantees order, inserts a default where there is a
     * gap.
     */
   def toTileBatch(region: Rectangle): Batch[MapTile] =
-    coordsBatch.filter(pt => region.contains(pt)).map { pt =>
-      get(pt).getOrElse(Terminal.EmptyTile)
-    }
+    charMap.toBatch(region, Terminal.EmptyTile)
 
   /** Returns all MapTiles, does not guarantee order, does not fill in gaps. */
   def toBatch: Batch[MapTile] =
-    charMap.toBatch
+    charMap.toBatch.collect { case Some(v) => v }
 
   /** Returns all MapTiles in a given region, does not guarantee order, does not fill in gaps. */
   def toBatch(region: Rectangle): Batch[MapTile] =
-    charMap.searchByBoundingBox(region.toBoundingBox)
+    charMap.toBatch(region)
 
   /** Returns all MapTiles with their grid positions, does not guarantee order (but the position is
     * given), does not fill in gaps.
     */
   def toPositionedBatch: Batch[(Point, MapTile)] =
-    charMap.toBatchWithPosition.map(p => p._1.toPoint -> p._2)
+    charMap.toPositionedBatch
 
   /** Returns all MapTiles with their grid positions in a given region, does not guarantee order
     * (but the position is given), does not fill in gaps.
     */
   def toPositionedBatch(region: Rectangle): Batch[(Point, MapTile)] =
-    charMap.toBatchWithPosition
-      .filter(p => region.contains(p._1.toPoint))
-      .map(p => p._1.toPoint -> p._2)
+    charMap.toPositionedBatch(region)
 
   def |+|(otherConsole: Terminal): TerminalEmulator =
     combine(otherConsole)
   def combine(otherConsole: Terminal): TerminalEmulator =
     this.copy(
-      charMap = charMap.insertElements(
-        otherConsole.toPositionedBatch.map(p => (p._2, Vertex.fromPoint(p._1)))
+      charMap = charMap.put(
+        otherConsole.toPositionedBatch
       )
     )
 
@@ -145,27 +132,27 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
   def toRogueTerminalEmulator: RogueTerminalEmulator =
     RogueTerminalEmulator(size).inset(this, Point.zero)
 
-  def modifyAt(position: Point)(modifier: MapTile => MapTile): TerminalEmulator =
-    get(position) match
-      case None =>
-        this
+  private def liftModifier(
+      modifier: (Point, MapTile) => MapTile
+  ): (Point, Option[MapTile]) => Option[MapTile] =
+    (pt, opt) =>
+      opt match
+        case None        => None
+        case Some(value) => Option(modifier(pt, value))
 
-      case Some(value) =>
-        put(position, modifier(value))
+  def modifyAt(position: Point)(modifier: MapTile => MapTile): TerminalEmulator =
+    this.copy(
+      charMap = charMap.modifyAt(position)(_.map(modifier))
+    )
 
   def map(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
-      charMap = charMap.toBatchWithPosition.foldLeft(charMap) { case (acc, (pos, char)) =>
-        acc.insertElement(modifier(pos.toPoint, char), pos)
-      }
+      charMap = charMap.map(liftModifier(modifier))
     )
 
   def mapRectangle(region: Rectangle)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
-      charMap = charMap.toBatchWithPosition.foldLeft(charMap) { case (acc, (pos, char)) =>
-        if region.contains(pos.toPoint) then acc.insertElement(modifier(pos.toPoint, char), pos)
-        else acc
-      }
+      charMap = charMap.mapRectangle(region)(liftModifier(modifier))
     )
 
   def fillRectangle(region: Rectangle, mapTile: MapTile): TerminalEmulator =
@@ -184,10 +171,7 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
 
   def mapCircle(circle: Circle)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
-      charMap = charMap.toBatchWithPosition.foldLeft(charMap) { case (acc, (pos, char)) =>
-        if circle.contains(pos.toPoint) then acc.insertElement(modifier(pos.toPoint, char), pos)
-        else acc
-      }
+      charMap = charMap.mapCircle(circle)(liftModifier(modifier))
     )
 
   def fillCircle(circle: Circle, mapTile: MapTile): TerminalEmulator =
@@ -201,14 +185,7 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
 
   def mapLine(from: Point, to: Point)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
-      charMap = FOV.bresenhamLine(from, to).foldLeft(charMap) { case (acc, pos) =>
-        get(pos) match
-          case None =>
-            acc
-
-          case Some(value) =>
-            acc.insertElement(modifier(pos, value), pos.toVertex)
-      }
+      charMap = charMap.mapLine(from, to)(liftModifier(modifier))
     )
 
   def mapLine(line: LineSegment)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
@@ -247,5 +224,5 @@ object TerminalEmulator:
   def apply(screenSize: Size): TerminalEmulator =
     TerminalEmulator(
       screenSize,
-      QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble)
+      SparseGrid[MapTile](screenSize)
     )

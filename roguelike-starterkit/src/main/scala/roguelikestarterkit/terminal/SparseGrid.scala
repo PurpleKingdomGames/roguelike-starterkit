@@ -209,7 +209,6 @@ final class SparseGrid[A](
     mapCircle(circle)((_, _) => Option(value))
 
   /** Map over the grid squares on a line (bresenham) and modify */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def mapLine(from: Point, to: Point)(
       modifier: (Point, Option[A]) => Option[A]
   ): SparseGrid[A] =

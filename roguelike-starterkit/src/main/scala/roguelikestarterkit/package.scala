@@ -66,8 +66,6 @@ val TerminalClones: terminal.TerminalClones.type = terminal.TerminalClones
 
 // Utils
 
-val FOV: utils.FOV.type = utils.FOV
-
 type PathFinder = utils.PathFinder
 val PathFinder: utils.PathFinder.type = utils.PathFinder
 

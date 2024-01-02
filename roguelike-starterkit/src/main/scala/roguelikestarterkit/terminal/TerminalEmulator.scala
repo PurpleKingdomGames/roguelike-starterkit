@@ -1,7 +1,7 @@
 package roguelikestarterkit.terminal
 
 import indigo.*
-import roguelikestarterkit.FOV
+import indigoextras.datatypes.SparseGrid
 import roguelikestarterkit.Tile
 
 import scala.annotation.tailrec

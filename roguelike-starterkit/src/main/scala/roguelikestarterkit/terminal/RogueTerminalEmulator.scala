@@ -1,7 +1,7 @@
 package roguelikestarterkit.terminal
 
 import indigo.*
-import roguelikestarterkit.FOV
+import indigoextras.utils.Bresenham
 import roguelikestarterkit.Tile
 
 import scala.annotation.tailrec
@@ -351,7 +351,7 @@ final class RogueTerminalEmulator(
   def mapLine(from: Point, to: Point)(
       modifier: (Point, MapTile) => MapTile
   ): RogueTerminalEmulator =
-    val pts   = FOV.bresenhamLine(from, to)
+    val pts   = Bresenham.line(from, to)
     val count = length
     var i     = 0
 

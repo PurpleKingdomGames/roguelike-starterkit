@@ -5,6 +5,8 @@ import roguelikestarterkit.Tile
 
 trait Terminal:
 
+  def size: Size
+
   /** Put the tile at the given point
     */
   def put(

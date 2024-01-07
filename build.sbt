@@ -6,7 +6,7 @@ import indigoplugin._
 
 val scala3Version              = "3.3.1"
 val indigoVersion              = "0.16.0"
-val roguelikeStarterKitVersion = "0.5.0"
+val roguelikeStarterKitVersion = "0.5.1-SNAPSHOT"
 
 Global / onChangedBuildSource                              := ReloadOnSourceChanges
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"

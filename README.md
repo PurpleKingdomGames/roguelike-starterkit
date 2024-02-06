@@ -122,4 +122,72 @@ The starter kit also provides:
 
 ## Roguelike UI
 
-Documentation to follow. The Roguelike Starterkit from 0.3.3 onwards includes a prototype UI system specifically for roguelikes. There is an example in the `UIScene` in the demo project in this repo.
+The Roguelike Starterkit from 0.3.3 onwards includes a prototype UI system specifically for roguelikes. There is an example in the `UIScene` in the demo project in this repo.
+
+![](imgs/rogue-paint-ui.png)
+
+### Getting started
+
+#### Elm arch all the way down
+
+The Rogue UI is implemented as a nested Elm arch (Indigo flavoured, of course). So the components are Elm arch via a typeclass, windows are Elm arch, as is the window manager. Windows in fact run mini-indigo games for their content.
+
+#### Language and Scale
+
+The Rogue UI was aimed at terminal rendering, and so the UI is based on an ASCII like grid (no need to render in ASCII, however). So we have types to describe that which are different from Indigo's normal types - though they are very similar - in the hope of reducing confusion. For example, we could describe the size of a window with a standard `Size` type - but what is size measured in? `Size` normally means some notion of 'pixels', but on the UI grid, we want to mean 'grid squares / coordinates' and so we use `Dimensions` instead.
+
+- `Bounds` - like `Rectangle`, but for a grid
+- `Coords` - like `Point`, but for a grid
+- `Dimensions` - like `Size`, but for a grid
+
+#### Organisation
+
+The UI is organised in two parts:
+
+##### 1 - Windows
+
+![](imgs/ascii-windows-2.gif)
+
+Windows work as you'd expect, albeit on a fixed grid, giving you the ability to move, resize, open and close them.
+
+Windows are controlled by the `WindowManager`, which is responsible for controlling their life cycle, layout, and event propogation.
+
+Window's do not have to render components (see below), as they are basically mini Indigo games, and can render anything Indigo can. When rendering content into a window though, do are responsible for adhering to it's content window bounds information, which can be found within the provided `UiContext`, which is much the same as a `FrameContext`, with some extra window specific data attached to it.
+
+To set up your `WindowManager`, you need to add a `WindowManagerModel` and `WindowManagerViewModel` to your game's model and view model instances respectively, and then use `WindowManager.updateModel`, `WindowManager.updateViewModel`, and `WindowManager.present` at the appropriate times in your game logic. There's no magic here. The WindowManager is a mini elm architecture, and you need to hook it into you main game logic.
+
+Example code:
+
+- [Model / ViewModel set up](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/RogueLikeGame.scala#L74-L99)
+- [Integration into your game loop](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/UIScene.scala#L27-L80)
+- [A working window definition with components](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/UIScene.scala#L85)
+
+##### 2 - Components
+
+![](imgs/masked_windows.gif)
+
+Components (buttons, labels, `ComponentGroups`, etc., anything with a `Component` typeclass) are ui elements that work on the Rogue UI's grid system.
+
+Strictly speaking you don't need to use them with the window system, but they are handy.
+
+`Component`s can optionally be organised into `ComponentGroup`s (which are themselves components). Component groups know how to organise components, based on a `ComponentLayout` instance, for instance you can tell the components to lay themselves out in a row and wrap or overflow. 
+
+#### UI Shaders
+
+The Rogue UI has some custom shaders (for things like window content masking), on top of the other RLSK shaders. The easiest way to include them all is as follows:
+
+```scala
+def boot(flags: Map[String, String]): Outcome[BootResult[Size]] =
+  Outcome(
+    BootResult(...)
+      .withShaders(
+        roguelikestarterkit.shaders.all
+      )
+  )
+```
+
+#### Rendering / Graphics
+
+Being part of the RLSK, under the covers, the Rogue UI is rendered using terminal emulators and character sheets.
+
+To change the graphics of your UI, all you have to do is replace the appropriate characters on a sprite sheet as if it were like a 9-slice (kinda), and feed it to the game / UI system.

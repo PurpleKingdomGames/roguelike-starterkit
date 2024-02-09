@@ -122,3 +122,9 @@ object WindowModel:
       false,
       false
     )
+
+  def apply[StartupData, CA](
+      id: WindowId,
+      charSheet: CharSheet
+  ): WindowModel[StartupData, CA, Unit] =
+    WindowModel(id, charSheet, ())

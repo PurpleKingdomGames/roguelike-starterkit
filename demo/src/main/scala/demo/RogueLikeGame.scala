@@ -79,7 +79,8 @@ object Model:
     CharSheet(
       Assets.assets.AnikkiSquare10x10,
       Size(10),
-      RoguelikeTiles.Size10x10.charCrops
+      RoguelikeTiles.Size10x10.charCrops,
+      RoguelikeTiles.Size10x10.Fonts.fontKey
     )
 
   val initial: Model =

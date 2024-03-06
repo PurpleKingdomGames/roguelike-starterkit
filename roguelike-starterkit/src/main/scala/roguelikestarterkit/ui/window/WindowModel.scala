@@ -21,7 +21,8 @@ final case class WindowModel[StartupData, CA, A](
     hasFocus: Boolean,
     static: Boolean,
     minSize: Option[Dimensions],
-    maxSize: Option[Dimensions]
+    maxSize: Option[Dimensions],
+    state: WindowState
 ):
 
   lazy val minAllowedSize: Dimensions =
@@ -122,6 +123,18 @@ final case class WindowModel[StartupData, CA, A](
   def noMaxSize: WindowModel[StartupData, CA, A] =
     this.copy(maxSize = None)
 
+  def withState(value: WindowState): WindowModel[StartupData, CA, A] =
+    this.copy(state = value)
+  def open: WindowModel[StartupData, CA, A] =
+    withState(WindowState.Open)
+  def close: WindowModel[StartupData, CA, A] =
+    withState(WindowState.Closed)
+
+  def isOpen: Boolean =
+    state == WindowState.Open
+  def isClosed: Boolean =
+    state == WindowState.Closed
+
 object WindowModel:
 
   def apply[StartupData, CA, A](
@@ -143,7 +156,8 @@ object WindowModel:
       false,
       false,
       None,
-      None
+      None,
+      WindowState.Closed
     )
 
   def apply[StartupData, CA](

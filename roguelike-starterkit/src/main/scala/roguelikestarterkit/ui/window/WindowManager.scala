@@ -10,11 +10,17 @@ object WindowManager:
       model: WindowManagerModel[StartupData, A]
   ): GlobalEvent => Outcome[WindowManagerModel[StartupData, A]] =
     case WindowManagerEvent.Close(id) =>
-      Outcome(model.remove(id))
+      Outcome(model.close(id))
 
     case WindowManagerEvent.GiveFocusAt(position) =>
       Outcome(model.giveFocusAndSurfaceAt(position))
         .addGlobalEvents(WindowEvent.Redraw)
+
+    case WindowManagerEvent.Open(id) =>
+      Outcome(model.open(id))
+
+    case WindowManagerEvent.OpenAt(id, coords) =>
+      Outcome(model.open(id).moveTo(id, coords))
 
     case WindowManagerEvent.Move(id, coords) =>
       Outcome(model.moveTo(id, coords))
@@ -27,7 +33,7 @@ object WindowManager:
 
     case e =>
       model.windows
-        .map(w => Window.updateModel(context, w)(e))
+        .map(w => if w.isOpen then Window.updateModel(context, w)(e) else Outcome(w))
         .sequence
         .map(m => model.copy(windows = m))
 
@@ -38,13 +44,16 @@ object WindowManager:
   ): GlobalEvent => Outcome[WindowManagerViewModel[StartupData, A]] =
     case e =>
       val updated =
+        val prunedVM = viewModel.prune(model)
         model.windows.flatMap { m =>
-          viewModel.prune(model).windows.find(_.id == m.id) match
-            case None =>
-              Batch(Outcome(WindowViewModel.initial(m.id)))
+          if m.isClosed then Batch.empty
+          else
+            prunedVM.windows.find(_.id == m.id) match
+              case None =>
+                Batch(Outcome(WindowViewModel.initial(m.id)))
 
-            case Some(vm) =>
-              Batch(vm.update(context, m, e))
+              case Some(vm) =>
+                Batch(vm.update(context, m, e))
         }
 
       updated.sequence.map(vm => viewModel.copy(windows = vm))
@@ -56,6 +65,7 @@ object WindowManager:
       viewModel: WindowManagerViewModel[StartupData, A]
   ): Outcome[SceneUpdateFragment] =
     model.windows
+      .filter(_.isOpen)
       .flatMap { m =>
         viewModel.windows.find(_.id == m.id) match
           case None =>

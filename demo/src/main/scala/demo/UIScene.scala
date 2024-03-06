@@ -31,6 +31,9 @@ object UIScene extends Scene[Size, Model, ViewModel]:
     case KeyboardEvent.KeyUp(Key.SPACE) =>
       Outcome(model).addGlobalEvents(SceneEvent.JumpTo(RogueTerminalEmulatorScene.name))
 
+    case KeyboardEvent.KeyUp(Key.KEY_O) =>
+      Outcome(model).addGlobalEvents(WindowManagerEvent.OpenAt(ColourWindow.windowId, Coords(1, 1)))
+
     case e =>
       val updated =
         model.windowManager.update(
@@ -113,11 +116,13 @@ object ColourWindow {
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
+  val windowId: WindowId = WindowId("Color palette")
+
   def window(
       charSheet: CharSheet
   ): WindowModel[Size, CustomContext, ColorPalette] =
     WindowModel(
-      WindowId("Color palette"),
+      windowId,
       charSheet,
       ColorPalette(
         ComponentGroup(Bounds(0, 0, 23, 23))

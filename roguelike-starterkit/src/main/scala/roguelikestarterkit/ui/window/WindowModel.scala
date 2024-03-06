@@ -24,7 +24,7 @@ final case class WindowModel[StartupData, CA, A](
     maxSize: Option[Dimensions]
 ):
 
-  private lazy val minAllowedSize: Dimensions =
+  lazy val minAllowedSize: Dimensions =
     val m = if title.isEmpty then Dimensions(3) else Dimensions(3, 5)
     minSize.fold(m)(_.max(m))
 

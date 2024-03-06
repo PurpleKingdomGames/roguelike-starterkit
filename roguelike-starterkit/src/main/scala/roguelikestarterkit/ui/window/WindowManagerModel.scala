@@ -26,6 +26,20 @@ final case class WindowManagerModel[StartupData, A](windows: Batch[WindowModel[S
 
     this.copy(windows = reordered)
 
+  def moveTo(id: WindowId, position: Coords): WindowManagerModel[StartupData, A] =
+    this.copy(windows = windows.map(w => if w.id == id then w.moveTo(position) else w))
+
+  def resizeTo(id: WindowId, dimensions: Dimensions): WindowManagerModel[StartupData, A] =
+    this.copy(windows = windows.map(w => if w.id == id then w.resizeTo(dimensions) else w))
+
+  def transformTo(id: WindowId, bounds: Bounds): WindowManagerModel[StartupData, A] =
+    this.copy(windows =
+      windows.map(w =>
+        // Note: We do _not_ use .withBounds here because that won't do the min size checks.
+        if w.id == id then w.moveTo(bounds.coords).resizeTo(bounds.dimensions) else w
+      )
+    )
+
   def update(
       context: UiContext[StartupData, A],
       event: GlobalEvent

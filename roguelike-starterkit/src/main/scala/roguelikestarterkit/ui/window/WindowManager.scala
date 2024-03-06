@@ -16,6 +16,15 @@ object WindowManager:
       Outcome(model.giveFocusAndSurfaceAt(position))
         .addGlobalEvents(WindowEvent.Redraw)
 
+    case WindowManagerEvent.Move(id, coords) =>
+      Outcome(model.moveTo(id, coords))
+
+    case WindowManagerEvent.Resize(id, dimensions) =>
+      Outcome(model.resizeTo(id, dimensions))
+
+    case WindowManagerEvent.Transform(id, bounds) =>
+      Outcome(model.transformTo(id, bounds))
+
     case e =>
       model.windows
         .map(w => Window.updateModel(context, w)(e))

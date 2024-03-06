@@ -7,13 +7,21 @@ import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
 final case class WindowManagerModel[StartupData, A](windows: Batch[WindowModel[StartupData, A, _]]):
-  def add(windowModels: WindowModel[StartupData, A, _]*): WindowManagerModel[StartupData, A] =
-    add(Batch.fromSeq(windowModels))
-  def add(windowModels: Batch[WindowModel[StartupData, A, _]]): WindowManagerModel[StartupData, A] =
+  def register(windowModels: WindowModel[StartupData, A, _]*): WindowManagerModel[StartupData, A] =
+    register(Batch.fromSeq(windowModels))
+  def register(
+      windowModels: Batch[WindowModel[StartupData, A, _]]
+  ): WindowManagerModel[StartupData, A] =
     this.copy(windows = windows ++ windowModels)
 
-  def remove(id: WindowId): WindowManagerModel[StartupData, A] =
-    this.copy(windows = windows.filterNot(_.id == id))
+  def open(ids: WindowId*): WindowManagerModel[StartupData, A] =
+    open(Batch.fromSeq(ids))
+
+  def open(ids: Batch[WindowId]): WindowManagerModel[StartupData, A] =
+    this.copy(windows = windows.map(w => if ids.exists(_ == w.id) then w.open else w))
+
+  def close(id: WindowId): WindowManagerModel[StartupData, A] =
+    this.copy(windows = windows.map(w => if w.id == id then w.close else w))
 
   def giveFocusAndSurfaceAt(coords: Coords): WindowManagerModel[StartupData, A] =
     val reordered =

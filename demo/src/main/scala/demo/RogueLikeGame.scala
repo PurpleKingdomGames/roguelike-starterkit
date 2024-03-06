@@ -87,11 +87,12 @@ object Model:
     Model(
       WindowManagerModel
         .initial[Size, CustomContext]
-        .add(
+        .register(
           ColourWindow.window(
             defaultCharSheet
           )
         )
+        .open(ColourWindow.windowId)
     )
 
 final case class ViewModel(windowManager: WindowManagerViewModel[Size, CustomContext])

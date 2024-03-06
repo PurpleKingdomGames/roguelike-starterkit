@@ -19,8 +19,14 @@ final case class WindowModel[StartupData, CA, A](
     resizable: Boolean,
     closeable: Boolean,
     hasFocus: Boolean,
-    static: Boolean
+    static: Boolean,
+    minSize: Option[Dimensions],
+    maxSize: Option[Dimensions]
 ):
+
+  private lazy val minAllowedSize: Dimensions =
+    val m = if title.isEmpty then Dimensions(3) else Dimensions(3, 5)
+    minSize.fold(m)(_.max(m))
 
   def withId(value: WindowId): WindowModel[StartupData, CA, A] =
     this.copy(id = value)
@@ -40,7 +46,8 @@ final case class WindowModel[StartupData, CA, A](
     moveBy(Coords(x, y))
 
   def withDimensions(value: Dimensions): WindowModel[StartupData, CA, A] =
-    withBounds(bounds.withDimensions(value))
+    val d = value.max(minAllowedSize)
+    withBounds(bounds.withDimensions(maxSize.fold(d)(_.min(d))))
   def resizeTo(size: Dimensions): WindowModel[StartupData, CA, A] =
     withDimensions(size)
   def resizeTo(x: Int, y: Int): WindowModel[StartupData, CA, A] =
@@ -101,6 +108,20 @@ final case class WindowModel[StartupData, CA, A](
   def notStatic: WindowModel[StartupData, CA, A] =
     withStatic(false)
 
+  def withMinSize(min: Dimensions): WindowModel[StartupData, CA, A] =
+    this.copy(minSize = Option(min))
+  def withMinSize(width: Int, height: Int): WindowModel[StartupData, CA, A] =
+    this.copy(minSize = Option(Dimensions(width, height)))
+  def noMinSize: WindowModel[StartupData, CA, A] =
+    this.copy(minSize = None)
+
+  def withMaxSize(max: Dimensions): WindowModel[StartupData, CA, A] =
+    this.copy(maxSize = Option(max))
+  def withMaxSize(width: Int, height: Int): WindowModel[StartupData, CA, A] =
+    this.copy(maxSize = Option(Dimensions(width, height)))
+  def noMaxSize: WindowModel[StartupData, CA, A] =
+    this.copy(maxSize = None)
+
 object WindowModel:
 
   def apply[StartupData, CA, A](
@@ -120,7 +141,9 @@ object WindowModel:
       false,
       false,
       false,
-      false
+      false,
+      None,
+      None
     )
 
   def apply[StartupData, CA](

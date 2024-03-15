@@ -208,6 +208,20 @@ object Window:
         )
       )
 
+    case MouseEvent.Move(pt)
+        if viewModel.mouseIsOver && !model.bounds
+          .toScreenSpace(context.charSheet.size)
+          .contains(pt) =>
+      Outcome(viewModel.copy(mouseIsOver = false))
+        .addGlobalEvents(WindowEvent.MouseOut(model.id))
+
+    case MouseEvent.Move(pt)
+        if !viewModel.mouseIsOver && model.bounds
+          .toScreenSpace(context.charSheet.size)
+          .contains(pt) =>
+      Outcome(viewModel.copy(mouseIsOver = true))
+        .addGlobalEvents(WindowEvent.MouseOver(model.id))
+
     case _ =>
       Outcome(viewModel)
 

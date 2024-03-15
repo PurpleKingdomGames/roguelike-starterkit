@@ -9,3 +9,5 @@ enum WindowEvent extends GlobalEvent:
   case ResizeBy(id: WindowId, dragData: DragData)
   case Redraw
   case ClearData
+  case MouseOver(id: WindowId)
+  case MouseOut(id: WindowId)

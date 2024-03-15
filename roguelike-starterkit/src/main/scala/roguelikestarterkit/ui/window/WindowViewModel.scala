@@ -15,7 +15,8 @@ final case class WindowViewModel(
     terminalClones: TerminalClones,
     contentRectangle: Bounds,
     dragData: Option[DragData],
-    resizeData: Option[DragData]
+    resizeData: Option[DragData],
+    mouseIsOver: Boolean
 ):
 
   def update[StartupData, CA, A](
@@ -38,7 +39,8 @@ object WindowViewModel:
       TerminalClones.empty,
       Bounds.zero,
       None,
-      None
+      None,
+      false
     )
 
   def makeWindowTerminal[StartupData, CA, A](

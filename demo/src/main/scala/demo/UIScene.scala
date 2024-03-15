@@ -34,6 +34,14 @@ object UIScene extends Scene[Size, Model, ViewModel]:
     case KeyboardEvent.KeyUp(Key.KEY_O) =>
       Outcome(model).addGlobalEvents(WindowManagerEvent.OpenAt(ColourWindow.windowId, Coords(1, 1)))
 
+    case WindowEvent.MouseOver(id) =>
+      println("Mouse over window: " + id)
+      Outcome(model)
+
+    case WindowEvent.MouseOut(id) =>
+      println("Mouse out window: " + id)
+      Outcome(model)
+
     case e =>
       val updated =
         model.windowManager.update(
@@ -81,6 +89,17 @@ object UIScene extends Scene[Size, Model, ViewModel]:
         model.windowManager,
         viewModel.windowManager
       )
+      .map { windowsSUF =>
+        SceneUpdateFragment(
+          TextBox(
+            "Mouse over: " +
+              viewModel.windowManager.mouseIsOverAnyWindow + ", " +
+              viewModel.windowManager.mouseIsOver.mkString("[", ",", "]")
+          )
+            .withTextStyle(TextStyle.default.withColor(RGBA.White).withSize(Pixels(12)))
+            .moveTo(0, 260)
+        ) |+| windowsSUF
+      }
 
 import indigo.*
 import roguelikestarterkit.*

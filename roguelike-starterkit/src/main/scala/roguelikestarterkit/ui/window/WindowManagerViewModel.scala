@@ -14,6 +14,12 @@ final case class WindowManagerViewModel[StartupData, A](windows: Batch[WindowVie
   ): Outcome[WindowManagerViewModel[StartupData, A]] =
     WindowManager.updateViewModel(context, model, this)(event)
 
+  def mouseIsOverAnyWindow: Boolean =
+    windows.exists(_.mouseIsOver)
+
+  def mouseIsOver: Batch[WindowId] =
+    windows.collect { case wvm if wvm.mouseIsOver => wvm.id }
+
 object WindowManagerViewModel:
   def initial[StartupData, A]: WindowManagerViewModel[StartupData, A] =
     WindowManagerViewModel(Batch.empty)

@@ -17,3 +17,5 @@ trait Component[A]:
       context: UiContext[StartupData, ContextData],
       model: A
   ): Outcome[ComponentFragment]
+
+  def reflow(model: A): A

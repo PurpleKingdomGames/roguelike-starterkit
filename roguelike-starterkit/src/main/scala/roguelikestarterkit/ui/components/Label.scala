@@ -34,3 +34,6 @@ object Label:
         model: Label
     ): Outcome[ComponentFragment] =
       model.render(context.bounds.coords, model.text)
+
+    def reflow(model: Label): Label =
+      model

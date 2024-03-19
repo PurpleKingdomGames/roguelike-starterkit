@@ -76,6 +76,9 @@ object Button:
         case ButtonState.Over => model.over.getOrElse(model.up)(context.bounds.coords, model.bounds)
         case ButtonState.Down => model.down.getOrElse(model.up)(context.bounds.coords, model.bounds)
 
+    def reflow(model: Button): Button =
+      model
+
 enum ButtonState:
   case Up, Over, Down
 

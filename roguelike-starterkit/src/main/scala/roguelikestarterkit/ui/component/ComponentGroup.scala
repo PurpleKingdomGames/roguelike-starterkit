@@ -148,3 +148,11 @@ object ComponentGroup:
         model: ComponentGroup
     ): Outcome[ComponentFragment] =
       model.present(context)
+
+    def reflow(model: ComponentGroup): ComponentGroup =
+      val reflowed: Batch[ComponentEntry[?]] = model.components.map { c =>
+        c.copy(
+          model = c.component.reflow(c.model)
+        )
+      }
+      model.reflow.copy(components = reflowed)

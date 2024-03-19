@@ -35,7 +35,7 @@ object Window:
     case WindowEvent.ResizeBy(id, dragData) if model.id == id =>
       Outcome(
         model.withDimensions(model.bounds.dimensions + (dragData.by - dragData.offset).toDimensions)
-      )
+      ).addGlobalEvents(WindowEvent.Resized(id))
 
     case e =>
       val b = model.bounds

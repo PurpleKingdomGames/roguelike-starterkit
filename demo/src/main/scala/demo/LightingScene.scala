@@ -26,7 +26,7 @@ object LightingScene extends Scene[Size, Model, ViewModel]:
 
   def updateModel(context: SceneContext[Size], model: Model): GlobalEvent => Outcome[Model] =
     case KeyboardEvent.KeyUp(Key.SPACE) =>
-      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(UIScene.name))
+      Outcome(model).addGlobalEvents(SceneEvent.Next)
 
     case _ =>
       Outcome(model)

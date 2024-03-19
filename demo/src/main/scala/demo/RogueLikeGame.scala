@@ -18,7 +18,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   def scenes(bootData: Size): NonEmptyList[Scene[Size, Model, ViewModel]] =
     NonEmptyList(
       LightingScene,
-      UIScene,
+      // UIScene,
       RogueTerminalEmulatorScene,
       TerminalTextScene,
       TerminalEmulatorScene

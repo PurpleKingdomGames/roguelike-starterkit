@@ -18,46 +18,53 @@ final case class ComponentGroup(
     def withPadding(p: Padding): Bounds =
       b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
 
+  private def nextOffset(components: Batch[ComponentEntry[_]]): Coords =
+    layout match
+      case ComponentLayout.None =>
+        Coords.zero
+
+      case ComponentLayout.Horizontal(padding, Overflow.Hidden) =>
+        components
+          .takeRight(1)
+          .headOption
+          .map(c => c.offset + Coords(c.component.bounds(c.model).withPadding(padding).right, 0))
+          .getOrElse(Coords(padding.left, padding.top))
+
+      case ComponentLayout.Horizontal(padding, Overflow.Wrap) =>
+        val maxY = components
+          .map(c => c.offset.y + c.component.bounds(c.model).withPadding(padding).height)
+          .sortWith(_ > _)
+          .headOption
+          .getOrElse(0)
+
+        components
+          .takeRight(1)
+          .headOption
+          .map { c =>
+            val padded      = c.component.bounds(c.model).withPadding(padding)
+            val maybeOffset = c.offset + Coords(padded.right, 0)
+
+            if padded.moveBy(maybeOffset).right < bounds.width then maybeOffset
+            else Coords(0, maxY)
+          }
+          .getOrElse(Coords(padding.left, padding.top))
+
+      case ComponentLayout.Vertical(padding) =>
+        components
+          .takeRight(1)
+          .headOption
+          .map(c => c.offset + Coords(0, c.component.bounds(c.model).withPadding(padding).bottom))
+          .getOrElse(Coords(padding.left, padding.top))
+
+  def reflow: ComponentGroup =
+    val newComponents = components.foldLeft(Batch.empty[ComponentEntry[_]]) { (acc, entry) =>
+      acc :+ entry.copy(offset = nextOffset(acc))
+    }
+
+    this.copy(components = newComponents)
+
   def add[A](entry: A)(using c: Component[A]): ComponentGroup =
-    val offset: Coords =
-      layout match
-        case ComponentLayout.None =>
-          Coords.zero
-
-        case ComponentLayout.Horizontal(padding, Overflow.Hidden) =>
-          components
-            .takeRight(1)
-            .headOption
-            .map(c => c.offset + Coords(c.component.bounds(c.model).withPadding(padding).right, 0))
-            .getOrElse(Coords(padding.left, padding.top))
-
-        case ComponentLayout.Horizontal(padding, Overflow.Wrap) =>
-          val maxY = components
-            .map(c => c.offset.y + c.component.bounds(c.model).withPadding(padding).height)
-            .sortWith(_ > _)
-            .headOption
-            .getOrElse(0)
-
-          components
-            .takeRight(1)
-            .headOption
-            .map { c =>
-              val padded      = c.component.bounds(c.model).withPadding(padding)
-              val maybeOffset = c.offset + Coords(padded.right, 0)
-
-              if padded.moveBy(maybeOffset).right < bounds.width then maybeOffset
-              else Coords(0, maxY)
-            }
-            .getOrElse(Coords(padding.left, padding.top))
-
-        case ComponentLayout.Vertical(padding) =>
-          components
-            .takeRight(1)
-            .headOption
-            .map(c => c.offset + Coords(0, c.component.bounds(c.model).withPadding(padding).bottom))
-            .getOrElse(Coords(padding.left, padding.top))
-
-    this.copy(components = components :+ ComponentEntry(offset, entry, c))
+    this.copy(components = components :+ ComponentEntry(nextOffset(components), entry, c))
 
   def add[A](entries: Batch[A])(using c: Component[A]): ComponentGroup =
     entries.foldLeft(this) { case (acc, next) => acc.add(next) }
@@ -94,10 +101,10 @@ final case class ComponentGroup(
       .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))
 
   def withBounds(value: Bounds): ComponentGroup =
-    this.copy(bounds = value)
+    this.copy(bounds = value).reflow
 
   def withLayout(value: ComponentLayout): ComponentGroup =
-    this.copy(layout = value)
+    this.copy(layout = value).reflow
 
   def withPosition(value: Coords): ComponentGroup =
     withBounds(bounds.withPosition(value))

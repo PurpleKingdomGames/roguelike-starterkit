@@ -14,10 +14,10 @@ object Window:
   private val graphic10x10: Graphic[TerminalMaterial] =
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
-  def updateModel[StartupData, CA, A](
+  def updateModel[A](
       context: UiContext,
-      model: WindowModel[StartupData, CA, A]
-  ): GlobalEvent => Outcome[WindowModel[StartupData, CA, A]] =
+      model: WindowModel[A]
+  ): GlobalEvent => Outcome[WindowModel[A]] =
     case WindowEvent.MoveBy(id, dragData) if model.id == id =>
       Outcome(
         model.copy(
@@ -56,9 +56,9 @@ object Window:
   def calculateDragBy(charSize: Int, mousePosition: Point, windowPosition: Coords): Coords =
     Coords(mousePosition / charSize) - windowPosition
 
-  def redraw[StartupData, CA, A](
+  def redraw[A](
       context: UiContext,
-      model: WindowModel[StartupData, CA, A],
+      model: WindowModel[A],
       viewModel: WindowViewModel
   ): WindowViewModel =
     val tempModel =
@@ -103,9 +103,9 @@ object Window:
       contentRectangle = contentRectangle
     )
 
-  def updateViewModel[StartupData, CA, A](
+  def updateViewModel[A](
       context: UiContext,
-      model: WindowModel[StartupData, CA, A],
+      model: WindowModel[A],
       viewModel: WindowViewModel
   ): GlobalEvent => Outcome[WindowViewModel] =
     case FrameTick
@@ -225,10 +225,10 @@ object Window:
     case _ =>
       Outcome(viewModel)
 
-  def present[StartupData, CA, A](
+  def present[A](
       context: UiContext,
       globalMagnification: Int,
-      model: WindowModel[StartupData, CA, A],
+      model: WindowModel[A],
       viewModel: WindowViewModel
   ): Outcome[SceneUpdateFragment] =
     model

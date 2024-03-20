@@ -10,7 +10,7 @@ final case class WindowManager(
     id: SubSystemId,
     magnification: Int,
     charSheet: CharSheet,
-    windows: Batch[WindowModel[Unit, Unit, _]]
+    windows: Batch[WindowModel[_]]
 ) extends SubSystem:
   type EventType      = GlobalEvent
   type SubSystemModel = ModelHolder
@@ -29,13 +29,13 @@ final case class WindowManager(
   ): GlobalEvent => Outcome[ModelHolder] =
     e =>
       for {
-        updatedModel <- WindowManager.updateModel[Unit, Unit](
+        updatedModel <- WindowManager.updateModel[Unit](
           UiContext(toFrameContext(context), charSheet),
           model.model
         )(e)
 
         updatedViewModel <-
-          WindowManager.updateViewModel[Unit, Unit](
+          WindowManager.updateViewModel[Unit](
             UiContext(toFrameContext(context), charSheet),
             updatedModel,
             model.viewModel
@@ -53,10 +53,10 @@ final case class WindowManager(
       model.viewModel
     )
 
-  def register(windowModels: WindowModel[Unit, Unit, _]*): WindowManager =
+  def register(windowModels: WindowModel[_]*): WindowManager =
     register(Batch.fromSeq(windowModels))
   def register(
-      windowModels: Batch[WindowModel[Unit, Unit, _]]
+      windowModels: Batch[WindowModel[_]]
   ): WindowManager =
     this.copy(windows = windows ++ windowModels)
 
@@ -70,16 +70,16 @@ final case class WindowManager(
     )
 
 final case class ModelHolder(
-    model: WindowManagerModel[Unit, Unit],
-    viewModel: WindowManagerViewModel[Unit, Unit]
+    model: WindowManagerModel[Unit],
+    viewModel: WindowManagerViewModel[Unit]
 )
 object ModelHolder:
   def initial(
-      windows: Batch[WindowModel[Unit, Unit, _]]
+      windows: Batch[WindowModel[_]]
   ): ModelHolder =
     ModelHolder(
-      WindowManagerModel.initial[Unit, Unit].register(windows),
-      WindowManagerViewModel.initial[Unit, Unit]
+      WindowManagerModel.initial[Unit].register(windows),
+      WindowManagerViewModel.initial[Unit]
     )
 
 object WindowManager:
@@ -87,10 +87,10 @@ object WindowManager:
   def apply(id: SubSystemId, magnification: Int, charSheet: CharSheet): WindowManager =
     WindowManager(id, magnification, charSheet, Batch.empty)
 
-  def updateModel[StartupData, A](
+  def updateModel[A](
       context: UiContext,
-      model: WindowManagerModel[StartupData, A]
-  ): GlobalEvent => Outcome[WindowManagerModel[StartupData, A]] =
+      model: WindowManagerModel[A]
+  ): GlobalEvent => Outcome[WindowManagerModel[A]] =
     case WindowManagerEvent.Close(id) =>
       Outcome(model.close(id))
 
@@ -119,11 +119,11 @@ object WindowManager:
         .sequence
         .map(m => model.copy(windows = m))
 
-  def updateViewModel[StartupData, A](
+  def updateViewModel[A](
       context: UiContext,
-      model: WindowManagerModel[StartupData, A],
-      viewModel: WindowManagerViewModel[StartupData, A]
-  ): GlobalEvent => Outcome[WindowManagerViewModel[StartupData, A]] =
+      model: WindowManagerModel[A],
+      viewModel: WindowManagerViewModel[A]
+  ): GlobalEvent => Outcome[WindowManagerViewModel[A]] =
     case e =>
       val updated =
         val prunedVM = viewModel.prune(model)
@@ -140,11 +140,11 @@ object WindowManager:
 
       updated.sequence.map(vm => viewModel.copy(windows = vm))
 
-  def present[StartupData, A](
+  def present[A](
       context: UiContext,
       globalMagnification: Int,
-      model: WindowManagerModel[StartupData, A],
-      viewModel: WindowManagerViewModel[StartupData, A]
+      model: WindowManagerModel[A],
+      viewModel: WindowManagerViewModel[A]
   ): Outcome[SceneUpdateFragment] =
     model.windows
       .filter(_.isOpen)

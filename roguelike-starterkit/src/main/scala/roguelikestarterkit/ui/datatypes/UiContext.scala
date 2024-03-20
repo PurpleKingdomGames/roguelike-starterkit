@@ -1,6 +1,7 @@
 package roguelikestarterkit.ui.datatypes
 
 import indigo.*
+import indigo.scenes.SceneContext
 
 final case class UiContext(
     bounds: Bounds,
@@ -43,4 +44,34 @@ object UiContext:
       frameContext.dice,
       frameContext.inputState,
       frameContext.boundaryLocator
+    )
+
+  def apply(
+      subSystemFrameContext: SubSystemFrameContext,
+      charSheet: CharSheet
+  ): UiContext =
+    val mouseCoords = Coords(subSystemFrameContext.mouse.position / charSheet.size.toPoint)
+    UiContext(
+      Bounds.zero,
+      charSheet,
+      mouseCoords,
+      subSystemFrameContext.gameTime,
+      subSystemFrameContext.dice,
+      subSystemFrameContext.inputState,
+      subSystemFrameContext.boundaryLocator
+    )
+
+  def apply(
+      sceneContext: SceneContext[_],
+      charSheet: CharSheet
+  ): UiContext =
+    val mouseCoords = Coords(sceneContext.mouse.position / charSheet.size.toPoint)
+    UiContext(
+      Bounds.zero,
+      charSheet,
+      mouseCoords,
+      sceneContext.gameTime,
+      sceneContext.dice,
+      sceneContext.inputState,
+      sceneContext.boundaryLocator
     )

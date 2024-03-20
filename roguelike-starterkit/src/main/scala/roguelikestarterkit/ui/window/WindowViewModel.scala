@@ -16,7 +16,8 @@ final case class WindowViewModel(
     contentRectangle: Bounds,
     dragData: Option[DragData],
     resizeData: Option[DragData],
-    mouseIsOver: Boolean
+    mouseIsOver: Boolean,
+    magnification: Int
 ):
 
   def update[A](
@@ -31,7 +32,7 @@ final case class WindowViewModel(
 
 object WindowViewModel:
 
-  def initial(id: WindowId): WindowViewModel =
+  def initial(id: WindowId, magnification: Int): WindowViewModel =
     WindowViewModel(
       id,
       0,
@@ -40,7 +41,8 @@ object WindowViewModel:
       Bounds.zero,
       None,
       None,
-      false
+      false,
+      magnification
     )
 
   def makeWindowTerminal[A](

@@ -46,7 +46,7 @@ object UIScene extends Scene[Size, Model, ViewModel]:
       val updated =
         model.windowManager.update(
           UiContext(
-            unitFrameContext(context.frameContext),
+            context.frameContext,
             Model.defaultCharSheet
           ),
           e
@@ -62,7 +62,7 @@ object UIScene extends Scene[Size, Model, ViewModel]:
     case e =>
       val updated = viewModel.windowManager.update(
         UiContext(
-          unitFrameContext(context.frameContext),
+          context.frameContext,
           Model.defaultCharSheet
         ),
         model.windowManager,
@@ -79,10 +79,9 @@ object UIScene extends Scene[Size, Model, ViewModel]:
     WindowManager
       .present(
         UiContext(
-          unitFrameContext(context.frameContext),
+          context.frameContext,
           Model.defaultCharSheet
         ),
-        RogueLikeGame.magnification,
         model.windowManager,
         viewModel.windowManager
       )
@@ -97,6 +96,3 @@ object UIScene extends Scene[Size, Model, ViewModel]:
             .moveTo(0, 260)
         ) |+| windowsSUF
       }
-
-  private def unitFrameContext(context: FrameContext[Size]): FrameContext[Unit] =
-    new FrameContext[Unit](context.gameTime, context.dice, context.inputState, context.boundaryLocator, ())

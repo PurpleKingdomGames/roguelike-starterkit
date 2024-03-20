@@ -227,7 +227,6 @@ object Window:
 
   def present[A](
       context: UiContext,
-      globalMagnification: Int,
       model: WindowModel[A],
       viewModel: WindowViewModel
   ): Outcome[SceneUpdateFragment] =
@@ -243,7 +242,7 @@ object Window:
               _.withBlendMaterial(
                 LayerMask(
                   viewModel.contentRectangle
-                    .toScreenSpace(context.charSheet.size * globalMagnification)
+                    .toScreenSpace(context.charSheet.size * viewModel.magnification)
                 )
               )
             )

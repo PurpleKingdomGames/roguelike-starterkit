@@ -8,7 +8,7 @@ import roguelikestarterkit.ui.datatypes.UiContext
 // TODO: Bring back startUpData as a type param.
 final case class WindowManager(
     id: SubSystemId,
-    magnification: Int,
+    initialMagnification: Int,
     charSheet: CharSheet,
     windows: Batch[WindowModel[_]]
 ) extends SubSystem:
@@ -20,7 +20,7 @@ final case class WindowManager(
 
   def initialModel: Outcome[ModelHolder] =
     Outcome(
-      ModelHolder.initial(windows)
+      ModelHolder.initial(windows, initialMagnification)
     )
 
   def update(
@@ -30,13 +30,13 @@ final case class WindowManager(
     e =>
       for {
         updatedModel <- WindowManager.updateModel[Unit](
-          UiContext(toFrameContext(context), charSheet),
+          UiContext(context, charSheet),
           model.model
         )(e)
 
         updatedViewModel <-
           WindowManager.updateViewModel[Unit](
-            UiContext(toFrameContext(context), charSheet),
+            UiContext(context, charSheet),
             updatedModel,
             model.viewModel
           )(e)
@@ -47,8 +47,7 @@ final case class WindowManager(
       model: ModelHolder
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(
-      UiContext(toFrameContext(context), charSheet),
-      magnification,
+      UiContext(context, charSheet),
       model.model,
       model.viewModel
     )
@@ -60,26 +59,18 @@ final case class WindowManager(
   ): WindowManager =
     this.copy(windows = windows ++ windowModels)
 
-  private def toFrameContext(context: SubSystemFrameContext): FrameContext[Unit] =
-    FrameContext(
-      context.gameTime,
-      context.dice,
-      context.inputState,
-      context.boundaryLocator,
-      ()
-    )
-
 final case class ModelHolder(
-    model: WindowManagerModel[Unit],
-    viewModel: WindowManagerViewModel[Unit]
+    model: WindowManagerModel,
+    viewModel: WindowManagerViewModel
 )
 object ModelHolder:
   def initial(
-      windows: Batch[WindowModel[_]]
+      windows: Batch[WindowModel[_]],
+      magnification: Int
   ): ModelHolder =
     ModelHolder(
-      WindowManagerModel.initial[Unit].register(windows),
-      WindowManagerViewModel.initial[Unit]
+      WindowManagerModel.initial.register(windows),
+      WindowManagerViewModel.initial(magnification)
     )
 
 object WindowManager:
@@ -89,8 +80,8 @@ object WindowManager:
 
   def updateModel[A](
       context: UiContext,
-      model: WindowManagerModel[A]
-  ): GlobalEvent => Outcome[WindowManagerModel[A]] =
+      model: WindowManagerModel
+  ): GlobalEvent => Outcome[WindowManagerModel] =
     case WindowManagerEvent.Close(id) =>
       Outcome(model.close(id))
 
@@ -121,9 +112,12 @@ object WindowManager:
 
   def updateViewModel[A](
       context: UiContext,
-      model: WindowManagerModel[A],
-      viewModel: WindowManagerViewModel[A]
-  ): GlobalEvent => Outcome[WindowManagerViewModel[A]] =
+      model: WindowManagerModel,
+      viewModel: WindowManagerViewModel
+  ): GlobalEvent => Outcome[WindowManagerViewModel] =
+    case WindowManagerEvent.ChangeMagnification(next) =>
+      Outcome(viewModel.changeMagnification(next))
+
     case e =>
       val updated =
         val prunedVM = viewModel.prune(model)
@@ -132,7 +126,7 @@ object WindowManager:
           else
             prunedVM.windows.find(_.id == m.id) match
               case None =>
-                Batch(Outcome(WindowViewModel.initial(m.id)))
+                Batch(Outcome(WindowViewModel.initial(m.id, viewModel.magnification)))
 
               case Some(vm) =>
                 Batch(vm.update(context, m, e))
@@ -142,9 +136,8 @@ object WindowManager:
 
   def present[A](
       context: UiContext,
-      globalMagnification: Int,
-      model: WindowManagerModel[A],
-      viewModel: WindowManagerViewModel[A]
+      model: WindowManagerModel,
+      viewModel: WindowManagerViewModel
   ): Outcome[SceneUpdateFragment] =
     model.windows
       .filter(_.isOpen)
@@ -155,7 +148,7 @@ object WindowManager:
             Batch.empty
 
           case Some(vm) =>
-            Batch(Window.present(context, globalMagnification, m, vm))
+            Batch(Window.present(context, m, vm))
       }
       .sequence
       .map(

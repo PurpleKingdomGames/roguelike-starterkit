@@ -9,12 +9,12 @@ trait Component[A]:
   def bounds(model: A): Bounds
 
   def updateModel[StartupData, ContextData](
-      context: UiContext[StartupData, ContextData],
+      context: UiContext,
       model: A
   ): GlobalEvent => Outcome[A]
 
   def present[StartupData, ContextData](
-      context: UiContext[StartupData, ContextData],
+      context: UiContext,
       model: A
   ): Outcome[ComponentFragment]
 

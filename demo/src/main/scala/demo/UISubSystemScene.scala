@@ -4,13 +4,13 @@ import indigo.*
 import indigo.scenes.*
 import roguelikestarterkit.*
 
-object UIScene extends Scene[Size, Model, ViewModel]:
+object UISubSystemScene extends Scene[Size, Model, ViewModel]:
 
   type SceneModel     = Model
   type SceneViewModel = ViewModel
 
   val name: SceneName =
-    SceneName("UI scene")
+    SceneName("UI subsystem scene")
 
   val modelLens: Lens[Model, Model] =
     Lens.keepLatest
@@ -22,7 +22,18 @@ object UIScene extends Scene[Size, Model, ViewModel]:
     EventFilters.Permissive
 
   val subSystems: Set[SubSystem] =
-    Set()
+    Set(
+      WindowManager(
+        SubSystemId("window manager"),
+        RogueLikeGame.magnification,
+        charSheet = Model.defaultCharSheet
+      )
+        .register(
+          ColourWindow.window(
+            Model.defaultCharSheet
+          )
+        )
+    )
 
   def updateModel(
       context: SceneContext[Size],
@@ -42,57 +53,19 @@ object UIScene extends Scene[Size, Model, ViewModel]:
       println("Mouse out window: " + id)
       Outcome(model)
 
-    case e =>
-      val updated =
-        model.windowManager.update(
-          UiContext(
-            context.frameContext,
-            Model.defaultCharSheet
-          ),
-          e
-        )
-
-      updated.map(w => model.copy(windowManager = w))
+    case _ =>
+      Outcome(model)
 
   def updateViewModel(
       context: SceneContext[Size],
       model: Model,
       viewModel: ViewModel
   ): GlobalEvent => Outcome[ViewModel] =
-    case e =>
-      val updated = viewModel.windowManager.update(
-        UiContext(
-          context.frameContext,
-          Model.defaultCharSheet
-        ),
-        model.windowManager,
-        e
-      )
-
-      updated.map(w => viewModel.copy(windowManager = w))
+    _ => Outcome(viewModel)
 
   def present(
       context: SceneContext[Size],
       model: Model,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
-    WindowManager
-      .present(
-        UiContext(
-          context.frameContext,
-          Model.defaultCharSheet
-        ),
-        model.windowManager,
-        viewModel.windowManager
-      )
-      .map { windowsSUF =>
-        SceneUpdateFragment(
-          TextBox(
-            "Mouse over: " +
-              viewModel.windowManager.mouseIsOverAnyWindow + ", " +
-              viewModel.windowManager.mouseIsOver.mkString("[", ",", "]")
-          )
-            .withTextStyle(TextStyle.default.withColor(RGBA.White).withSize(Pixels(12)))
-            .moveTo(0, 260)
-        ) |+| windowsSUF
-      }
+    Outcome(SceneUpdateFragment.empty)

@@ -11,14 +11,14 @@ class ComponentGroupTests extends munit.FunSuite {
   given Component[String] = new Component[String] {
     def bounds(model: String): Bounds = Bounds(0, 0, model.length, 1)
 
-    def updateModel[StartupData, ContextData](
-        context: UiContext[StartupData, ContextData],
+    def updateModel(
+        context: UiContext,
         model: String
     ): GlobalEvent => Outcome[String] =
       _ => Outcome(model)
 
-    def present[StartupData, ContextData](
-        context: UiContext[StartupData, ContextData],
+    def present(
+        context: UiContext,
         model: String
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)

@@ -16,22 +16,23 @@ final case class WindowViewModel(
     contentRectangle: Bounds,
     dragData: Option[DragData],
     resizeData: Option[DragData],
-    mouseIsOver: Boolean
+    mouseIsOver: Boolean,
+    magnification: Int
 ):
 
-  def update[StartupData, CA, A](
-      context: UiContext[StartupData, CA],
-      model: WindowModel[StartupData, CA, A],
+  def update[A](
+      context: UiContext,
+      model: WindowModel[A],
       event: GlobalEvent
   ): Outcome[WindowViewModel] =
     Window.updateViewModel(context, model, this)(event)
 
-  def resize[StartupData, CA, A](model: WindowModel[StartupData, CA, A]): WindowViewModel =
+  def resize[A](model: WindowModel[A]): WindowViewModel =
     this.copy(terminal = WindowViewModel.makeWindowTerminal(model, terminal))
 
 object WindowViewModel:
 
-  def initial(id: WindowId): WindowViewModel =
+  def initial(id: WindowId, magnification: Int): WindowViewModel =
     WindowViewModel(
       id,
       0,
@@ -40,11 +41,12 @@ object WindowViewModel:
       Bounds.zero,
       None,
       None,
-      false
+      false,
+      magnification
     )
 
-  def makeWindowTerminal[StartupData, CA, A](
-      model: WindowModel[StartupData, CA, A],
+  def makeWindowTerminal[A](
+      model: WindowModel[A],
       current: RogueTerminalEmulator
   ): RogueTerminalEmulator =
     val validSize =

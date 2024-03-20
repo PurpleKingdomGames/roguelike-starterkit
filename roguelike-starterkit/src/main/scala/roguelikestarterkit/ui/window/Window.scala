@@ -11,13 +11,13 @@ import roguelikestarterkit.ui.shaders.LayerMask
 
 object Window:
 
-  private val graphic10x10: Graphic[TerminalMaterial] =
+  private val graphic: Graphic[TerminalMaterial] =
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
-  def updateModel[StartupData, CA, A](
-      context: UiContext[StartupData, CA],
-      model: WindowModel[StartupData, CA, A]
-  ): GlobalEvent => Outcome[WindowModel[StartupData, CA, A]] =
+  def updateModel[A](
+      context: UiContext,
+      model: WindowModel[A]
+  ): GlobalEvent => Outcome[WindowModel[A]] =
     case WindowEvent.MoveBy(id, dragData) if model.id == id =>
       Outcome(
         model.copy(
@@ -56,9 +56,9 @@ object Window:
   def calculateDragBy(charSize: Int, mousePosition: Point, windowPosition: Coords): Coords =
     Coords(mousePosition / charSize) - windowPosition
 
-  def redraw[StartupData, CA, A](
-      context: UiContext[StartupData, CA],
-      model: WindowModel[StartupData, CA, A],
+  def redraw[A](
+      context: UiContext,
+      model: WindowModel[A],
       viewModel: WindowViewModel
   ): WindowViewModel =
     val tempModel =
@@ -82,7 +82,7 @@ object Window:
         tempModel.bounds.coords.toScreenSpace(model.charSheet.size),
         model.charSheet.charCrops
       ) { case (fg, bg) =>
-        graphic10x10.withMaterial(TerminalMaterial(model.charSheet.assetName, fg, bg))
+        graphic.withMaterial(TerminalMaterial(model.charSheet.assetName, fg, bg))
       }
 
     val b = tempModel.bounds
@@ -103,9 +103,9 @@ object Window:
       contentRectangle = contentRectangle
     )
 
-  def updateViewModel[StartupData, CA, A](
-      context: UiContext[StartupData, CA],
-      model: WindowModel[StartupData, CA, A],
+  def updateViewModel[A](
+      context: UiContext,
+      model: WindowModel[A],
       viewModel: WindowViewModel
   ): GlobalEvent => Outcome[WindowViewModel] =
     case FrameTick
@@ -225,10 +225,9 @@ object Window:
     case _ =>
       Outcome(viewModel)
 
-  def present[StartupData, CA, A](
-      context: UiContext[StartupData, CA],
-      globalMagnification: Int,
-      model: WindowModel[StartupData, CA, A],
+  def present[A](
+      context: UiContext,
+      model: WindowModel[A],
       viewModel: WindowViewModel
   ): Outcome[SceneUpdateFragment] =
     model
@@ -243,7 +242,7 @@ object Window:
               _.withBlendMaterial(
                 LayerMask(
                   viewModel.contentRectangle
-                    .toScreenSpace(context.charSheet.size * globalMagnification)
+                    .toScreenSpace(context.charSheet.size * viewModel.magnification)
                 )
               )
             )

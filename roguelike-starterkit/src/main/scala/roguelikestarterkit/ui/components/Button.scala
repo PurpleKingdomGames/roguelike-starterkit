@@ -46,8 +46,8 @@ object Button:
     def bounds(model: Button): Bounds =
       model.bounds
 
-    def updateModel[StartupData, ContextData](
-        context: UiContext[StartupData, ContextData],
+    def updateModel(
+        context: UiContext,
         model: Button
     ): GlobalEvent => Outcome[Button] =
       case FrameTick =>
@@ -67,8 +67,8 @@ object Button:
       case _ =>
         Outcome(model)
 
-    def present[StartupData, ContextData](
-        context: UiContext[StartupData, ContextData],
+    def present(
+        context: UiContext,
         model: Button
     ): Outcome[ComponentFragment] =
       model.state match

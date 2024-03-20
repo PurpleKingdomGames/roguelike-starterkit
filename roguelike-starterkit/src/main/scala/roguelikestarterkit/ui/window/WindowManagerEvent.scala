@@ -13,3 +13,4 @@ enum WindowManagerEvent extends GlobalEvent:
   case Move(id: WindowId, position: Coords)
   case Resize(id: WindowId, dimensions: Dimensions)
   case Transform(id: WindowId, bounds: Bounds)
+  case ChangeMagnification(newMagnification: Int)

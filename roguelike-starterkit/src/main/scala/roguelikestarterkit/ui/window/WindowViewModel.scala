@@ -19,14 +19,14 @@ final case class WindowViewModel(
     mouseIsOver: Boolean
 ):
 
-  def update[StartupData, CA, A](
+  def update[A](
       context: UiContext,
-      model: WindowModel[StartupData, CA, A],
+      model: WindowModel[A],
       event: GlobalEvent
   ): Outcome[WindowViewModel] =
     Window.updateViewModel(context, model, this)(event)
 
-  def resize[StartupData, CA, A](model: WindowModel[StartupData, CA, A]): WindowViewModel =
+  def resize[A](model: WindowModel[A]): WindowViewModel =
     this.copy(terminal = WindowViewModel.makeWindowTerminal(model, terminal))
 
 object WindowViewModel:
@@ -43,8 +43,8 @@ object WindowViewModel:
       false
     )
 
-  def makeWindowTerminal[StartupData, CA, A](
-      model: WindowModel[StartupData, CA, A],
+  def makeWindowTerminal[A](
+      model: WindowModel[A],
       current: RogueTerminalEmulator
   ): RogueTerminalEmulator =
     val validSize =

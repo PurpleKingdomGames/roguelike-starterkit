@@ -38,7 +38,7 @@ object ColourWindow:
 
   def window(
       charSheet: CharSheet
-  ): WindowModel[Unit, Unit, ColorPalette] =
+  ): WindowModel[ColorPalette] =
     WindowModel(
       windowId,
       charSheet,

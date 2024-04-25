@@ -14,14 +14,14 @@ import scala.annotation.tailrec
 final case class ComponentGroup(
     bounds: Bounds,
     layout: ComponentLayout,
-    components: Batch[ComponentEntry[_]]
+    components: Batch[ComponentEntry[?]]
 ):
 
   extension (b: Bounds)
     def withPadding(p: Padding): Bounds =
       b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
 
-  def nextOffset(components: Batch[ComponentEntry[_]]): Coords =
+  def nextOffset(components: Batch[ComponentEntry[?]]): Coords =
     layout match
       case ComponentLayout.None =>
         Coords.zero
@@ -60,7 +60,7 @@ final case class ComponentGroup(
           .getOrElse(Coords(padding.left, padding.top))
 
   def reflow: ComponentGroup =
-    val newComponents = components.foldLeft(Batch.empty[ComponentEntry[_]]) { (acc, entry) =>
+    val newComponents = components.foldLeft(Batch.empty[ComponentEntry[?]]) { (acc, entry) =>
       val reflowed = entry.copy(
         offset = nextOffset(acc),
         model = entry.component.reflow(entry.model)

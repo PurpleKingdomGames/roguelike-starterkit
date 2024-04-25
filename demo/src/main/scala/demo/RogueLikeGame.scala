@@ -28,7 +28,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[Size]] =
+  def boot(flags: Map[String, String]): Outcome[BootResult[Size, Model]] =
     Outcome(
       BootResult(
         Config.config.withMagnification(magnification),

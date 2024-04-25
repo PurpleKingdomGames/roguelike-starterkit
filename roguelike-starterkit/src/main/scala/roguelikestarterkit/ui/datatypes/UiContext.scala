@@ -32,7 +32,7 @@ final case class UiContext(
 object UiContext:
 
   def apply(
-      frameContext: FrameContext[_],
+      frameContext: FrameContext[?],
       charSheet: CharSheet
   ): UiContext =
     val mouseCoords = Coords(frameContext.mouse.position / charSheet.size.toPoint)
@@ -47,7 +47,7 @@ object UiContext:
     )
 
   def apply(
-      subSystemFrameContext: SubSystemFrameContext,
+      subSystemFrameContext: SubSystemFrameContext[?],
       charSheet: CharSheet
   ): UiContext =
     val mouseCoords = Coords(subSystemFrameContext.mouse.position / charSheet.size.toPoint)
@@ -62,7 +62,7 @@ object UiContext:
     )
 
   def apply(
-      sceneContext: SceneContext[_],
+      sceneContext: SceneContext[?],
       charSheet: CharSheet
   ): UiContext =
     val mouseCoords = Coords(sceneContext.mouse.position / charSheet.size.toPoint)

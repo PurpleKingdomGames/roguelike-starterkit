@@ -5,18 +5,22 @@ import indigo.shared.FrameContext
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.UiContext
 
-final case class WindowManager[StartUpData](
+final case class WindowManager[StartUpData, Model](
     id: SubSystemId,
     initialMagnification: Int,
     charSheet: CharSheet,
     startUpData: StartUpData,
-    windows: Batch[WindowModel[_]]
-) extends SubSystem:
+    windows: Batch[WindowModel[?]]
+) extends SubSystem[Model]:
   type EventType      = GlobalEvent
   type SubSystemModel = ModelHolder
+  type ReferenceData  = Unit
 
   def eventFilter: GlobalEvent => Option[GlobalEvent] =
     e => Some(e)
+
+  def reference(model: Model): ReferenceData =
+    ()
 
   def initialModel: Outcome[ModelHolder] =
     Outcome(
@@ -24,7 +28,7 @@ final case class WindowManager[StartUpData](
     )
 
   def update(
-      context: SubSystemFrameContext,
+      context: SubSystemFrameContext[ReferenceData],
       model: ModelHolder
   ): GlobalEvent => Outcome[ModelHolder] =
     e =>
@@ -43,7 +47,7 @@ final case class WindowManager[StartUpData](
       } yield ModelHolder(updatedModel, updatedViewModel)
 
   def present(
-      context: SubSystemFrameContext,
+      context: SubSystemFrameContext[ReferenceData],
       model: ModelHolder
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(
@@ -52,11 +56,11 @@ final case class WindowManager[StartUpData](
       model.viewModel
     )
 
-  def register(windowModels: WindowModel[_]*): WindowManager[StartUpData] =
+  def register(windowModels: WindowModel[?]*): WindowManager[StartUpData, Model] =
     register(Batch.fromSeq(windowModels))
   def register(
-      windowModels: Batch[WindowModel[_]]
-  ): WindowManager[StartUpData] =
+      windowModels: Batch[WindowModel[?]]
+  ): WindowManager[StartUpData, Model] =
     this.copy(windows = windows ++ windowModels)
 
 final case class ModelHolder(
@@ -65,7 +69,7 @@ final case class ModelHolder(
 )
 object ModelHolder:
   def initial(
-      windows: Batch[WindowModel[_]],
+      windows: Batch[WindowModel[?]],
       magnification: Int
   ): ModelHolder =
     ModelHolder(
@@ -75,15 +79,15 @@ object ModelHolder:
 
 object WindowManager:
 
-  def apply(id: SubSystemId, magnification: Int, charSheet: CharSheet): WindowManager[Unit] =
+  def apply[Model](id: SubSystemId, magnification: Int, charSheet: CharSheet): WindowManager[Unit, Model] =
     WindowManager(id, magnification, charSheet, (), Batch.empty)
 
-  def apply[StartUpData](
+  def apply[StartUpData, Model](
       id: SubSystemId,
       magnification: Int,
       charSheet: CharSheet,
       startUpData: StartUpData
-  ): WindowManager[StartUpData] =
+  ): WindowManager[StartUpData, Model] =
     WindowManager(id, magnification, charSheet, startUpData, Batch.empty)
 
   def updateModel[A](

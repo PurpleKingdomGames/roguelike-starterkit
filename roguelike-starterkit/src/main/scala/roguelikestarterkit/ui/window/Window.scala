@@ -239,12 +239,18 @@ object Window:
         val masked =
           cm.copy(layers =
             cm.layers.map(
-              _.withBlendMaterial(
-                LayerMask(
-                  viewModel.contentRectangle
-                    .toScreenSpace(context.charSheet.size * viewModel.magnification)
-                )
-              )
+              _.modifyLayer {
+                case l: Layer.Content =>
+                  l.withBlendMaterial(
+                    LayerMask(
+                      viewModel.contentRectangle
+                        .toScreenSpace(context.charSheet.size * viewModel.magnification)
+                    )
+                  )
+
+                case l =>
+                  l
+              }
             )
           )
 

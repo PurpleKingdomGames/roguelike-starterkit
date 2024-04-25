@@ -4,8 +4,8 @@ import scala.language.postfixOps
 import sbtwelcome._
 import indigoplugin._
 
-val scala3Version              = "3.3.1"
-val indigoVersion              = "0.16.0"
+val scala3Version              = "3.4.1"
+val indigoVersion              = "0.16.1-SNAPSHOT"
 val roguelikeStarterKitVersion = "0.5.1-SNAPSHOT"
 
 Global / onChangedBuildSource                              := ReloadOnSourceChanges

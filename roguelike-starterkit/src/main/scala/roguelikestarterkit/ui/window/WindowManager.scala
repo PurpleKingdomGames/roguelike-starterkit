@@ -68,6 +68,11 @@ final case class WindowManager[StartUpData, Model, RefData](
   ): WindowManager[StartUpData, Model, ReferenceData] =
     this.copy(windows = windows ++ windowModels)
 
+  def open(ids: WindowId*): WindowManager[StartUpData, Model, ReferenceData] =
+    open(Batch.fromSeq(ids))
+  def open(ids: Batch[WindowId]): WindowManager[StartUpData, Model, ReferenceData] =
+    this.copy(windows = windows.map(w => if ids.exists(_ == w.id) then w.open else w))
+
   def withStartupData[A](newStartupData: A): WindowManager[A, Model, ReferenceData] =
     WindowManager(
       id,
@@ -81,20 +86,6 @@ final case class WindowManager[StartUpData, Model, RefData](
 
   def withLayerKey(newLayerKey: BindingKey): WindowManager[StartUpData, Model, ReferenceData] =
     this.copy(layerKey = Option(newLayerKey))
-
-final case class ModelHolder[ReferenceData](
-    model: WindowManagerModel[ReferenceData],
-    viewModel: WindowManagerViewModel[ReferenceData]
-)
-object ModelHolder:
-  def initial[ReferenceData](
-      windows: Batch[WindowModel[?, ReferenceData]],
-      magnification: Int
-  ): ModelHolder[ReferenceData] =
-    ModelHolder(
-      WindowManagerModel.initial.register(windows),
-      WindowManagerViewModel.initial(magnification)
-    )
 
 object WindowManager:
 
@@ -239,3 +230,17 @@ object WindowManager:
       viewModel: WindowManagerViewModel[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
     present(Option(layerKey), context, model, viewModel)
+
+final case class ModelHolder[ReferenceData](
+    model: WindowManagerModel[ReferenceData],
+    viewModel: WindowManagerViewModel[ReferenceData]
+)
+object ModelHolder:
+  def initial[ReferenceData](
+      windows: Batch[WindowModel[?, ReferenceData]],
+      magnification: Int
+  ): ModelHolder[ReferenceData] =
+    ModelHolder(
+      WindowManagerModel.initial.register(windows),
+      WindowManagerViewModel.initial(magnification)
+    )

@@ -1,5 +1,8 @@
 package roguelikestarterkit.ui.component
 
+/** `ComponentLayout` instructs a `ComponentGroup` how it should layout the components it contains.
+  * They are always placed one after another, optionally with some padding.
+  */
 enum ComponentLayout:
   case None
   case Horizontal(padding: Padding, overflow: Overflow)
@@ -25,6 +28,8 @@ object ComponentLayout:
 
     extension (h: Vertical) def withPadding(value: Padding): Vertical = h.copy(padding = value)
 
+/** Describes the padding between components.
+  */
 final case class Padding(top: Int, right: Int, bottom: Int, left: Int):
   def withTop(amount: Int): Padding        = this.copy(top = amount)
   def withRight(amount: Int): Padding      = this.copy(right = amount)
@@ -51,5 +56,8 @@ object Padding:
   def horizontal(amount: Int): Padding = Padding(0, amount, 0, amount)
   def verticl(amount: Int): Padding    = Padding(amount, 0, amount, 0)
 
+/** Overflow describes what to do in the event that a component's layout position is beyond the
+  * bounds of the `ComponentGroup`.
+  */
 enum Overflow:
   case Hidden, Wrap

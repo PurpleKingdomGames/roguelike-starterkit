@@ -4,6 +4,9 @@ import indigo.shared.collections.Batch
 import indigo.shared.scenegraph.CloneBlank
 import indigo.shared.scenegraph.SceneNode
 
+/** ComponentFragments represent the nodes and clone instances used for rendering a component. They
+  * are like a cut-down version of a `SceneUpdateFragment`.
+  */
 final case class ComponentFragment(
     nodes: Batch[SceneNode],
     cloneBlanks: Batch[CloneBlank]

@@ -8,6 +8,9 @@ import roguelikestarterkit.ui.datatypes.UiContext
 
 import scala.annotation.tailrec
 
+/** Encapsulates a collection of components and describes and manages their layout, as well as
+  * propagating update and presention calls.
+  */
 final case class ComponentGroup(
     bounds: Bounds,
     layout: ComponentLayout,

@@ -72,8 +72,7 @@ final case class ComponentGroup(
 
     this.copy(components = newComponents)
 
-  // TODO: We'll need a way for the Window to propagate change too. Maybe another typeclass?
-  def propagatedChange(parentBounds: Bounds): ComponentGroup =
+  def cascade(parentBounds: Bounds): ComponentGroup =
     val newBounds =
       boundsType match
         case BoundsType.Fixed =>
@@ -102,9 +101,20 @@ final case class ComponentGroup(
             (parentBounds.height.toDouble * height).toInt
           )
 
-    withBounds(newBounds).copy(
-      components = components.map(_.propagatedChange(newBounds))
-    ).reflow
+        case BoundsType.Offset(amountPosition, amountSize) =>
+          Bounds(parentBounds.coords + amountPosition, parentBounds.dimensions + amountSize)
+
+        case BoundsType.OffsetPosition(amount) =>
+          bounds.withPosition(parentBounds.coords + amount)
+
+        case BoundsType.OffsetSize(amount) =>
+          bounds.withDimensions(parentBounds.dimensions + amount)
+
+    withBounds(newBounds)
+      .copy(
+        components = components.map(_.cascade(newBounds))
+      )
+      .reflow
 
   def add[A](entry: A)(using c: Component[A]): ComponentGroup =
     this.copy(components = components :+ ComponentEntry(nextOffset(components), entry, c))
@@ -146,8 +156,31 @@ final case class ComponentGroup(
   def withBounds(value: Bounds): ComponentGroup =
     this.copy(bounds = value).reflow
 
-  def withBoundsTyoe(value: BoundsType): ComponentGroup =
+  def withBoundsType(value: BoundsType): ComponentGroup =
     this.copy(boundsType = value).reflow
+
+  def fixedBounds: ComponentGroup =
+    withBoundsType(BoundsType.Fixed)
+  def inheritBounds: ComponentGroup =
+    withBoundsType(BoundsType.Inherit)
+  def relative(x: Double, y: Double, width: Double, height: Double): ComponentGroup =
+    withBoundsType(BoundsType.Relative(x, y, width, height))
+  def relativePosition(x: Double, y: Double): ComponentGroup =
+    withBoundsType(BoundsType.RelativePosition(x, y))
+  def relativeSize(width: Double, height: Double): ComponentGroup =
+    withBoundsType(BoundsType.RelativeSize(width, height))
+  def offset(amountPosition: Coords, amountSize: Dimensions): ComponentGroup =
+    withBoundsType(BoundsType.Offset(amountPosition, amountSize))
+  def offset(x: Int, y: Int, width: Int, height: Int): ComponentGroup =
+    offset(Coords(x, y), Dimensions(width, height))
+  def offsetPosition(amount: Coords): ComponentGroup =
+    withBoundsType(BoundsType.OffsetPosition(amount))
+  def offsetPosition(x: Int, y: Int): ComponentGroup =
+    offsetPosition(Coords(x, y))
+  def offsetSize(amount: Dimensions): ComponentGroup =
+    withBoundsType(BoundsType.OffsetSize(amount))
+  def offsetSize(width: Int, height: Int): ComponentGroup =
+    offsetSize(Dimensions(width, height))
 
   def withLayout(value: ComponentLayout): ComponentGroup =
     this.copy(layout = value).reflow
@@ -203,5 +236,5 @@ object ComponentGroup:
       }
       model.reflow.copy(components = reflowed)
 
-    def propagatedChange(model: ComponentGroup, parentBounds: Bounds): ComponentGroup =
-      model.propagatedChange(parentBounds)
+    def cascade(model: ComponentGroup, parentBounds: Bounds): ComponentGroup =
+      model.cascade(parentBounds)

@@ -32,7 +32,14 @@ final case class WindowModel[A, ReferenceData](
     this.copy(id = value)
 
   def withBounds(value: Bounds): WindowModel[A, ReferenceData] =
-    this.copy(bounds = value)
+    val withNewBounds = this.copy(bounds = value)
+
+    withNewBounds.copy(
+      contentModel = windowContent.onContentAreaBoundsChange(
+        contentModel,
+        Window.calculateContentRectangle(value, withNewBounds)
+      )
+    )
 
   def withPosition(value: Coords): WindowModel[A, ReferenceData] =
     withBounds(bounds.moveTo(value))

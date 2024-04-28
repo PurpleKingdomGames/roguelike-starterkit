@@ -38,16 +38,7 @@ object Window:
       ).addGlobalEvents(WindowEvent.Resized(id))
 
     case e =>
-      val b = model.bounds
-      val contentRectangle =
-        if model.title.isDefined then
-          b
-            .resize((b.dimensions - Dimensions(2, 4)).max(Dimensions.zero))
-            .moveTo(b.coords + Coords(1, 3))
-        else
-          b
-            .resize((b.dimensions - Dimensions(2, 2)).max(Dimensions.zero))
-            .moveTo(b.coords + Coords(1, 1))
+      val contentRectangle = calculateContentRectangle(model.bounds, model)
 
       model.windowContent
         .updateModel(context.copy(bounds = contentRectangle), model.contentModel)(e)
@@ -55,6 +46,19 @@ object Window:
 
   def calculateDragBy(charSize: Int, mousePosition: Point, windowPosition: Coords): Coords =
     Coords(mousePosition / charSize) - windowPosition
+
+  def calculateContentRectangle[StartupData, CA, A](
+      workingBounds: Bounds,
+      model: WindowModel[StartupData, CA, A]
+  ): Bounds =
+    if model.title.isDefined then
+      workingBounds
+        .resize((workingBounds.dimensions - Dimensions(2, 4)).max(Dimensions.zero))
+        .moveTo(workingBounds.coords + Coords(1, 3))
+    else
+      workingBounds
+        .resize((workingBounds.dimensions - Dimensions(2, 2)).max(Dimensions.zero))
+        .moveTo(workingBounds.coords + Coords(1, 1))
 
   def redraw[A, ReferenceData](
       context: UiContext[ReferenceData],
@@ -85,17 +89,8 @@ object Window:
         graphic.withMaterial(TerminalMaterial(model.charSheet.assetName, fg, bg))
       }
 
-    val b = tempModel.bounds
-
     val contentRectangle =
-      if model.title.isDefined then
-        b
-          .resize((b.dimensions - Dimensions(2, 4)).max(Dimensions.zero))
-          .moveTo(b.coords + Coords(1, 3))
-      else
-        b
-          .resize((b.dimensions - Dimensions(2, 2)).max(Dimensions.zero))
-          .moveTo(b.coords + Coords(1, 1))
+      calculateContentRectangle(tempModel.bounds, model)
 
     vm.copy(
       terminalClones = clones,

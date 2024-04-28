@@ -25,6 +25,9 @@ class ComponentGroupTests extends munit.FunSuite {
 
     def reflow(model: String): String =
       model
+
+    def propagatedChange(model: String, parentBounds: Bounds): String =
+      model
   }
 
   test("reflow should reapply the layout to all existing components") {
@@ -32,6 +35,7 @@ class ComponentGroupTests extends munit.FunSuite {
     val component2 = ComponentEntry(Coords(10, 10), "def", summon[Component[String]])
     val group = ComponentGroup(
       Bounds(0, 0, 100, 100),
+      BoundsType.Fixed,
       ComponentLayout.Horizontal(Padding(5), Overflow.Wrap),
       Batch(component1, component2)
     )

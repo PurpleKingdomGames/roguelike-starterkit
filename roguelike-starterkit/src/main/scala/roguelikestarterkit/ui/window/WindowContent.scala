@@ -23,9 +23,10 @@ trait WindowContent[A]:
       model: A
   ): Outcome[SceneUpdateFragment]
 
-  /** Called when the window's content area bounds changes.
+  /** Called when the window's content area bounds changes, gives the model an opportunity to
+    * respond to the new content area.
     */
-  def onContentAreaBoundsChange(model: A, newBounds: Bounds): A
+  def cascade(model: A, newBounds: Bounds): A
 
 object WindowContent:
 
@@ -43,7 +44,7 @@ object WindowContent:
     ): Outcome[SceneUpdateFragment] =
       Outcome(SceneUpdateFragment.empty)
 
-    def onContentAreaBoundsChange(model: Unit, newBounds: Bounds): Unit =
+    def cascade(model: Unit, newBounds: Bounds): Unit =
       model
 
   given WindowContent[ComponentGroup] with
@@ -60,5 +61,5 @@ object WindowContent:
     ): Outcome[SceneUpdateFragment] =
       model.present(context).map(_.toSceneUpdateFragment)
 
-    def onContentAreaBoundsChange(model: ComponentGroup, newBounds: Bounds): ComponentGroup =
-      model.propagatedChange(newBounds)
+    def cascade(model: ComponentGroup, newBounds: Bounds): ComponentGroup =
+      model.cascade(newBounds)

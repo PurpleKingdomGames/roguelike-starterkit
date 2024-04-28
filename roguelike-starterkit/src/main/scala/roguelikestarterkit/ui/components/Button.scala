@@ -78,7 +78,7 @@ object Button:
     def reflow(model: Button): Button =
       model
 
-    def propagatedChange(model: Button, parentBounds: Bounds): Button =
+    def cascade(model: Button, parentBounds: Bounds): Button =
       model
 
 enum ButtonState:

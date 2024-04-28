@@ -35,7 +35,7 @@ final case class WindowModel[A, ReferenceData](
     val withNewBounds = this.copy(bounds = value)
 
     withNewBounds.copy(
-      contentModel = windowContent.onContentAreaBoundsChange(
+      contentModel = windowContent.cascade(
         contentModel,
         Window.calculateContentRectangle(value, withNewBounds)
       )

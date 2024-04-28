@@ -26,7 +26,7 @@ class ComponentGroupTests extends munit.FunSuite {
     def reflow(model: String): String =
       model
 
-    def propagatedChange(model: String, parentBounds: Bounds): String =
+    def cascade(model: String, parentBounds: Bounds): String =
       model
   }
 

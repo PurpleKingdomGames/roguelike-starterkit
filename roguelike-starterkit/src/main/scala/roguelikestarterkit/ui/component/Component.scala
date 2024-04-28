@@ -33,6 +33,6 @@ trait Component[A]:
   def reflow(model: A): A
 
   /** Informs the Component that something about its parent has changed in case it needs to take
-    * action.
+    * action. Currently the only cascaded change is the bounds.
     */
-  def propagatedChange(model: A, parentBounds: Bounds): A
+  def cascade(model: A, parentBounds: Bounds): A

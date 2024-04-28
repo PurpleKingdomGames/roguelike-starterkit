@@ -260,5 +260,5 @@ object ColorPalette:
         SceneUpdateFragment(c.nodes).addCloneBlanks(c.cloneBlanks)
       }
 
-    def onContentAreaBoundsChange(model: ColorPalette, newBounds: Bounds): ColorPalette =
+    def cascade(model: ColorPalette, newBounds: Bounds): ColorPalette =
       model

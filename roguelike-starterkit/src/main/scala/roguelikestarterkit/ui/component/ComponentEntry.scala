@@ -9,5 +9,5 @@ import roguelikestarterkit.ui.datatypes.Coords
   */
 final case class ComponentEntry[A](offset: Coords, model: A, component: Component[A]):
 
-  def propagatedChange(parentBounds: Bounds): ComponentEntry[A] =
-    this.copy(model = component.propagatedChange(model, parentBounds))
+  def cascade(parentBounds: Bounds): ComponentEntry[A] =
+    this.copy(model = component.cascade(model, parentBounds))

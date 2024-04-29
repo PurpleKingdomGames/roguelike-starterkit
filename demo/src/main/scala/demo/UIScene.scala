@@ -141,9 +141,11 @@ object ColourWindow {
       ColorPalette(
         ComponentGroup(Bounds(0, 0, 23, 23))
           .withLayout(ComponentLayout.Vertical())
+          .inheritBounds
           .add(
             ComponentGroup(Bounds(0, 0, 23, 10))
               .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
+              .offsetSize(0, -4)
               .add(
                 outrunner16.colors.map { rgba =>
                   Button(Bounds(0, 0, 3, 3))(presentSwatch(charSheet, rgba, None))
@@ -261,4 +263,6 @@ object ColorPalette:
       }
 
     def cascade(model: ColorPalette, newBounds: Bounds): ColorPalette =
-      model
+      model.copy(
+        components = model.components.cascade(newBounds)
+      )

@@ -162,19 +162,16 @@ class WindowModelTests extends munit.FunSuite:
 
   test("model cascades bounds changes to nested component groups") {
 
-    val group = ComponentGroup(
-      Bounds(0, 0, 100, 100),
-      BoundsType.Inherit,
-      ComponentLayout.Horizontal(Padding(5), Overflow.Wrap),
-      Batch(
-        ComponentGroup(
-          Bounds(0, 0, 100, 100),
-          BoundsType.Inherit,
-          ComponentLayout.Horizontal(Padding(5), Overflow.Wrap),
-          Batch(component)
+    val group =
+      ComponentGroup(Bounds(0, 0, 100, 100))
+        .withLayout(ComponentLayout.Horizontal(Padding(5), Overflow.Wrap))
+        .inheritBounds
+        .add(
+          ComponentGroup(Bounds(0, 0, 100, 100))
+            .withLayout(ComponentLayout.Horizontal(Padding(5), Overflow.Wrap))
+            .offset(2, 4, -2, -4)
+            .add(Bounds(0, 0, 0, 0))
         )
-      )
-    )
 
     val model: WindowModel[Unit, Unit, ComponentGroup] =
       WindowModel(
@@ -183,7 +180,29 @@ class WindowModelTests extends munit.FunSuite:
         group.inheritBounds
       ).withBounds(Bounds(0, 0, 40, 40))
 
+    // Window cascades to top level component group
     assertEquals(model.contentModel.bounds, Bounds(1, 1, 38, 38))
+
+    model.contentModel.components.headOption match
+      case None =>
+        fail("No sub components found")
+
+      case Some(value) =>
+        val cg = value.model.asInstanceOf[ComponentGroup]
+
+        // top comp group cascades to next level.
+        assertEquals(cg.bounds, Bounds(3, 5, 36, 34))
+
+        cg.components.headOption match
+          case None =>
+            fail("No sub components found 2")
+
+          case Some(value) =>
+            val b = value.model.asInstanceOf[Bounds]
+
+            // second comp group cascades to next level.
+            assertEquals(b.asInstanceOf[Bounds], Bounds(3, 5, 36, 34))
+
   }
 
   given Component[String] = new Component[String] {
@@ -206,4 +225,26 @@ class WindowModelTests extends munit.FunSuite:
 
     def cascade(model: String, parentBounds: Bounds): String =
       model
+  }
+
+  given Component[Bounds] = new Component[Bounds] {
+    def bounds(model: Bounds): Bounds = model
+
+    def updateModel[StartupData, ContextData](
+        context: UiContext[StartupData, ContextData],
+        model: Bounds
+    ): GlobalEvent => Outcome[Bounds] =
+      _ => Outcome(model)
+
+    def present[StartupData, ContextData](
+        context: UiContext[StartupData, ContextData],
+        model: Bounds
+    ): Outcome[ComponentFragment] =
+      Outcome(ComponentFragment.empty)
+
+    def reflow(model: Bounds): Bounds =
+      model
+
+    def cascade(model: Bounds, parentBounds: Bounds): Bounds =
+      parentBounds
   }

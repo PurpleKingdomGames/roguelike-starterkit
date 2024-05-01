@@ -8,14 +8,14 @@ class WindowModelTests extends munit.FunSuite:
 
   test("model cascades bounds changes") {
 
-    given WindowContent[Bounds] with
-      def updateModel[Unit](
+    given WindowContent[Bounds, Unit] with
+      def updateModel(
           context: UiContext[Unit],
           model: Bounds
       ): GlobalEvent => Outcome[Bounds] =
         _ => Outcome(model)
 
-      def present[Unit](
+      def present(
           context: UiContext[Unit],
           model: Bounds
       ): Outcome[Layer] =

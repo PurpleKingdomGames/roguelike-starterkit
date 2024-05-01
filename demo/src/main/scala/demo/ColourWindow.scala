@@ -145,9 +145,9 @@ object ColourWindow {
 final case class ColorPalette(components: ComponentGroup)
 object ColorPalette:
 
-  given WindowContent[ColorPalette] with
+  given WindowContent[ColorPalette, Unit] with
 
-    def updateModel[Unit](
+    def updateModel(
         context: UiContext[Unit],
         model: ColorPalette
     ): GlobalEvent => Outcome[ColorPalette] =
@@ -156,7 +156,7 @@ object ColorPalette:
           model.copy(components = c)
         }
 
-    def present[Unit](
+    def present(
         context: UiContext[Unit],
         model: ColorPalette
     ): Outcome[Layer] =

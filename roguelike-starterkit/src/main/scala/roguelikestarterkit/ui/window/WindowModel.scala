@@ -13,7 +13,7 @@ final case class WindowModel[A, ReferenceData](
     bounds: Bounds,
     title: Option[String],
     contentModel: A,
-    windowContent: WindowContent[A],
+    windowContent: WindowContent[A, ReferenceData],
     draggable: Boolean,
     resizable: Boolean,
     closeable: Boolean,
@@ -137,7 +137,7 @@ object WindowModel:
       id: WindowId,
       charSheet: CharSheet,
       content: A
-  )(using c: WindowContent[A]): WindowModel[A, ReferenceData] =
+  )(using c: WindowContent[A, ReferenceData]): WindowModel[A, ReferenceData] =
     WindowModel(
       id,
       charSheet,

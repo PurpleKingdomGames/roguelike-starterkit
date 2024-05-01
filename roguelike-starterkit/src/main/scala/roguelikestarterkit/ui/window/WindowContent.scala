@@ -7,18 +7,18 @@ import roguelikestarterkit.ComponentGroup
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.UiContext
 
-trait WindowContent[A]:
+trait WindowContent[A, ReferenceData]:
 
   /** Update this content's model.
     */
-  def updateModel[ReferenceData](
+  def updateModel(
       context: UiContext[ReferenceData],
       model: A
   ): GlobalEvent => Outcome[A]
 
   /** Produce a renderable output for this content base on the model
     */
-  def present[ReferenceData](
+  def present(
       context: UiContext[ReferenceData],
       model: A
   ): Outcome[Layer]
@@ -30,15 +30,15 @@ trait WindowContent[A]:
 
 object WindowContent:
 
-  given WindowContent[Unit] with
+  given [ReferenceData]: WindowContent[Unit, ReferenceData] with
 
-    def updateModel[ReferenceData](
+    def updateModel(
         context: UiContext[ReferenceData],
         model: Unit
     ): GlobalEvent => Outcome[Unit] =
       _ => Outcome(model)
 
-    def present[ReferenceData](
+    def present(
         context: UiContext[ReferenceData],
         model: Unit
     ): Outcome[Layer] =
@@ -47,15 +47,15 @@ object WindowContent:
     def cascade(model: Unit, newBounds: Bounds): Unit =
       model
 
-  given WindowContent[ComponentGroup] with
+  given [ReferenceData]: WindowContent[ComponentGroup, ReferenceData] with
 
-    def updateModel[ReferenceData](
+    def updateModel(
         context: UiContext[ReferenceData],
         model: ComponentGroup
     ): GlobalEvent => Outcome[ComponentGroup] =
       e => model.update(context)(e)
 
-    def present[ReferenceData](
+    def present(
         context: UiContext[ReferenceData],
         model: ComponentGroup
     ): Outcome[Layer] =

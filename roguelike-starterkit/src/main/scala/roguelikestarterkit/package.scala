@@ -113,7 +113,7 @@ val WindowViewModel: ui.window.WindowViewModel.type = ui.window.WindowViewModel
 type WindowEvent = ui.window.WindowEvent
 val WindowEvent: ui.window.WindowEvent.type = ui.window.WindowEvent
 
-type WindowContent[A] = ui.window.WindowContent[A]
+type WindowContent[A, ReferenceData] = ui.window.WindowContent[A, ReferenceData]
 val WindowContent: ui.window.WindowContent.type = ui.window.WindowContent
 
 // UI Components

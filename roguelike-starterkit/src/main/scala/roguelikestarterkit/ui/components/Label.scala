@@ -11,11 +11,19 @@ import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.UiContext
 
+import scala.annotation.targetName
+
 final case class Label(text: String, render: (Coords, String) => Outcome[ComponentFragment]):
   def withText(value: String): Label =
     this.copy(text = value)
 
 object Label:
+
+  /** Minimal label constructor with custom rendering function
+    */
+  @targetName("Label_apply_curried")
+  def apply(text: String)(present: (Coords, String) => Outcome[ComponentFragment]): Label =
+    Label(text, present)
 
   given Component[Label] with
     def bounds(model: Label): Bounds =

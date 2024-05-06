@@ -16,6 +16,8 @@ import roguelikestarterkit.ui.datatypes.UiContext
 
 import scala.annotation.targetName
 
+/** Labels are a simple `Component` that render text.
+  */
 final case class Label(text: String, render: (Coords, String) => Outcome[ComponentFragment]):
   def withText(value: String): Label =
     this.copy(text = value)
@@ -52,6 +54,9 @@ object Label:
     Outcome(ComponentFragment(terminal))
   }
 
+  /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with custom
+    * bounds
+    */
   def apply(text: String, theme: Theme): Label =
     Label(text, presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background))
 

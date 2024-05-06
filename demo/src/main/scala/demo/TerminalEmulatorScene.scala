@@ -25,9 +25,6 @@ object TerminalEmulatorScene extends Scene[Size, Model, ViewModel]:
     Set()
 
   def updateModel(context: SceneContext[Size], model: Model): GlobalEvent => Outcome[Model] =
-    case KeyboardEvent.KeyUp(Key.SPACE) =>
-      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(UISubSystemScene.name))
-
     case _ =>
       Outcome(model)
 

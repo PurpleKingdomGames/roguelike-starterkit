@@ -3,7 +3,7 @@ package demo
 import indigo.*
 import roguelikestarterkit.*
 
-object ColourWindow {
+object ColourWindow:
 
   final case class ColorPaletteReference(name: String, count: Int, colors: Batch[RGBA])
 
@@ -49,6 +49,7 @@ object ColourWindow {
               .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
               .offsetSize(0, -4)
               .add(
+                // Custom rendered buttons for the swatches
                 outrunner16.colors.map { rgba =>
                   Button(Bounds(0, 0, 3, 3))(presentSwatch(charSheet, rgba, None))
                     // .onClick(<Emit some event...>)
@@ -58,12 +59,17 @@ object ColourWindow {
               )
           )
           .add(
-            Button(Bounds(0, 0, 14, 3))(
-              presentButton(charSheet, "Load palette", RGBA.Silver, RGBA.Black)
+            // Default button renderer
+            Button(
+              "Load palette",
+              Button.Theme(
+                charSheet,
+                RGBA.Silver -> RGBA.Black,
+                RGBA.White  -> RGBA.Black,
+                RGBA.Black  -> RGBA.White,
+                hasBorder = true
+              )
             )
-              // .onClick(<Emit some event...>)
-              .presentOver(presentButton(charSheet, "Load palette", RGBA.White, RGBA.Black))
-              .presentDown(presentButton(charSheet, "Load palette", RGBA.Black, RGBA.White))
           )
       )
     )
@@ -103,44 +109,6 @@ object ColourWindow {
               )
         )
       )
-
-  def presentButton(
-      charSheet: CharSheet,
-      text: String,
-      fgColor: RGBA,
-      bgColor: RGBA
-  ): (Coords, Bounds) => Outcome[ComponentFragment] =
-    (offset, bounds) =>
-      val hBar = Batch.fill(text.length)("─").mkString
-      val size = bounds.dimensions.unsafeToSize
-
-      val terminal =
-        RogueTerminalEmulator(size)
-          .put(Point(0, 0), Tile.`┌`, fgColor, bgColor)
-          .put(Point(size.width - 1, 0), Tile.`┐`, fgColor, bgColor)
-          .put(Point(0, size.height - 1), Tile.`└`, fgColor, bgColor)
-          .put(Point(size.width - 1, size.height - 1), Tile.`┘`, fgColor, bgColor)
-          .put(Point(0, 1), Tile.`│`, fgColor, bgColor)
-          .put(Point(size.width - 1, 1), Tile.`│`, fgColor, bgColor)
-          .putLine(Point(1, 0), hBar, fgColor, bgColor)
-          .putLine(Point(1, 1), text, fgColor, bgColor)
-          .putLine(Point(1, 2), hBar, fgColor, bgColor)
-          .toCloneTiles(
-            CloneId("button"),
-            bounds.coords
-              .toScreenSpace(charSheet.size)
-              .moveBy(offset.toScreenSpace(charSheet.size)),
-            charSheet.charCrops
-          ) { case (fg, bg) =>
-            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-          }
-
-      Outcome(
-        ComponentFragment(
-          terminal.clones
-        ).addCloneBlanks(terminal.blanks)
-      )
-}
 
 final case class ColorPalette(components: ComponentGroup)
 object ColorPalette:

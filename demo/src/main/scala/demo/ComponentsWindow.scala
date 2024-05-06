@@ -73,6 +73,9 @@ object ComponentsWindow:
             Outcome(ComponentFragment(terminal))
           }
         )
+        .add(
+          Label("Terminal rendered label", Label.Theme(charSheet, RGBA.Magenta, RGBA.Cyan))
+        )
     )
       .withTitle("Components example")
       .moveTo(0, 0)

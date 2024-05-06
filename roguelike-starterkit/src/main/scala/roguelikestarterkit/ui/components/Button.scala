@@ -212,19 +212,19 @@ object Button:
 
   final case class Theme(
       charSheet: CharSheet,
-      up: Color,
-      over: Color,
-      down: Color,
+      up: TerminalTileColors,
+      over: TerminalTileColors,
+      down: TerminalTileColors,
       hasBorder: Boolean
   ):
     def withUp(foreground: RGBA, background: RGBA): Theme =
-      this.copy(up = Color(foreground, background))
+      this.copy(up = TerminalTileColors(foreground, background))
 
     def withOver(foreground: RGBA, background: RGBA): Theme =
-      this.copy(over = Color(foreground, background))
+      this.copy(over = TerminalTileColors(foreground, background))
 
     def withDown(foreground: RGBA, background: RGBA): Theme =
-      this.copy(down = Color(foreground, background))
+      this.copy(down = TerminalTileColors(foreground, background))
 
     def withBorder(value: Boolean): Theme =
       this.copy(hasBorder = value)
@@ -237,9 +237,9 @@ object Button:
     def apply(charSheet: CharSheet, foreground: RGBA, background: RGBA, hasBorder: Boolean): Theme =
       Theme(
         charSheet,
-        Color(foreground, background),
-        Color(foreground, background),
-        Color(foreground, background),
+        TerminalTileColors(foreground, background),
+        TerminalTileColors(foreground, background),
+        TerminalTileColors(foreground, background),
         hasBorder
       )
     def apply(charSheet: CharSheet, foreground: RGBA, background: RGBA): Theme =
@@ -262,9 +262,9 @@ object Button:
     ): Theme =
       Theme(
         charSheet,
-        Color(foregroundUp, backgroundUp),
-        Color(foregroundOver, backgroundOver),
-        Color(foregroundDown, backgroundDown),
+        TerminalTileColors(foregroundUp, backgroundUp),
+        TerminalTileColors(foregroundOver, backgroundOver),
+        TerminalTileColors(foregroundDown, backgroundDown),
         hasBorder
       )
     def apply(
@@ -296,9 +296,9 @@ object Button:
     ): Theme =
       Theme(
         charSheet,
-        Color(up._1, up._2),
-        Color(over._1, over._2),
-        Color(down._1, down._2),
+        TerminalTileColors(up._1, up._2),
+        TerminalTileColors(over._1, over._2),
+        TerminalTileColors(down._1, down._2),
         hasBorder
       )
     def apply(
@@ -314,12 +314,6 @@ object Button:
         down,
         false
       )
-
-  final case class Color(foreground: RGBA, background: RGBA):
-    def withForeground(value: RGBA): Color =
-      this.copy(foreground = value)
-    def withBackground(value: RGBA): Color =
-      this.copy(background = value)
 
 enum ButtonState:
   case Up, Over, Down

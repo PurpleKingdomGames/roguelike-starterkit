@@ -70,7 +70,7 @@ object Button:
         RogueTerminalEmulator(size)
           .putLine(Point.zero, label, fgColor, bgColor)
           .toCloneTiles(
-            CloneId("button"),
+            CloneId(s"button_${charSheet.assetName.toString}"),
             bounds.coords
               .toScreenSpace(charSheet.size)
               .moveBy(offset.toScreenSpace(charSheet.size)),
@@ -103,7 +103,7 @@ object Button:
           .putLine(Point(1, 1), label, fgColor, bgColor)
           .putLine(Point(1, 2), hBar, fgColor, bgColor)
           .toCloneTiles(
-            CloneId("button"),
+            CloneId(s"button_${charSheet.assetName.toString}"),
             bounds.coords
               .toScreenSpace(charSheet.size)
               .moveBy(offset.toScreenSpace(charSheet.size)),

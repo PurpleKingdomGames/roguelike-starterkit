@@ -8,16 +8,16 @@ import roguelikestarterkit.ui.component.ComponentLayout.Horizontal
 
 class ComponentGroupTests extends munit.FunSuite {
 
-  given Component[String] = new Component[String] {
+  given Component[String, Unit] = new Component[String, Unit] {
     def bounds(model: String): Bounds = Bounds(0, 0, model.length, 1)
 
-    def updateModel[Unit](
+    def updateModel(
         context: UiContext[Unit],
         model: String
     ): GlobalEvent => Outcome[String] =
       _ => Outcome(model)
 
-    def present[Unit](
+    def present(
         context: UiContext[Unit],
         model: String
     ): Outcome[ComponentFragment] =
@@ -31,8 +31,8 @@ class ComponentGroupTests extends munit.FunSuite {
   }
 
   test("reflow should reapply the layout to all existing components") {
-    val component1 = ComponentEntry(Coords(0, 0), "abc", summon[Component[String]])
-    val component2 = ComponentEntry(Coords(10, 10), "def", summon[Component[String]])
+    val component1 = ComponentEntry(Coords(0, 0), "abc", summon[Component[String, Unit]])
+    val component2 = ComponentEntry(Coords(10, 10), "def", summon[Component[String, Unit]])
     val group = ComponentGroup(
       Bounds(0, 0, 100, 100),
       BoundsType.Fixed,

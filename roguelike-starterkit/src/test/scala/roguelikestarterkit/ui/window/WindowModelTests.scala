@@ -53,8 +53,8 @@ class WindowModelTests extends munit.FunSuite:
       FontKey("test")
     )
 
-  val component = ComponentEntry(Coords(0, 0), "abc", summon[Component[String]])
-  val group = ComponentGroup(
+  val component = ComponentEntry[String, Unit](Coords(0, 0), "abc", summon[Component[String, Unit]])
+  val group = ComponentGroup[Unit](
     Bounds(0, 0, 100, 100),
     BoundsType.Fixed,
     ComponentLayout.Horizontal(Padding(5), Overflow.Wrap),
@@ -62,7 +62,7 @@ class WindowModelTests extends munit.FunSuite:
   )
 
   test("model cascades bounds changes to component group - BoundsType.Fixed") {
-    val model: WindowModel[ComponentGroup, Unit] =
+    val model: WindowModel[ComponentGroup[Unit], Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -73,7 +73,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.Inherit") {
-    val model: WindowModel[ComponentGroup, Unit] =
+    val model: WindowModel[ComponentGroup[Unit], Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -84,7 +84,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.Relative") {
-    val model: WindowModel[ComponentGroup, Unit] =
+    val model: WindowModel[ComponentGroup[Unit], Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -95,7 +95,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.Relative 100%") {
-    val model: WindowModel[ComponentGroup, Unit] =
+    val model: WindowModel[ComponentGroup[Unit], Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -106,7 +106,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.RelativePosition") {
-    val model: WindowModel[ComponentGroup, Unit] =
+    val model: WindowModel[ComponentGroup[Unit], Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -117,7 +117,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.RelativeSize") {
-    val model: WindowModel[ComponentGroup, Unit] =
+    val model: WindowModel[ComponentGroup[Unit], Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -128,7 +128,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.Offset") {
-    val model: WindowModel[ComponentGroup, Unit] =
+    val model: WindowModel[ComponentGroup[Unit], Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -139,7 +139,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.OffsetPosition") {
-    val model: WindowModel[ComponentGroup, Unit] =
+    val model: WindowModel[ComponentGroup[Unit], Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -150,7 +150,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.OffsetSize") {
-    val model: WindowModel[ComponentGroup, Unit] =
+    val model: WindowModel[ComponentGroup[Unit], Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -173,7 +173,7 @@ class WindowModelTests extends munit.FunSuite:
             .add(Bounds(0, 0, 0, 0))
         )
 
-    val model: WindowModel[ComponentGroup, Unit] =
+    val model: WindowModel[ComponentGroup[Unit], Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -188,7 +188,7 @@ class WindowModelTests extends munit.FunSuite:
         fail("No sub components found")
 
       case Some(value) =>
-        val cg = value.model.asInstanceOf[ComponentGroup]
+        val cg = value.model.asInstanceOf[ComponentGroup[Unit]]
 
         // top comp group cascades to next level.
         assertEquals(cg.bounds, Bounds(3, 5, 36, 34))
@@ -205,16 +205,16 @@ class WindowModelTests extends munit.FunSuite:
 
   }
 
-  given Component[String] = new Component[String] {
+  given Component[String, Unit] = new Component[String, Unit] {
     def bounds(model: String): Bounds = Bounds(0, 0, model.length, 1)
 
-    def updateModel[Unit](
+    def updateModel(
         context: UiContext[Unit],
         model: String
     ): GlobalEvent => Outcome[String] =
       _ => Outcome(model)
 
-    def present[Unit](
+    def present(
         context: UiContext[Unit],
         model: String
     ): Outcome[ComponentFragment] =
@@ -227,16 +227,16 @@ class WindowModelTests extends munit.FunSuite:
       model
   }
 
-  given Component[Bounds] = new Component[Bounds] {
+  given Component[Bounds, Unit] = new Component[Bounds, Unit] {
     def bounds(model: Bounds): Bounds = model
 
-    def updateModel[Unit](
+    def updateModel(
         context: UiContext[Unit],
         model: Bounds
     ): GlobalEvent => Outcome[Bounds] =
       _ => Outcome(model)
 
-    def present[Unit](
+    def present(
         context: UiContext[Unit],
         model: Bounds
     ): Outcome[ComponentFragment] =

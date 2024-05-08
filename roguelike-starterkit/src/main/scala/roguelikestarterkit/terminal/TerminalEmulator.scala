@@ -220,6 +220,22 @@ final case class TerminalEmulator(size: Size, charMap: SparseGrid[MapTile]) exte
   ): TerminalEmulator =
     mapLine(from, to)((_, mt) => MapTile(tile, foreground, background))
 
+  def toASCII(nullReplacement: Tile): String =
+    charMap
+      .toBatch(MapTile(Tile.fromInt(nullReplacement.toInt)))
+      .map(_.char.toInt)
+      .map {
+        case 0 => nullReplacement.toInt.toChar
+        case c => c.toInt.toChar
+      }
+      .toJSArray
+      .sliding(size.width, size.width)
+      .map(_.mkString)
+      .mkString("\n")
+
+  def toASCII: String =
+    toASCII(Tile.SPACE)
+
 object TerminalEmulator:
   def apply(screenSize: Size): TerminalEmulator =
     TerminalEmulator(

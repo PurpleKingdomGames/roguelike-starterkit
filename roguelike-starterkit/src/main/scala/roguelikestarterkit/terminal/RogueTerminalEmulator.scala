@@ -401,6 +401,20 @@ final class RogueTerminalEmulator(
   ): RogueTerminalEmulator =
     mapLine(from, to)((_, mt) => MapTile(tile, foreground, background))
 
+  def toASCII(nullReplacement: Char): String =
+    _tiles
+      .map(_.toInt)
+      .map {
+        case 0 => nullReplacement
+        case c => c.toInt.toChar
+      }
+      .sliding(size.width, size.width)
+      .map(_.mkString)
+      .mkString("\n")
+
+  def toASCII: String =
+    toASCII(' ')
+
 object RogueTerminalEmulator:
 
   inline def pointToIndex(point: Point, gridWidth: Int): Int =

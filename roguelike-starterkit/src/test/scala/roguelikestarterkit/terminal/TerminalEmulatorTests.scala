@@ -588,4 +588,36 @@ class TerminalEmulatorTests extends munit.FunSuite {
     assert(actual.zip(expected).forall(_ == _))
   }
 
+  test("should be able to output ASCII") {
+    val list =
+      Batch(
+        (Point(8, 2), MapTile(Tile.`@`)),
+        (Point(0, 0), MapTile(Tile.`!`)),
+        (Point(9, 9), MapTile(Tile.`?`))
+      )
+
+    val console =
+      TerminalEmulator(Size(10))
+        .put(list)
+        .putLine(Point(2, 0), "Hello", RGBA.White, RGBA.Black)
+
+    val actual =
+      console.toASCII(Tile.fromInt('_'.toInt))
+
+    val expected =
+      """!_Hello___
+      |__________
+      |________@_
+      |__________
+      |__________
+      |__________
+      |__________
+      |__________
+      |__________
+      |_________?
+      |""".stripMargin.trim
+
+    assertEquals(actual, expected)
+  }
+
 }

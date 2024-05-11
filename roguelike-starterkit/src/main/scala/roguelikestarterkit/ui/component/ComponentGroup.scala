@@ -146,7 +146,10 @@ final case class ComponentGroup[ReferenceData](
         .sequence
         .map { updatedComponents =>
           this.copy(
-            components = updatedComponents
+            components = updatedComponents,
+            referenceBounds = updatedComponents.map { c =>
+              c.component.bounds(c.model)
+            }
           )
         }
 

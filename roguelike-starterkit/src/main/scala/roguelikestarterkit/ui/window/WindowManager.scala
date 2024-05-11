@@ -131,11 +131,17 @@ object WindowManager:
     case e: WindowEvent =>
       handleWindowEvents(context, model)(e)
 
+    case e: MouseEvent =>
+      model.giveWindowAt(context.mouseCoords) match
+        case None =>
+          sendEventToAllWindowModels(context, model, e, _.isOpen)
+
+        case Some(windowUnderMouse) =>
+          Outcome(model)
+          sendEventToAllWindowModels(context, model, e, w => w.isOpen && w.id == windowUnderMouse)
+
     case e =>
-      model.windows
-        .map(w => if w.isOpen then Window.updateModel(context, w)(e) else Outcome(w))
-        .sequence
-        .map(m => model.copy(windows = m))
+      sendEventToAllWindowModels(context, model, e, _.isOpen)
 
   private def handleWindowEvents[ReferenceData](
       context: UiContext[ReferenceData],
@@ -187,6 +193,17 @@ object WindowManager:
     case WindowEvent.ChangeMagnification(_) =>
       Outcome(model)
 
+  private def sendEventToAllWindowModels[ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowManagerModel[ReferenceData],
+      e: GlobalEvent,
+      p: WindowModel[?, ReferenceData] => Boolean
+  ): Outcome[WindowManagerModel[ReferenceData]] =
+    model.windows
+      .map(w => if p(w) then Window.updateModel(context, w)(e) else Outcome(w))
+      .sequence
+      .map(m => model.copy(windows = m))
+
   private[window] def updateViewModel[ReferenceData](
       context: UiContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
@@ -195,21 +212,47 @@ object WindowManager:
     case WindowEvent.ChangeMagnification(next) =>
       Outcome(viewModel.changeMagnification(next))
 
+    case e: MouseEvent =>
+      model.giveWindowAt(context.mouseCoords) match
+        case None =>
+          sendEventToAllWindowViewModels(context, model, viewModel, e, _ => true)
+
+        case Some(windowUnderMouse) =>
+          sendEventToAllWindowViewModels(
+            context,
+            model,
+            viewModel,
+            e,
+            w => w.id == windowUnderMouse || w.dragData.isDefined
+          )
+
     case e =>
-      val updated =
-        val prunedVM = viewModel.prune(model)
-        model.windows.flatMap { m =>
-          if m.isClosed then Batch.empty
-          else
-            prunedVM.windows.find(_.id == m.id) match
-              case None =>
-                Batch(Outcome(WindowViewModel.initial(m.id, viewModel.magnification)))
+      sendEventToAllWindowViewModels(context, model, viewModel, e, _ => true)
 
-              case Some(vm) =>
-                Batch(vm.update(context, m, e))
-        }
+  private def sendEventToAllWindowViewModels[ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowManagerModel[ReferenceData],
+      viewModel: WindowManagerViewModel[ReferenceData],
+      e: GlobalEvent,
+      p: WindowViewModel[ReferenceData] => Boolean
+  ): Outcome[WindowManagerViewModel[ReferenceData]] =
+    val updated =
+      val prunedVM = viewModel.prune(model)
+      model.windows.flatMap { m =>
+        if m.isClosed then Batch.empty
+        else
+          prunedVM.windows.find(_.id == m.id) match
+            case None =>
+              Batch(Outcome(WindowViewModel.initial(m.id, viewModel.magnification)))
 
-      updated.sequence.map(vm => viewModel.copy(windows = vm))
+            case Some(vm) if p(vm) =>
+              Batch(vm.update(context, m, e))
+
+            case Some(vm) =>
+              Batch(Outcome(vm))
+      }
+
+    updated.sequence.map(vm => viewModel.copy(windows = vm))
 
   private[window] def present[ReferenceData](
       layerKey: Option[BindingKey],

@@ -34,7 +34,15 @@ object UIScene extends Scene[Size, Model, ViewModel]:
             Model.defaultCharSheet
           )
         )
-        .open(ComponentsWindow.windowId)
+        .register(
+          ComponentsWindow2.window(
+            Model.defaultCharSheet
+          )
+        )
+        .open(
+          ComponentsWindow.windowId,
+          ComponentsWindow2.windowId
+        )
     )
 
   def updateModel(

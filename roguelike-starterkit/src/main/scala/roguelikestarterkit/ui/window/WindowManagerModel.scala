@@ -56,6 +56,9 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[WindowModel[?,
 
     this.copy(windows = reordered)
 
+  def giveWindowAt(coords: Coords): Option[WindowId] =
+    windows.reverse.find(w => !w.static && w.bounds.contains(coords)).map(_.id)
+
   def moveTo(id: WindowId, position: Coords): WindowManagerModel[ReferenceData] =
     this.copy(windows = windows.map(w => if w.id == id then w.moveTo(position) else w))
 

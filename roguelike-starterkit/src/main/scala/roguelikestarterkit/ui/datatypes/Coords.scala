@@ -16,7 +16,7 @@ object Coords:
 
   extension (c: Coords)
     private[datatypes] inline def toPoint: Point    = c
-    inline def unsafetoPoint: Point                 = c
+    inline def unsafeToPoint: Point                 = c
     inline def toDimensions: Dimensions             = Dimensions(c.toSize)
     inline def toScreenSpace(charSize: Size): Point = c * charSize.toPoint
 

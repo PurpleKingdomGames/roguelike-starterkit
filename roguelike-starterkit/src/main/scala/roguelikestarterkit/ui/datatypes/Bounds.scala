@@ -45,7 +45,7 @@ object Bounds:
     inline def halfSize: Dimensions = (dimensions / 2).abs
 
     def contains(coords: Coords): Boolean =
-      r.contains(coords.unsafetoPoint)
+      r.contains(coords.unsafeToPoint)
     def contains(x: Int, y: Int): Boolean =
       contains(Coords(x, y))
 

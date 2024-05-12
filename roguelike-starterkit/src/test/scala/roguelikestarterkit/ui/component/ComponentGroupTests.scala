@@ -31,18 +31,11 @@ class ComponentGroupTests extends munit.FunSuite {
   }
 
   test("reflow should reapply the layout to all existing components") {
-    val component1 = ComponentEntry(Coords(0, 0), "abc", summon[Component[String, Unit]])
-    val component2 = ComponentEntry(Coords(10, 10), "def", summon[Component[String, Unit]])
-    val group = ComponentGroup(
-      Bounds(0, 0, 100, 100),
-      BoundsType.Fixed,
-      ComponentLayout.Horizontal(Padding(5), Overflow.Wrap),
-      Batch(component1, component2),
-      Batch(
-        component1.component.bounds(component1.model),
-        component2.component.bounds(component2.model)
-      )
-    )
+    val group: ComponentGroup[Unit] =
+      ComponentGroup(Bounds(0, 0, 100, 100))
+        .withLayout(ComponentLayout.Horizontal(Padding(5), Overflow.Wrap))
+        .withBoundsType(BoundsType.Fixed)
+        .add("abc", "def")
 
     val actual = group.reflow.components.toList.map(_.offset)
 
@@ -206,5 +199,15 @@ class ComponentGroupTests extends munit.FunSuite {
       )
 
     assertEquals(actual, expected)
+  }
+
+  test("Cascade should snap to width of parent and height of contents by default.") {
+    val group: ComponentGroup[Unit] =
+      ComponentGroup(Bounds(0, 0, 100, 100))
+        .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
+        .add("abc", "def")
+
+    assertEquals(group.contentBounds, Bounds(0, 0, 3, 3))
+    assertEquals(group.bounds, Bounds(0, 0, 100, 3))
   }
 }

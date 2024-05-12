@@ -42,3 +42,12 @@ enum BoundsType:
   /** The component group resizes itself based on the parents bounds, offset by the amount given.
     */
   case OffsetSize(dimensions: Dimensions)
+
+  /** The component group bases its size on some aspect of its contents or he available space
+    */
+  case Dynamic(width: FitMode, height: FitMode)
+
+object BoundsType:
+
+  val default: BoundsType =
+    BoundsType.Dynamic(FitMode.Available, FitMode.Content)

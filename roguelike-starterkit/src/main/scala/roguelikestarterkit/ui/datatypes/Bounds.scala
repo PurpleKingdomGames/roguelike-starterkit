@@ -17,8 +17,7 @@ object Bounds:
   val zero: Bounds = Bounds(0, 0, 0, 0)
 
   extension (r: Bounds)
-    private[datatypes] inline def toRectangle: Rectangle       = r
-    private[datatypes] inline def unsafeToRectangle: Rectangle = r
+    inline def unsafeToRectangle: Rectangle = r
     inline def coords: Coords                                  = Coords(r.position)
     inline def dimensions: Dimensions                          = Dimensions(r.size)
     inline def toScreenSpace(charSize: Size): Rectangle =

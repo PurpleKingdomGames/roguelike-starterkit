@@ -11,13 +11,23 @@ import scala.annotation.tailrec
 /** Encapsulates a collection of components and describes and manages their layout, as well as
   * propagating update and presention calls.
   */
-final case class ComponentGroup[ReferenceData](
+final case class ComponentGroup[ReferenceData] private (
     bounds: Bounds,
     boundsType: BoundsType,
     layout: ComponentLayout,
     components: Batch[ComponentEntry[?, ReferenceData]],
     referenceBounds: Batch[Bounds]
 ):
+
+  lazy val contentBounds: Bounds =
+    val allBounds: Batch[Rectangle] = referenceBounds.map(_.unsafeToRectangle)
+
+    if allBounds.isEmpty then Bounds.zero
+    else
+      val h = allBounds.head
+      val t = allBounds.tail
+
+      Bounds(t.foldLeft(h) { case (acc, r) => acc.expandToInclude(r) })
 
   extension (b: Bounds)
     def withPadding(p: Padding): Bounds =
@@ -72,7 +82,13 @@ final case class ComponentGroup[ReferenceData](
         acc :+ reflowed
     }
 
-    this.copy(components = newComponents)
+    val newReferenceBounds =
+      newComponents.map(c => c.component.bounds(c.model).withPosition(c.offset))
+
+    this.copy(
+      components = newComponents,
+      referenceBounds = newReferenceBounds
+    )
 
   def cascade(parentBounds: Bounds): ComponentGroup[ReferenceData] =
     val newBounds =
@@ -112,22 +128,60 @@ final case class ComponentGroup[ReferenceData](
         case BoundsType.OffsetSize(amount) =>
           bounds.withDimensions(parentBounds.dimensions + amount)
 
-    withBounds(newBounds)
+        case BoundsType.Dynamic(FitMode.Available, FitMode.Available) =>
+          parentBounds
+
+        case BoundsType.Dynamic(FitMode.Available, FitMode.Content) =>
+          parentBounds.withDimensions(
+            parentBounds.dimensions.width,
+            contentBounds.dimensions.height
+          )
+
+        case BoundsType.Dynamic(FitMode.Available, FitMode.Fixed(units)) =>
+          parentBounds.withDimensions(parentBounds.dimensions.width, units)
+
+        case BoundsType.Dynamic(FitMode.Content, FitMode.Available) =>
+          parentBounds.withDimensions(
+            contentBounds.dimensions.height,
+            parentBounds.dimensions.width
+          )
+
+        case BoundsType.Dynamic(FitMode.Content, FitMode.Content) =>
+          contentBounds
+
+        case BoundsType.Dynamic(FitMode.Content, FitMode.Fixed(units)) =>
+          contentBounds.withDimensions(contentBounds.dimensions.width, units)
+
+        case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Available) =>
+          parentBounds.withDimensions(units, parentBounds.dimensions.height)
+
+        case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Content) =>
+          contentBounds.withDimensions(units, contentBounds.dimensions.height)
+
+        case BoundsType.Dynamic(FitMode.Fixed(unitsW), FitMode.Fixed(unitsH)) =>
+          bounds.withDimensions(unitsW, unitsH)
+
+    this
       .copy(
+        bounds = newBounds,
         components = components.map(_.cascade(newBounds))
       )
-      .reflow
 
-  def add[A](entry: A)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
+  private def addSingle[A](entry: A)(using
+      c: Component[A, ReferenceData]
+  ): ComponentGroup[ReferenceData] =
     this.copy(
       components = components :+ ComponentEntry(nextOffset(components), entry, c),
       referenceBounds = referenceBounds :+ c.bounds(entry)
     )
 
+  def add[A](entry: A)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
+    addSingle(entry).reflow.cascade(bounds)
+
   def add[A](entries: Batch[A])(using
       c: Component[A, ReferenceData]
   ): ComponentGroup[ReferenceData] =
-    entries.foldLeft(this) { case (acc, next) => acc.add(next) }
+    entries.foldLeft(this) { case (acc, next) => acc.addSingle(next) }.reflow.cascade(bounds)
   def add[A](entries: A*)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
     add(Batch.fromSeq(entries))
 
@@ -181,6 +235,8 @@ final case class ComponentGroup[ReferenceData](
   def withBoundsType(value: BoundsType): ComponentGroup[ReferenceData] =
     this.copy(boundsType = value).reflow
 
+  def defaultBounds: ComponentGroup[ReferenceData] =
+    withBoundsType(BoundsType.default)
   def fixedBounds: ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.Fixed)
   def inheritBounds: ComponentGroup[ReferenceData] =
@@ -203,6 +259,8 @@ final case class ComponentGroup[ReferenceData](
     withBoundsType(BoundsType.OffsetSize(amount))
   def offsetSize(width: Int, height: Int): ComponentGroup[ReferenceData] =
     offsetSize(Dimensions(width, height))
+  def dynamicBounds(width: FitMode, height: FitMode): ComponentGroup[ReferenceData] =
+    withBoundsType(BoundsType.Dynamic(width, height))
 
   def withLayout(value: ComponentLayout): ComponentGroup[ReferenceData] =
     this.copy(layout = value).reflow
@@ -230,8 +288,14 @@ final case class ComponentGroup[ReferenceData](
     resizeBy(Dimensions(x, y))
 
 object ComponentGroup:
-  def apply[ReferenceData](bounds: Bounds): ComponentGroup[ReferenceData] =
-    ComponentGroup(bounds, BoundsType.Fixed, ComponentLayout.None, Batch.empty, Batch.empty)
+  def apply[ReferenceData](initalBounds: Bounds): ComponentGroup[ReferenceData] =
+    ComponentGroup(
+      initalBounds,
+      BoundsType.default,
+      ComponentLayout.None,
+      Batch.empty,
+      Batch.empty
+    )
 
   given [ReferenceData]: Component[ComponentGroup[ReferenceData], ReferenceData] with
 

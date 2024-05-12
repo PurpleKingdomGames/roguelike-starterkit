@@ -56,16 +56,11 @@ class WindowModelTests extends munit.FunSuite:
       FontKey("test")
     )
 
-  val component = ComponentEntry[String, Unit](Coords(0, 0), "abc", summon[Component[String, Unit]])
-  val group = ComponentGroup[Unit](
-    Bounds(0, 0, 100, 100),
-    BoundsType.Fixed,
-    ComponentLayout.Horizontal(Padding(5), Overflow.Wrap),
-    Batch(component),
-    Batch(
-      component.component.bounds(component.model)
-    )
-  )
+  val group =
+    ComponentGroup(Bounds(0, 0, 100, 100))
+      .withLayout(ComponentLayout.Horizontal(Padding(5), Overflow.Wrap))
+      .withBoundsType(BoundsType.Fixed)
+      .add("abc")
 
   test("model cascades bounds changes to component group - BoundsType.Fixed") {
     val model: WindowModel[ComponentGroup[Unit], Unit] =

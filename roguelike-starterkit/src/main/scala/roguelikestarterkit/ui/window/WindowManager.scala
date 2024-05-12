@@ -223,7 +223,7 @@ object WindowManager:
             model,
             viewModel,
             e,
-            w => w.id == windowUnderMouse || w.dragData.isDefined
+            w => w.id == windowUnderMouse || w.dragData.isDefined || w.resizeData.isDefined
           )
 
     case e =>

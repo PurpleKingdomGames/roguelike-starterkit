@@ -4,6 +4,10 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 
+import ui.components.group.ComponentGroup
+import ui.components.group.BoundsType
+import ui.components.group.{ComponentLayout, Overflow, Padding}
+
 object syntax:
 
   extension (r: Rectangle)
@@ -108,25 +112,27 @@ val WindowContent: ui.window.WindowContent.type = ui.window.WindowContent
 
 type Component[A, ReferenceData] = ui.component.Component[A, ReferenceData]
 
-type ComponentGroup[ReferenceData] = ui.component.ComponentGroup[ReferenceData]
-val ComponentGroup: ui.component.ComponentGroup.type = ui.component.ComponentGroup
-
 type ComponentFragment = ui.component.ComponentFragment
 val ComponentFragment: ui.component.ComponentFragment.type = ui.component.ComponentFragment
 
-type ComponentLayout = ui.component.ComponentLayout
-val ComponentLayout: ui.component.ComponentLayout.type = ui.component.ComponentLayout
+// UI Built-in Component Groups
 
-type Overflow = ui.component.Overflow
-val Overflow: ui.component.Overflow.type = ui.component.Overflow
+type ComponentGroup[ReferenceData] = ui.components.group.ComponentGroup[ReferenceData]
+val ComponentGroup: ui.components.group.ComponentGroup.type = ui.components.group.ComponentGroup
 
-type Padding = ui.component.Padding
-val Padding: ui.component.Padding.type = ui.component.Padding
+type ComponentLayout = ui.components.group.ComponentLayout
+val ComponentLayout: ui.components.group.ComponentLayout.type = ui.components.group.ComponentLayout
 
-type BoundsType = ui.component.BoundsType
-val BoundsType: ui.component.BoundsType.type = ui.component.BoundsType
+type Overflow = ui.components.group.Overflow
+val Overflow: ui.components.group.Overflow.type = ui.components.group.Overflow
 
-// UI Built in components
+type Padding = ui.components.group.Padding
+val Padding: ui.components.group.Padding.type = ui.components.group.Padding
+
+type BoundsType = ui.components.group.BoundsType
+val BoundsType: ui.components.group.BoundsType.type = ui.components.group.BoundsType
+
+// UI Built-in components
 
 type Button[ReferenceData] = ui.components.Button[ReferenceData]
 val Button: ui.components.Button.type = ui.components.Button

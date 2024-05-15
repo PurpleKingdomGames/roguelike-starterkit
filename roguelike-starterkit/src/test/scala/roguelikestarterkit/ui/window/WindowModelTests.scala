@@ -3,6 +3,9 @@ package roguelikestarterkit.ui.window
 import indigo.*
 import roguelikestarterkit.ui.component.*
 import roguelikestarterkit.ui.datatypes.*
+import roguelikestarterkit.ui.components.group.ComponentGroup
+import roguelikestarterkit.ui.components.group.BoundsType
+import roguelikestarterkit.ui.components.group.{ComponentLayout, Padding}
 
 class WindowModelTests extends munit.FunSuite:
 

@@ -1,6 +1,7 @@
-package roguelikestarterkit.ui.component
+package roguelikestarterkit.ui.components.group
 
 import indigo.*
+import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 

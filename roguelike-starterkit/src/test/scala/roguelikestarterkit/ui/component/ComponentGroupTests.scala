@@ -4,7 +4,9 @@ import indigo.*
 import roguelikestarterkit.Bounds
 import roguelikestarterkit.Coords
 import roguelikestarterkit.UiContext
-import roguelikestarterkit.ui.component.ComponentLayout.Horizontal
+import roguelikestarterkit.ui.components.group.ComponentLayout.Horizontal
+import roguelikestarterkit.ui.components.group.ComponentGroup
+import roguelikestarterkit.ui.components.group.Padding
 
 class ComponentGroupTests extends munit.FunSuite {
 
@@ -33,8 +35,8 @@ class ComponentGroupTests extends munit.FunSuite {
   test("reflow should reapply the layout to all existing components") {
     val group: ComponentGroup[Unit] =
       ComponentGroup(Bounds(0, 0, 100, 100))
-        .withLayout(ComponentLayout.Horizontal(Padding(5), Overflow.Wrap))
-        .withBoundsType(BoundsType.Fixed)
+        .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Horizontal(Padding(5), Overflow.Wrap))
+        .withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.Fixed)
         .add("abc", "def")
 
     val actual = group.reflow.components.toList.map(_.offset)
@@ -50,7 +52,7 @@ class ComponentGroupTests extends munit.FunSuite {
 
   test("Calculate the next offset - vertical, padding 0") {
     val group = ComponentGroup(Bounds(0, 0, 10, 5))
-      .withLayout(ComponentLayout.Vertical(Padding(0)))
+      .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Vertical(Padding(0)))
       .add("abc", "def")
 
     val actual =
@@ -67,7 +69,7 @@ class ComponentGroupTests extends munit.FunSuite {
 
   test("Calculate the next offset - vertical, padding 5") {
     val group = ComponentGroup(Bounds(0, 0, 10, 5))
-      .withLayout(ComponentLayout.Vertical(Padding(5)))
+      .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Vertical(Padding(5)))
       .add("abc", "def")
 
     val actual =
@@ -84,7 +86,7 @@ class ComponentGroupTests extends munit.FunSuite {
 
   test("Calculate the next offset - vertical, padding top=5") {
     val group = ComponentGroup(Bounds(0, 0, 10, 5))
-      .withLayout(ComponentLayout.Vertical(Padding(5, 0, 0, 0)))
+      .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Vertical(Padding(5, 0, 0, 0)))
       .add("abc", "def")
 
     val actual =
@@ -101,7 +103,7 @@ class ComponentGroupTests extends munit.FunSuite {
 
   test("Calculate the next offset - horizontal, padding 0, hidden") {
     val group = ComponentGroup(Bounds(0, 0, 5, 5))
-      .withLayout(ComponentLayout.Horizontal(Padding(0), Overflow.Hidden))
+      .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Horizontal(Padding(0), Overflow.Hidden))
       .add("abc", "def")
 
     val actual =
@@ -118,7 +120,7 @@ class ComponentGroupTests extends munit.FunSuite {
 
   test("Calculate the next offset - horizontal, padding 5, hidden") {
     val group = ComponentGroup(Bounds(0, 0, 5, 5))
-      .withLayout(ComponentLayout.Horizontal(Padding(5), Overflow.Hidden))
+      .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Horizontal(Padding(5), Overflow.Hidden))
       .add("abc", "def")
 
     val actual =
@@ -135,7 +137,7 @@ class ComponentGroupTests extends munit.FunSuite {
 
   test("Calculate the next offset - horizontal, padding left=5, hidden") {
     val group = ComponentGroup(Bounds(0, 0, 5, 5))
-      .withLayout(ComponentLayout.Horizontal(Padding(0, 0, 0, 5), Overflow.Hidden))
+      .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Horizontal(Padding(0, 0, 0, 5), Overflow.Hidden))
       .add("abc", "def")
 
     val actual =
@@ -152,7 +154,7 @@ class ComponentGroupTests extends munit.FunSuite {
 
   test("Calculate the next offset - horizontal, padding 0, wrap") {
     val group = ComponentGroup(Bounds(0, 0, 5, 5))
-      .withLayout(ComponentLayout.Horizontal(Padding(0), Overflow.Wrap))
+      .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Horizontal(Padding(0), Overflow.Wrap))
       .add("abc", "def")
 
     val actual =
@@ -169,7 +171,7 @@ class ComponentGroupTests extends munit.FunSuite {
 
   test("Calculate the next offset - horizontal, padding 5, wrap") {
     val group = ComponentGroup(Bounds(0, 0, 5, 5))
-      .withLayout(ComponentLayout.Horizontal(Padding(5), Overflow.Wrap))
+      .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Horizontal(Padding(5), Overflow.Wrap))
       .add("abc", "def")
 
     val actual =
@@ -186,7 +188,7 @@ class ComponentGroupTests extends munit.FunSuite {
 
   test("Calculate the next offset - horizontal, padding left=5 top=2, wrap") {
     val group = ComponentGroup(Bounds(0, 0, 3, 5))
-      .withLayout(ComponentLayout.Horizontal(Padding(2, 0, 0, 5), Overflow.Wrap))
+      .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Horizontal(Padding(2, 0, 0, 5), Overflow.Wrap))
       .add("abc", "def")
 
     val actual =
@@ -204,7 +206,7 @@ class ComponentGroupTests extends munit.FunSuite {
   test("Cascade should snap to width of parent and height of contents by default.") {
     val group: ComponentGroup[Unit] =
       ComponentGroup(Bounds(0, 0, 100, 100))
-        .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
+        .withLayout(roguelikestarterkit.ui.components.group.ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
         .add("abc", "def")
 
     assertEquals(group.contentBounds, Bounds(0, 0, 3, 3))

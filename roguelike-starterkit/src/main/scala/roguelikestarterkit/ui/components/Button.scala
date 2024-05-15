@@ -25,8 +25,6 @@ final case class Button[ReferenceData](
     click: ReferenceData => Batch[GlobalEvent],
     calculateBounds: ReferenceData => Bounds
 ):
-  export bounds.*
-
   def presentUp(
       up: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
   ): Button[ReferenceData] =
@@ -48,6 +46,24 @@ final case class Button[ReferenceData](
     onClick(_ => events)
   def onClick(events: GlobalEvent*): Button[ReferenceData] =
     onClick(Batch.fromSeq(events))
+
+  // Delegates, for convenience.
+
+  def update[StartupData, ContextData](
+      context: UiContext[ReferenceData]
+  ): GlobalEvent => Outcome[Button[ReferenceData]] =
+    summon[Component[Button[ReferenceData], ReferenceData]].updateModel(context, this)
+
+  def present[StartupData, ContextData](
+      context: UiContext[ReferenceData]
+  ): Outcome[ComponentFragment] =
+    summon[Component[Button[ReferenceData], ReferenceData]].present(context, this)
+
+  def reflow: Button[ReferenceData] =
+    summon[Component[Button[ReferenceData], ReferenceData]].reflow(this)
+
+  def cascade(parentBounds: Bounds): Button[ReferenceData] =
+    summon[Component[Button[ReferenceData], ReferenceData]].cascade(this, parentBounds)
 
 object Button:
 

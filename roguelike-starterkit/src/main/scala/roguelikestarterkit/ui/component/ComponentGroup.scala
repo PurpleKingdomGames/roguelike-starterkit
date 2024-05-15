@@ -29,149 +29,12 @@ final case class ComponentGroup[ReferenceData] private (
 
       Bounds(t.foldLeft(h) { case (acc, r) => acc.expandToInclude(r) })
 
-  extension (b: Bounds)
-    def withPadding(p: Padding): Bounds =
-      b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
-
-  def nextOffset(components: Batch[ComponentEntry[?, ReferenceData]]): Coords =
-    layout match
-      case ComponentLayout.None =>
-        Coords.zero
-
-      case ComponentLayout.Horizontal(padding, Overflow.Hidden) =>
-        components
-          .takeRight(1)
-          .headOption
-          .map(c => c.offset + Coords(c.component.bounds(c.model).withPadding(padding).right, 0))
-          .getOrElse(Coords(padding.left, padding.top))
-
-      case ComponentLayout.Horizontal(padding, Overflow.Wrap) =>
-        val maxY = components
-          .map(c => c.offset.y + c.component.bounds(c.model).withPadding(padding).height)
-          .sortWith(_ > _)
-          .headOption
-          .getOrElse(0)
-
-        components
-          .takeRight(1)
-          .headOption
-          .map { c =>
-            val padded      = c.component.bounds(c.model).withPadding(padding)
-            val maybeOffset = c.offset + Coords(padded.right, 0)
-
-            if padded.moveBy(maybeOffset).right < bounds.width then maybeOffset
-            else Coords(padding.left, maxY)
-          }
-          .getOrElse(Coords(padding.left, padding.top))
-
-      case ComponentLayout.Vertical(padding) =>
-        components
-          .takeRight(1)
-          .headOption
-          .map(c => c.offset + Coords(0, c.component.bounds(c.model).withPadding(padding).bottom))
-          .getOrElse(Coords(padding.left, padding.top))
-
-  def reflow: ComponentGroup[ReferenceData] =
-    val newComponents = components.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) {
-      (acc, entry) =>
-        val reflowed = entry.copy(
-          offset = nextOffset(acc),
-          model = entry.component.reflow(entry.model)
-        )
-
-        acc :+ reflowed
-    }
-
-    val newReferenceBounds =
-      newComponents.map(c => c.component.bounds(c.model).withPosition(c.offset))
-
-    this.copy(
-      components = newComponents,
-      referenceBounds = newReferenceBounds
-    )
-
-  def cascade(parentBounds: Bounds): ComponentGroup[ReferenceData] =
-    val newBounds =
-      boundsType match
-        case BoundsType.Fixed =>
-          bounds
-
-        case BoundsType.Inherit =>
-          parentBounds
-
-        case BoundsType.Relative(x, y, width, height) =>
-          Bounds(
-            (parentBounds.width.toDouble * x).toInt,
-            (parentBounds.height.toDouble * y).toInt,
-            (parentBounds.width.toDouble * width).toInt,
-            (parentBounds.height.toDouble * height).toInt
-          )
-
-        case BoundsType.RelativePosition(x, y) =>
-          bounds.withPosition(
-            (parentBounds.width.toDouble * x).toInt,
-            (parentBounds.height.toDouble * y).toInt
-          )
-
-        case BoundsType.RelativeSize(width, height) =>
-          bounds.withDimensions(
-            (parentBounds.width.toDouble * width).toInt,
-            (parentBounds.height.toDouble * height).toInt
-          )
-
-        case BoundsType.Offset(amountPosition, amountSize) =>
-          Bounds(parentBounds.coords + amountPosition, parentBounds.dimensions + amountSize)
-
-        case BoundsType.OffsetPosition(amount) =>
-          bounds.withPosition(parentBounds.coords + amount)
-
-        case BoundsType.OffsetSize(amount) =>
-          bounds.withDimensions(parentBounds.dimensions + amount)
-
-        case BoundsType.Dynamic(FitMode.Available, FitMode.Available) =>
-          parentBounds
-
-        case BoundsType.Dynamic(FitMode.Available, FitMode.Content) =>
-          parentBounds.withDimensions(
-            parentBounds.dimensions.width,
-            contentBounds.dimensions.height
-          )
-
-        case BoundsType.Dynamic(FitMode.Available, FitMode.Fixed(units)) =>
-          parentBounds.withDimensions(parentBounds.dimensions.width, units)
-
-        case BoundsType.Dynamic(FitMode.Content, FitMode.Available) =>
-          parentBounds.withDimensions(
-            contentBounds.dimensions.height,
-            parentBounds.dimensions.width
-          )
-
-        case BoundsType.Dynamic(FitMode.Content, FitMode.Content) =>
-          contentBounds
-
-        case BoundsType.Dynamic(FitMode.Content, FitMode.Fixed(units)) =>
-          contentBounds.withDimensions(contentBounds.dimensions.width, units)
-
-        case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Available) =>
-          parentBounds.withDimensions(units, parentBounds.dimensions.height)
-
-        case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Content) =>
-          contentBounds.withDimensions(units, contentBounds.dimensions.height)
-
-        case BoundsType.Dynamic(FitMode.Fixed(unitsW), FitMode.Fixed(unitsH)) =>
-          bounds.withDimensions(unitsW, unitsH)
-
-    this
-      .copy(
-        bounds = newBounds,
-        components = components.map(_.cascade(newBounds))
-      )
-
   private def addSingle[A](entry: A)(using
       c: Component[A, ReferenceData]
   ): ComponentGroup[ReferenceData] =
     this.copy(
-      components = components :+ ComponentEntry(nextOffset(components), entry, c),
+      components = components :+
+        ComponentEntry(ComponentGroup.calculateNextOffset(bounds, layout)(components), entry, c),
       referenceBounds = referenceBounds :+ c.bounds(entry)
     )
 
@@ -184,50 +47,6 @@ final case class ComponentGroup[ReferenceData] private (
     entries.foldLeft(this) { case (acc, next) => acc.addSingle(next) }.reflow.cascade(bounds)
   def add[A](entries: A*)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
     add(Batch.fromSeq(entries))
-
-  private def updateComponents[StartupData, ContextData](
-      context: UiContext[ReferenceData]
-  ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
-    e =>
-      components
-        .map { c =>
-          c.component
-            .updateModel(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)(e)
-            .map { updated =>
-              c.copy(model = updated)
-            }
-        }
-        .sequence
-        .map { updatedComponents =>
-          this.copy(
-            components = updatedComponents,
-            referenceBounds = updatedComponents.map { c =>
-              c.component.bounds(c.model)
-            }
-          )
-        }
-
-  def update[StartupData, ContextData](
-      context: UiContext[ReferenceData]
-  ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
-    case FrameTick =>
-      updateComponents(context)(FrameTick).map { updated =>
-        if updated.referenceBounds != referenceBounds then updated.reflow
-        else updated
-      }
-
-    case e =>
-      updateComponents(context)(e)
-
-  def present[StartupData, ContextData](
-      context: UiContext[ReferenceData]
-  ): Outcome[ComponentFragment] =
-    components
-      .map { c =>
-        c.component.present(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)
-      }
-      .sequence
-      .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))
 
   def withBounds(value: Bounds): ComponentGroup[ReferenceData] =
     this.copy(bounds = value).reflow
@@ -287,6 +106,24 @@ final case class ComponentGroup[ReferenceData] private (
   def resizeBy(x: Int, y: Int): ComponentGroup[ReferenceData] =
     resizeBy(Dimensions(x, y))
 
+  // Delegates, for convenience.
+
+  def update[StartupData, ContextData](
+      context: UiContext[ReferenceData]
+  ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
+    summon[Component[ComponentGroup[ReferenceData], ReferenceData]].updateModel(context, this)
+
+  def present[StartupData, ContextData](
+      context: UiContext[ReferenceData]
+  ): Outcome[ComponentFragment] =
+    summon[Component[ComponentGroup[ReferenceData], ReferenceData]].present(context, this)
+
+  def reflow: ComponentGroup[ReferenceData] =
+    summon[Component[ComponentGroup[ReferenceData], ReferenceData]].reflow(this)
+
+  def cascade(parentBounds: Bounds): ComponentGroup[ReferenceData] =
+    summon[Component[ComponentGroup[ReferenceData], ReferenceData]].cascade(this, parentBounds)
+
 object ComponentGroup:
   def apply[ReferenceData](initalBounds: Bounds): ComponentGroup[ReferenceData] =
     ComponentGroup(
@@ -306,13 +143,48 @@ object ComponentGroup:
         context: UiContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
-      case e => model.update(context)(e)
+      case FrameTick =>
+        updateComponents(context, model)(FrameTick).map { updated =>
+          if updated.referenceBounds != model.referenceBounds then updated.reflow
+          else updated
+        }
+
+      case e =>
+        updateComponents(context, model)(e)
+
+    private def updateComponents[StartupData, ContextData](
+        context: UiContext[ReferenceData],
+        model: ComponentGroup[ReferenceData]
+    ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
+      e =>
+        model.components
+          .map { c =>
+            c.component
+              .updateModel(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)(e)
+              .map { updated =>
+                c.copy(model = updated)
+              }
+          }
+          .sequence
+          .map { updatedComponents =>
+            model.copy(
+              components = updatedComponents,
+              referenceBounds = updatedComponents.map { c =>
+                c.component.bounds(c.model)
+              }
+            )
+          }
 
     def present(
         context: UiContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): Outcome[ComponentFragment] =
-      model.present(context)
+      model.components
+        .map { c =>
+          c.component.present(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)
+        }
+        .sequence
+        .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))
 
     def reflow(model: ComponentGroup[ReferenceData]): ComponentGroup[ReferenceData] =
       val reflowed: Batch[ComponentEntry[?, ReferenceData]] = model.components.map { c =>
@@ -320,10 +192,147 @@ object ComponentGroup:
           model = c.component.reflow(c.model)
         )
       }
-      model.reflow.copy(components = reflowed)
+
+      val nextOffset = calculateNextOffset[ReferenceData](model.bounds, model.layout)
+
+      val newComponents = reflowed.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) {
+        (acc, entry) =>
+          val reflowed = entry.copy(
+            offset = nextOffset(acc),
+            model = entry.component.reflow(entry.model)
+          )
+
+          acc :+ reflowed
+      }
+
+      val newReferenceBounds =
+        newComponents.map(c => c.component.bounds(c.model).withPosition(c.offset))
+
+      model.copy(
+        components = newComponents,
+        referenceBounds = newReferenceBounds
+      )
 
     def cascade(
         model: ComponentGroup[ReferenceData],
         parentBounds: Bounds
     ): ComponentGroup[ReferenceData] =
-      model.cascade(parentBounds)
+      val newBounds: Bounds =
+        model.boundsType match
+          case BoundsType.Fixed =>
+            model.bounds
+
+          case BoundsType.Inherit =>
+            parentBounds
+
+          case BoundsType.Relative(x, y, width, height) =>
+            Bounds(
+              (parentBounds.width.toDouble * x).toInt,
+              (parentBounds.height.toDouble * y).toInt,
+              (parentBounds.width.toDouble * width).toInt,
+              (parentBounds.height.toDouble * height).toInt
+            )
+
+          case BoundsType.RelativePosition(x, y) =>
+            model.bounds.withPosition(
+              (parentBounds.width.toDouble * x).toInt,
+              (parentBounds.height.toDouble * y).toInt
+            )
+
+          case BoundsType.RelativeSize(width, height) =>
+            model.bounds.withDimensions(
+              (parentBounds.width.toDouble * width).toInt,
+              (parentBounds.height.toDouble * height).toInt
+            )
+
+          case BoundsType.Offset(amountPosition, amountSize) =>
+            Bounds(parentBounds.coords + amountPosition, parentBounds.dimensions + amountSize)
+
+          case BoundsType.OffsetPosition(amount) =>
+            model.bounds.withPosition(parentBounds.coords + amount)
+
+          case BoundsType.OffsetSize(amount) =>
+            model.bounds.withDimensions(parentBounds.dimensions + amount)
+
+          case BoundsType.Dynamic(FitMode.Available, FitMode.Available) =>
+            parentBounds
+
+          case BoundsType.Dynamic(FitMode.Available, FitMode.Content) =>
+            parentBounds.withDimensions(
+              parentBounds.dimensions.width,
+              model.contentBounds.dimensions.height
+            )
+
+          case BoundsType.Dynamic(FitMode.Available, FitMode.Fixed(units)) =>
+            parentBounds.withDimensions(parentBounds.dimensions.width, units)
+
+          case BoundsType.Dynamic(FitMode.Content, FitMode.Available) =>
+            parentBounds.withDimensions(
+              model.contentBounds.dimensions.height,
+              parentBounds.dimensions.width
+            )
+
+          case BoundsType.Dynamic(FitMode.Content, FitMode.Content) =>
+            model.contentBounds
+
+          case BoundsType.Dynamic(FitMode.Content, FitMode.Fixed(units)) =>
+            model.contentBounds.withDimensions(model.contentBounds.dimensions.width, units)
+
+          case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Available) =>
+            parentBounds.withDimensions(units, parentBounds.dimensions.height)
+
+          case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Content) =>
+            model.contentBounds.withDimensions(units, model.contentBounds.dimensions.height)
+
+          case BoundsType.Dynamic(FitMode.Fixed(unitsW), FitMode.Fixed(unitsH)) =>
+            model.bounds.withDimensions(unitsW, unitsH)
+
+      model
+        .copy(
+          bounds = newBounds,
+          components = model.components.map(_.cascade(newBounds))
+        )
+
+  extension (b: Bounds)
+    private def withPadding(p: Padding): Bounds =
+      b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
+
+  private def calculateNextOffset[ReferenceData](bounds: Bounds, layout: ComponentLayout)(
+      components: Batch[ComponentEntry[?, ReferenceData]]
+  ): Coords =
+    layout match
+      case ComponentLayout.None =>
+        Coords.zero
+
+      case ComponentLayout.Horizontal(padding, Overflow.Hidden) =>
+        components
+          .takeRight(1)
+          .headOption
+          .map(c => c.offset + Coords(c.component.bounds(c.model).withPadding(padding).right, 0))
+          .getOrElse(Coords(padding.left, padding.top))
+
+      case ComponentLayout.Horizontal(padding, Overflow.Wrap) =>
+        val maxY = components
+          .map(c => c.offset.y + c.component.bounds(c.model).withPadding(padding).height)
+          .sortWith(_ > _)
+          .headOption
+          .getOrElse(0)
+
+        components
+          .takeRight(1)
+          .headOption
+          .map { c =>
+            val padded      = c.component.bounds(c.model).withPadding(padding)
+            val maybeOffset = c.offset + Coords(padded.right, 0)
+
+            if padded.moveBy(maybeOffset).right < bounds.width then maybeOffset
+            else Coords(padding.left, maxY)
+          }
+          .getOrElse(Coords(padding.left, padding.top))
+
+      case ComponentLayout.Vertical(padding) =>
+        components
+          .takeRight(1)
+          .headOption
+          .map(c => c.offset + Coords(0, c.component.bounds(c.model).withPadding(padding).bottom))
+          .getOrElse(Coords(padding.left, padding.top))

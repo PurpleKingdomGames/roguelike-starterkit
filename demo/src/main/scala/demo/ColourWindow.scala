@@ -110,7 +110,7 @@ object ColourWindow:
         )
       )
 
-final case class ColorPalette(components: ComponentGroup[Unit])
+final case class ColorPalette(componentGroup: ComponentGroup[Unit])
 object ColorPalette:
 
   given WindowContent[ColorPalette, Unit] with
@@ -120,22 +120,22 @@ object ColorPalette:
         model: ColorPalette
     ): GlobalEvent => Outcome[ColorPalette] =
       case e =>
-        model.components.update(context)(e).map { c =>
-          model.copy(components = c)
+        model.componentGroup.update(context)(e).map { c =>
+          model.copy(componentGroup = c)
         }
 
     def present(
         context: UiContext[Unit],
         model: ColorPalette
     ): Outcome[Layer] =
-      model.components.present(context).map(_.toLayer)
+      model.componentGroup.present(context).map(_.toLayer)
 
     def cascade(model: ColorPalette, newBounds: Bounds): ColorPalette =
       model.copy(
-        components = model.components.cascade(newBounds)
+        componentGroup = model.componentGroup.cascade(newBounds)
       )
 
     def refresh(model: ColorPalette): ColorPalette =
       model.copy(
-        components = model.components.reflow
+        componentGroup = model.componentGroup.reflow
       )

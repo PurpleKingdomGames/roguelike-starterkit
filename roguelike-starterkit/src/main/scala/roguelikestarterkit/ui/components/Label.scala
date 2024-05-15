@@ -31,6 +31,24 @@ final case class Label[ReferenceData](
   def withBounds(value: Bounds): Label[ReferenceData] =
     this.copy(bounds = value)
 
+  // Delegates, for convenience.
+
+  def update[StartupData, ContextData](
+      context: UiContext[ReferenceData]
+  ): GlobalEvent => Outcome[Label[ReferenceData]] =
+    summon[Component[Label[ReferenceData], ReferenceData]].updateModel(context, this)
+
+  def present[StartupData, ContextData](
+      context: UiContext[ReferenceData]
+  ): Outcome[ComponentFragment] =
+    summon[Component[Label[ReferenceData], ReferenceData]].present(context, this)
+
+  def reflow: Label[ReferenceData] =
+    summon[Component[Label[ReferenceData], ReferenceData]].reflow(this)
+
+  def cascade(parentBounds: Bounds): Label[ReferenceData] =
+    summon[Component[Label[ReferenceData], ReferenceData]].cascade(this, parentBounds)
+
 object Label:
 
   private def findBounds(text: String): Bounds =

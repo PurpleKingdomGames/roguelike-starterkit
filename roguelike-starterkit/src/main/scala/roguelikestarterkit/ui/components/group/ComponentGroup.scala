@@ -10,10 +10,10 @@ import scala.annotation.tailrec
   * propagating update and presention calls.
   */
 final case class ComponentGroup[ReferenceData] private (
-    bounds: Bounds,
     boundsType: BoundsType,
     layout: ComponentLayout,
     components: Batch[ComponentEntry[?, ReferenceData]],
+    bounds: Bounds,
     referenceBounds: Batch[Bounds]
 ):
 
@@ -54,8 +54,8 @@ final case class ComponentGroup[ReferenceData] private (
 
   def defaultBounds: ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.default)
-  def fixedBounds: ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.Fixed)
+  def fixedBounds(value: Bounds): ComponentGroup[ReferenceData] =
+    withBoundsType(BoundsType.Fixed(value))
   def inheritBounds: ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.Inherit)
   def relative(x: Double, y: Double, width: Double, height: Double): ComponentGroup[ReferenceData] =
@@ -123,12 +123,31 @@ final case class ComponentGroup[ReferenceData] private (
     summon[Component[ComponentGroup[ReferenceData], ReferenceData]].cascade(this, parentBounds)
 
 object ComponentGroup:
-  def apply[ReferenceData](initalBounds: Bounds): ComponentGroup[ReferenceData] =
+
+  def apply[ReferenceData](): ComponentGroup[ReferenceData] =
     ComponentGroup(
-      initalBounds,
       BoundsType.default,
       ComponentLayout.None,
       Batch.empty,
+      Bounds.zero,
+      Batch.empty
+    )
+
+  def apply[ReferenceData](boundsType: BoundsType): ComponentGroup[ReferenceData] =
+    ComponentGroup(
+      boundsType,
+      ComponentLayout.None,
+      Batch.empty,
+      Bounds.zero,
+      Batch.empty
+    )
+
+  def apply[ReferenceData](bounds: Bounds): ComponentGroup[ReferenceData] =
+    ComponentGroup(
+      BoundsType.Fixed(bounds),
+      ComponentLayout.None,
+      Batch.empty,
+      bounds,
       Batch.empty
     )
 
@@ -217,8 +236,8 @@ object ComponentGroup:
     ): ComponentGroup[ReferenceData] =
       val newBounds: Bounds =
         model.boundsType match
-          case BoundsType.Fixed =>
-            model.bounds
+          case BoundsType.Fixed(b) =>
+            b
 
           case BoundsType.Inherit =>
             parentBounds

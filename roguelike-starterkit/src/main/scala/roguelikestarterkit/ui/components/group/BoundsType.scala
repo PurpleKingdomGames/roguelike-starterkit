@@ -1,5 +1,6 @@
 package roguelikestarterkit.ui.components.group
 
+import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 
@@ -9,7 +10,7 @@ enum BoundsType:
 
   /** The component group ignores parent bounds changes
     */
-  case Fixed
+  case Fixed(bounds: Bounds)
 
   /** The component group uses its parents bounds
     */

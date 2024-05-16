@@ -13,10 +13,10 @@ object ComponentsWindow2:
     WindowModel(
       windowId,
       charSheet,
-      ComponentGroup(Bounds(0, 0, 23, 23))
+      ComponentGroup()
         .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
         .add(
-          ComponentGroup(Bounds(0, 0, 23, 5))
+          ComponentGroup()
             .withLayout(ComponentLayout.Horizontal(Padding(0, 1, 0, 0)))
             .add(
               Label("label 1", Label.Theme(charSheet)),
@@ -25,7 +25,7 @@ object ComponentsWindow2:
             )
         )
         .add(
-          ComponentGroup(Bounds(0, 0, 23, 5))
+          ComponentGroup()
             .withLayout(ComponentLayout.Horizontal(Padding(0, 1, 0, 0)))
             .add(
               Batch(

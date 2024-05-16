@@ -62,9 +62,9 @@ class WindowModelTests extends munit.FunSuite:
     )
 
   val group =
-    ComponentGroup(Bounds(0, 0, 100, 100))
+    ComponentGroup()
       .withLayout(ComponentLayout.Horizontal(Padding(5), Overflow.Wrap))
-      .withBoundsType(BoundsType.Fixed)
+      .withBoundsType(BoundsType.Fixed(Bounds(0, 0, 100, 100)))
       .add("abc")
 
   test("model cascades bounds changes to component group - BoundsType.Fixed") {

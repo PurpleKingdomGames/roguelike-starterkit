@@ -13,10 +13,10 @@ object ComponentsWindow2:
     WindowModel(
       windowId,
       charSheet,
-      ComponentGroup()
+      ComponentGroup(0)
         .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
         .add(
-          ComponentGroup()
+          ComponentGroup(0)
             .withLayout(ComponentLayout.Horizontal(Padding(0, 1, 0, 0)))
             .add(
               Label("label 1", Label.Theme(charSheet)),
@@ -25,7 +25,7 @@ object ComponentsWindow2:
             )
         )
         .add(
-          ComponentGroup()
+          ComponentGroup(0)
             .withLayout(ComponentLayout.Horizontal(Padding(0, 1, 0, 0)))
             .add(
               Batch(
@@ -40,6 +40,14 @@ object ComponentsWindow2:
               }
             )
         )
+        .addDynamic { (count: Int) =>
+          ComponentGroup[Int](0)
+            .withLayout(ComponentLayout.Horizontal())
+            .add(Label("How many windows: ", Label.Theme(charSheet)))
+            .add(
+              Batch.fill(count)(Label("x", Label.Theme(charSheet)))
+            )
+        }
     )
       .withTitle("More component examples")
       .moveTo(2, 2)

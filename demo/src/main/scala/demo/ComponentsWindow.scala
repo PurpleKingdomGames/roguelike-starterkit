@@ -15,7 +15,7 @@ object ComponentsWindow:
     WindowModel(
       windowId,
       charSheet,
-      ComponentGroup(Bounds(0, 0, 23, 23))
+      ComponentGroup(0, Bounds(0, 0, 23, 23))
         .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1)))
         .inheritBounds
         .add(

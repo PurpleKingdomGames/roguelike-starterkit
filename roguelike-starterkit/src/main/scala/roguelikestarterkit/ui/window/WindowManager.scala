@@ -212,6 +212,9 @@ object WindowManager:
     case WindowEvent.ChangeMagnification(next) =>
       Outcome(viewModel.changeMagnification(next))
 
+    case e: MouseEvent.Move =>
+      sendEventToAllWindowViewModels(context, model, viewModel, e, _ => true)
+
     case e: MouseEvent =>
       model.giveWindowAt(context.mouseCoords) match
         case None =>

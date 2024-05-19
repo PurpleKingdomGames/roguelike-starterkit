@@ -63,6 +63,11 @@ object Bounds:
     def resize(x: Int, y: Int): Bounds =
       resize(Size(x, y))
 
+    def resizeBy(amount: Dimensions): Bounds =
+      r.resizeBy(amount.toSize)
+    def resizeBy(x: Int, y: Int): Bounds =
+      resizeBy(Size(x, y))
+
     def withPosition(coords: Coords): Bounds =
       moveTo(coords.toPoint)
     def withPosition(x: Int, y: Int): Bounds =

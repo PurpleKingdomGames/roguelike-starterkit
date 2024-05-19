@@ -299,7 +299,10 @@ object Input:
         model: Input
     ): GlobalEvent => Outcome[Input] =
       case _: MouseEvent.Click
-          if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
+          if model.bounds
+            .resizeBy(2, 2)
+            .moveBy(context.bounds.coords)
+            .contains(context.mouseCoords) =>
         Outcome(model.copy(hasFocus = true))
 
       case _: MouseEvent.Click =>
@@ -411,4 +414,4 @@ final case class Cursor(
 
 object Cursor:
   val default: Cursor =
-    Cursor(0, None, Seconds.zero)
+    Cursor(0, Option(Seconds(0.5)), Seconds.zero)

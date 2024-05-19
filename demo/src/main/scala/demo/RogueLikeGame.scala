@@ -54,7 +54,10 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
     Outcome(Startup.Success(bootData))
 
   def updateModel(context: FrameContext[Size], model: Model): GlobalEvent => Outcome[Model] =
-    case KeyboardEvent.KeyUp(Key.SPACE) =>
+    case KeyboardEvent.KeyUp(Key.PAGE_UP) =>
+      Outcome(model).addGlobalEvents(SceneEvent.LoopPrevious)
+
+    case KeyboardEvent.KeyUp(Key.PAGE_DOWN) =>
       Outcome(model).addGlobalEvents(SceneEvent.LoopNext)
 
     case _ =>

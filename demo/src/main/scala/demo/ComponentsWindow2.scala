@@ -3,6 +3,7 @@ package demo
 import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.components.Input
+import roguelikestarterkit.ui.components.TextArea
 
 object ComponentsWindow2:
 
@@ -50,6 +51,9 @@ object ComponentsWindow2:
         )
         .add(
           Input(20, Input.Theme(charSheet))
+        )
+        .add(
+          TextArea("abc.\nde,f\n0123456!", TextArea.Theme(charSheet))
         )
     )
       .withTitle("More component examples")

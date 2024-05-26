@@ -61,6 +61,12 @@ object UIScene extends Scene[Size, Model, ViewModel]:
 
       Outcome(model.copy(mouseOverWindows = ids))
 
+    case WindowEvent.Closed(id) =>
+      println("Closed window: " + id)
+      val ids = model.mouseOverWindows.filterNot(_ == id)
+
+      Outcome(model.copy(mouseOverWindows = ids))
+
     case _ =>
       Outcome(model)
 

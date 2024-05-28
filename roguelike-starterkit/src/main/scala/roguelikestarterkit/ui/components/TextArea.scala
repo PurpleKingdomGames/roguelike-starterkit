@@ -22,7 +22,7 @@ import scala.annotation.targetName
 final case class TextArea[ReferenceData](
     text: ReferenceData => List[String],
     bounds: Bounds,
-    render: (Coords, List[String]) => Outcome[ComponentFragment]
+    render: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
 ):
   def withText(value: String): TextArea[ReferenceData] =
     this.copy(text = _ => value.split("\n").toList)
@@ -62,14 +62,14 @@ object TextArea:
   /** Minimal label constructor with custom rendering function
     */
   def apply[ReferenceData](text: String)(
-      present: (Coords, List[String]) => Outcome[ComponentFragment]
+      present: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
   ): TextArea[ReferenceData] =
     val t = text.split("\n").toList
     TextArea(_ => t, findBounds(t), present)
 
   @targetName("TextArea_apply_curried")
   def apply[ReferenceData](text: ReferenceData => String)(
-      present: (Coords, List[String]) => Outcome[ComponentFragment]
+      present: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
   ): TextArea[ReferenceData] =
     TextArea((r: ReferenceData) => text(r).split("\n").toList, Bounds(0, 0, 1, 1), present)
 
@@ -78,23 +78,23 @@ object TextArea:
   private def presentTextArea(
       charSheet: CharSheet,
       fgColor: RGBA,
-      bgColor: RGBA,
-      dimensions: Dimensions
-  ): (Coords, List[String]) => Outcome[ComponentFragment] = { case (offset, label) =>
-    val size = dimensions.unsafeToSize
+      bgColor: RGBA
+  ): (Coords, List[String], Dimensions) => Outcome[ComponentFragment] = {
+    case (offset, label, dimensions) =>
+      val size = dimensions.unsafeToSize
 
-    val terminal =
-      RogueTerminalEmulator(size)
-        .putLines(Point.zero, Batch.fromList(label), fgColor, bgColor)
-        .toCloneTiles(
-          CloneId(s"label_${charSheet.assetName.toString}"),
-          offset.toScreenSpace(charSheet.size),
-          charSheet.charCrops
-        ) { case (fg, bg) =>
-          graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-        }
+      val terminal =
+        RogueTerminalEmulator(size)
+          .putLines(Point.zero, Batch.fromList(label), fgColor, bgColor)
+          .toCloneTiles(
+            CloneId(s"label_${charSheet.assetName.toString}"),
+            offset.toScreenSpace(charSheet.size),
+            charSheet.charCrops
+          ) { case (fg, bg) =>
+            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+          }
 
-    Outcome(ComponentFragment(terminal))
+      Outcome(ComponentFragment(terminal))
   }
 
   /** Creates a TextArea rendered using the RogueTerminalEmulator based on a `TextArea.Theme`, with
@@ -109,8 +109,7 @@ object TextArea:
       presentTextArea(
         theme.charSheet,
         theme.colors.foreground,
-        theme.colors.background,
-        d.dimensions
+        theme.colors.background
       )
     )
 
@@ -125,8 +124,7 @@ object TextArea:
       presentTextArea(
         theme.charSheet,
         theme.colors.foreground,
-        theme.colors.background,
-        d.dimensions
+        theme.colors.background
       )
     )
 
@@ -148,7 +146,7 @@ object TextArea:
         context: UiContext[ReferenceData],
         model: TextArea[ReferenceData]
     ): Outcome[ComponentFragment] =
-      model.render(context.bounds.coords, model.text(context.reference))
+      model.render(context.bounds.coords, model.text(context.reference), model.bounds.dimensions)
 
   final case class Theme(
       charSheet: CharSheet,

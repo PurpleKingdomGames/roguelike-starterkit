@@ -21,7 +21,7 @@ import scala.annotation.targetName
 final case class Label[ReferenceData](
     text: ReferenceData => String,
     bounds: Bounds,
-    render: (Coords, String) => Outcome[ComponentFragment]
+    render: (Coords, String, Dimensions) => Outcome[ComponentFragment]
 ):
   def withText(value: String): Label[ReferenceData] =
     this.copy(text = _ => value)
@@ -57,13 +57,13 @@ object Label:
   /** Minimal label constructor with custom rendering function
     */
   def apply[ReferenceData](text: String)(
-      present: (Coords, String) => Outcome[ComponentFragment]
+      present: (Coords, String, Dimensions) => Outcome[ComponentFragment]
   ): Label[ReferenceData] =
     Label(_ => text, findBounds(text), present)
 
   @targetName("Label_apply_curried")
   def apply[ReferenceData](text: ReferenceData => String)(
-      present: (Coords, String) => Outcome[ComponentFragment]
+      present: (Coords, String, Dimensions) => Outcome[ComponentFragment]
   ): Label[ReferenceData] =
     Label(text, Bounds(0, 0, 1, 1), present)
 
@@ -73,22 +73,22 @@ object Label:
       charSheet: CharSheet,
       fgColor: RGBA,
       bgColor: RGBA
-  ): (Coords, String) => Outcome[ComponentFragment] = { case (offset, label) =>
-    val dimensions = Dimensions(label.length, 1)
-    val size       = dimensions.unsafeToSize
+  ): (Coords, String, Dimensions) => Outcome[ComponentFragment] = {
+    case (offset, label, dimensions) =>
+      val size = dimensions.unsafeToSize
 
-    val terminal =
-      RogueTerminalEmulator(size)
-        .putLine(Point.zero, label, fgColor, bgColor)
-        .toCloneTiles(
-          CloneId(s"label_${charSheet.assetName.toString}"),
-          offset.toScreenSpace(charSheet.size),
-          charSheet.charCrops
-        ) { case (fg, bg) =>
-          graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-        }
+      val terminal =
+        RogueTerminalEmulator(size)
+          .putLine(Point.zero, label, fgColor, bgColor)
+          .toCloneTiles(
+            CloneId(s"label_${charSheet.assetName.toString}"),
+            offset.toScreenSpace(charSheet.size),
+            charSheet.charCrops
+          ) { case (fg, bg) =>
+            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+          }
 
-    Outcome(ComponentFragment(terminal))
+      Outcome(ComponentFragment(terminal))
   }
 
   /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with bounds
@@ -129,7 +129,7 @@ object Label:
         context: UiContext[ReferenceData],
         model: Label[ReferenceData]
     ): Outcome[ComponentFragment] =
-      model.render(context.bounds.coords, model.text(context.reference))
+      model.render(context.bounds.coords, model.text(context.reference), model.bounds.dimensions)
 
   final case class Theme(
       charSheet: CharSheet,

@@ -62,9 +62,8 @@ object ComponentsWindow:
           }
         )
         .add(
-          Label("Custom rendered label") { case (offset, label) =>
-            val dimensions = Dimensions(label.length, 1)
-            val size       = dimensions.unsafeToSize
+          Label("Custom rendered label") { case (offset, label, dimensions) =>
+            val size = dimensions.unsafeToSize
 
             val terminal =
               RogueTerminalEmulator(size)

@@ -17,7 +17,6 @@ import roguelikestarterkit.ui.datatypes.UiContext
 /** Buttons `Component`s allow you to create buttons for your UI.
   */
 final case class Button[ReferenceData](
-    bounds: Bounds,
     state: ButtonState,
     up: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment],
     over: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
@@ -59,11 +58,12 @@ final case class Button[ReferenceData](
   ): Outcome[ComponentFragment] =
     summon[StatelessComponent[Button[ReferenceData], ReferenceData]].present(context, this)
 
-  def reflow: Button[ReferenceData] =
-    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].reflow(this)
+  def reflow(context: UiContext[ReferenceData]): Button[ReferenceData] =
+    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].reflow(context, this)
 
-  def cascade(parentBounds: Bounds): Button[ReferenceData] =
-    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].cascade(this, parentBounds)
+  def cascade(context: UiContext[ReferenceData], parentBounds: Bounds): Button[ReferenceData] =
+    summon[StatelessComponent[Button[ReferenceData], ReferenceData]]
+      .cascade(context, this, parentBounds)
 
 object Button:
 
@@ -153,7 +153,6 @@ object Button:
       present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
   ): Button[ReferenceData] =
     Button(
-      bounds,
       ButtonState.Up,
       present,
       None,
@@ -168,7 +167,6 @@ object Button:
       present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
   ): Button[ReferenceData] =
     Button(
-      Bounds(0, 0, 1, 1),
       ButtonState.Up,
       present,
       None,
@@ -186,7 +184,6 @@ object Button:
       calculateBounds: ReferenceData => Bounds
   ): Button[ReferenceData] =
     Button(
-      if theme.hasBorder then Bounds(0, 0, 3, 3) else Bounds(0, 0, 1, 1),
       ButtonState.Up,
       presentButton(
         label,
@@ -254,34 +251,22 @@ object Button:
     )
 
   given [ReferenceData]: StatelessComponent[Button[ReferenceData], ReferenceData] with
-    def bounds(model: Button[ReferenceData]): Bounds =
-      model.bounds
+    def bounds(context: UiContext[ReferenceData], model: Button[ReferenceData]): Bounds =
+      model.calculateBounds(context.reference)
 
-    def updateModel(
+    def handleEvent(
         context: UiContext[ReferenceData],
         model: Button[ReferenceData]
-    ): GlobalEvent => Outcome[Button[ReferenceData]] =
-      case FrameTick =>
-        val newBounds =
-          model.calculateBounds(context.reference)
-
-        Outcome(
-          model.copy(
-            state =
-              if newBounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
-                if context.mouse.isLeftDown then ButtonState.Down
-                else ButtonState.Over
-              else ButtonState.Up,
-            bounds = newBounds
-          )
-        )
-
+    ): GlobalEvent => Batch[GlobalEvent] =
       case _: MouseEvent.Click
-          if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
-        Outcome(model).addGlobalEvents(model.click(context.reference))
+          if model
+            .calculateBounds(context.reference)
+            .moveBy(context.bounds.coords)
+            .contains(context.mouseCoords) =>
+        model.click(context.reference)
 
       case _ =>
-        Outcome(model)
+        Batch.empty
 
     def present(
         context: UiContext[ReferenceData],

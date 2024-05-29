@@ -38,15 +38,15 @@ final case class ComponentList[ReferenceData] private (
       Bounds(t.foldLeft(h) { case (acc, r) => acc.expandToInclude(r) })
 
   def withBounds(value: Bounds): ComponentList[ReferenceData] =
-    this.copy(computedBounds = value).reflow
+    this.copy(computedBounds = value)
 
   def withBoundsType(value: BoundsType): ComponentList[ReferenceData] =
     value match
       case BoundsType.Fixed(bounds) =>
-        this.copy(boundsType = value, computedBounds = bounds).reflow
+        this.copy(boundsType = value, computedBounds = bounds)
 
       case _ =>
-        this.copy(boundsType = value).reflow
+        this.copy(boundsType = value)
 
   def defaultBounds: ComponentList[ReferenceData] =
     withBoundsType(BoundsType.default)
@@ -76,7 +76,7 @@ final case class ComponentList[ReferenceData] private (
     withBoundsType(BoundsType.Dynamic(width, height))
 
   def withLayout(value: ComponentLayout): ComponentList[ReferenceData] =
-    this.copy(layout = value).reflow
+    this.copy(layout = value)
 
   def withPosition(value: Coords): ComponentList[ReferenceData] =
     withBounds(computedBounds.withPosition(value))
@@ -112,11 +112,15 @@ final case class ComponentList[ReferenceData] private (
   ): Outcome[ComponentFragment] =
     summon[Component[ComponentList[ReferenceData], ReferenceData]].present(context, this)
 
-  def reflow: ComponentList[ReferenceData] =
-    summon[Component[ComponentList[ReferenceData], ReferenceData]].reflow(this)
+  def reflow(context: UiContext[ReferenceData]): ComponentList[ReferenceData] =
+    summon[Component[ComponentList[ReferenceData], ReferenceData]].reflow(context, this)
 
-  def cascade(parentBounds: Bounds): ComponentList[ReferenceData] =
-    summon[Component[ComponentList[ReferenceData], ReferenceData]].cascade(this, parentBounds)
+  def cascade(
+      context: UiContext[ReferenceData],
+      parentBounds: Bounds
+  ): ComponentList[ReferenceData] =
+    summon[Component[ComponentList[ReferenceData], ReferenceData]]
+      .cascade(context, this, parentBounds)
 
 object ComponentList:
 
@@ -166,7 +170,7 @@ object ComponentList:
 
   given [ReferenceData]: Component[ComponentList[ReferenceData], ReferenceData] with
 
-    def bounds(model: ComponentList[ReferenceData]): Bounds =
+    def bounds(context: UiContext[ReferenceData], model: ComponentList[ReferenceData]): Bounds =
       model.computedBounds
 
     def updateModel(
@@ -175,7 +179,7 @@ object ComponentList:
     ): GlobalEvent => Outcome[ComponentList[ReferenceData]] =
       case FrameTick =>
         updateComponents(context, model)(FrameTick).map { updated =>
-          if updated.referenceBounds != model.referenceBounds then updated.reflow
+          if updated.referenceBounds != model.referenceBounds then updated.reflow(context)
           else updated
         }
 
@@ -194,8 +198,8 @@ object ComponentList:
           else
             model
               .copy(computedComponents = entries, contentHash = entries.customHashCode)
-              .reflow
-              .cascade(model.computedBounds)
+              .reflow(context)
+              .cascade(context, model.computedBounds)
 
         modelWithComponents.computedComponents
           .map { c =>
@@ -210,7 +214,7 @@ object ComponentList:
             model.copy(
               computedComponents = updatedComponents,
               referenceBounds = updatedComponents.map { c =>
-                c.component.bounds(c.model)
+                c.component.bounds(context, c.model)
               }
             )
           }
@@ -221,23 +225,27 @@ object ComponentList:
     ): Outcome[ComponentFragment] =
       GroupFunctions.present(context, model.computedComponents)
 
-    def reflow(model: ComponentList[ReferenceData]): ComponentList[ReferenceData] =
+    def reflow(
+        context: UiContext[ReferenceData],
+        model: ComponentList[ReferenceData]
+    ): ComponentList[ReferenceData] =
       val nextOffset =
-        GroupFunctions.calculateNextOffset[ReferenceData](model.computedBounds, model.layout)
+        GroupFunctions
+          .calculateNextOffset[ReferenceData](context, model.computedBounds, model.layout)
 
       val newComponents =
         model.computedComponents.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) {
           (acc, entry) =>
             val reflowed = entry.copy(
               offset = nextOffset(acc),
-              model = entry.component.reflow(entry.model)
+              model = entry.component.reflow(context, entry.model)
             )
 
             acc :+ reflowed
         }
 
       val newReferenceBounds =
-        newComponents.map(c => c.component.bounds(c.model).withPosition(c.offset))
+        newComponents.map(c => c.component.bounds(context, c.model).withPosition(c.offset))
 
       model.copy(
         computedComponents = newComponents,
@@ -245,6 +253,7 @@ object ComponentList:
       )
 
     def cascade(
+        context: UiContext[ReferenceData],
         model: ComponentList[ReferenceData],
         parentBounds: Bounds
     ): ComponentList[ReferenceData] =
@@ -259,5 +268,5 @@ object ComponentList:
       model
         .copy(
           computedBounds = newBounds,
-          computedComponents = model.computedComponents.map(_.cascade(newBounds))
+          computedComponents = model.computedComponents.map(_.cascade(context, newBounds))
         )

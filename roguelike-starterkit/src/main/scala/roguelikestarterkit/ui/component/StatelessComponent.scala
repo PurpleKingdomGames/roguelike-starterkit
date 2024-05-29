@@ -11,15 +11,14 @@ trait StatelessComponent[A, ReferenceData] extends Component[A, ReferenceData]:
 
   /** The position and size of the component
     */
-  def bounds(model: A): Bounds
+  def bounds(context: UiContext[ReferenceData], model: A): Bounds
 
-  /** Update this componenets model. In stateless componenets, the model is more like a view model,
-    * and should be assumed to be a cache for presentation data that could be reset at any time.
+  /** Handle an event that has been dispatched to this component.
     */
-  def updateModel(
+  def handleEvent(
       context: UiContext[ReferenceData],
       model: A
-  ): GlobalEvent => Outcome[A]
+  ): GlobalEvent => Batch[GlobalEvent]
 
   /** Produce a renderable output for this component, based on the component's model.
     */
@@ -28,5 +27,8 @@ trait StatelessComponent[A, ReferenceData] extends Component[A, ReferenceData]:
       model: A
   ): Outcome[ComponentFragment]
 
-  def reflow(model: A): A                        = model
-  def cascade(model: A, parentBounds: Bounds): A = model
+  def updateModel(context: UiContext[ReferenceData], model: A): GlobalEvent => Outcome[A] =
+    case e => Outcome(model).addGlobalEvents(handleEvent(context, model)(e))
+
+  def reflow(context: UiContext[ReferenceData], model: A): A                        = model
+  def cascade(context: UiContext[ReferenceData], model: A, parentBounds: Bounds): A = model

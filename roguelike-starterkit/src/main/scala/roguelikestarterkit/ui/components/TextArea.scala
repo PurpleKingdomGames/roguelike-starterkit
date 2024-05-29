@@ -21,16 +21,12 @@ import scala.annotation.targetName
   */
 final case class TextArea[ReferenceData](
     text: ReferenceData => List[String],
-    bounds: Bounds,
     render: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
 ):
   def withText(value: String): TextArea[ReferenceData] =
     this.copy(text = _ => value.split("\n").toList)
   def withText(f: ReferenceData => String): TextArea[ReferenceData] =
     this.copy(text = (r: ReferenceData) => f(r).split("\n").toList)
-
-  def withBounds(value: Bounds): TextArea[ReferenceData] =
-    this.copy(bounds = value)
 
   // Delegates, for convenience.
 
@@ -44,11 +40,12 @@ final case class TextArea[ReferenceData](
   ): Outcome[ComponentFragment] =
     summon[StatelessComponent[TextArea[ReferenceData], ReferenceData]].present(context, this)
 
-  def reflow: TextArea[ReferenceData] =
-    summon[StatelessComponent[TextArea[ReferenceData], ReferenceData]].reflow(this)
+  def reflow(context: UiContext[ReferenceData]): TextArea[ReferenceData] =
+    summon[StatelessComponent[TextArea[ReferenceData], ReferenceData]].reflow(context, this)
 
-  def cascade(parentBounds: Bounds): TextArea[ReferenceData] =
-    summon[StatelessComponent[TextArea[ReferenceData], ReferenceData]].cascade(this, parentBounds)
+  def cascade(context: UiContext[ReferenceData], parentBounds: Bounds): TextArea[ReferenceData] =
+    summon[StatelessComponent[TextArea[ReferenceData], ReferenceData]]
+      .cascade(context, this, parentBounds)
 
 object TextArea:
 
@@ -65,13 +62,13 @@ object TextArea:
       present: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
   ): TextArea[ReferenceData] =
     val t = text.split("\n").toList
-    TextArea(_ => t, findBounds(t), present)
+    TextArea(_ => t, present)
 
   @targetName("TextArea_apply_curried")
   def apply[ReferenceData](text: ReferenceData => String)(
       present: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
   ): TextArea[ReferenceData] =
-    TextArea((r: ReferenceData) => text(r).split("\n").toList, Bounds(0, 0, 1, 1), present)
+    TextArea((r: ReferenceData) => text(r).split("\n").toList, present)
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
@@ -102,10 +99,10 @@ object TextArea:
     */
   def apply[ReferenceData](text: String, theme: Theme): TextArea[ReferenceData] =
     val t = text.split("\n").toList
-    val d = findBounds(t)
+    // val d = findBounds(t)
     TextArea(
       _ => t,
-      d,
+      // d,
       presentTextArea(
         theme.charSheet,
         theme.colors.foreground,
@@ -117,10 +114,10 @@ object TextArea:
     * custom bounds
     */
   def apply[ReferenceData](text: ReferenceData => String, theme: Theme): TextArea[ReferenceData] =
-    val d = Bounds(0, 0, 1, 1)
+    // val d = Bounds(0, 0, 1, 1)
     TextArea(
       (r: ReferenceData) => text(r).split("\n").toList,
-      d,
+      // d,
       presentTextArea(
         theme.charSheet,
         theme.colors.foreground,
@@ -129,24 +126,31 @@ object TextArea:
     )
 
   given [ReferenceData]: StatelessComponent[TextArea[ReferenceData], ReferenceData] with
-    def bounds(model: TextArea[ReferenceData]): Bounds =
-      model.bounds
+    def bounds(context: UiContext[ReferenceData], model: TextArea[ReferenceData]): Bounds =
+      findBounds(model.text(context.reference))
+      // model.bounds
 
-    def updateModel(
+    def handleEvent(
         context: UiContext[ReferenceData],
         model: TextArea[ReferenceData]
-    ): GlobalEvent => Outcome[TextArea[ReferenceData]] =
-      case FrameTick =>
-        Outcome(model.withBounds(findBounds(model.text(context.reference))))
+    ): GlobalEvent => Batch[GlobalEvent] =
+      _ => Batch.empty
+    // def updateModel(
+    //     context: UiContext[ReferenceData],
+    //     model: TextArea[ReferenceData]
+    // ): GlobalEvent => Outcome[TextArea[ReferenceData]] =
+    //   case FrameTick =>
+    //     Outcome(model.withBounds(findBounds(model.text(context.reference))))
 
-      case _ =>
-        Outcome(model)
+    //   case _ =>
+    //     Outcome(model)
 
     def present(
         context: UiContext[ReferenceData],
         model: TextArea[ReferenceData]
     ): Outcome[ComponentFragment] =
-      model.render(context.bounds.coords, model.text(context.reference), model.bounds.dimensions)
+      val bounds = findBounds(model.text(context.reference))
+      model.render(context.bounds.coords, model.text(context.reference), bounds.dimensions)
 
   final case class Theme(
       charSheet: CharSheet,

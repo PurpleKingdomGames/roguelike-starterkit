@@ -130,12 +130,12 @@ object ColorPalette:
     ): Outcome[Layer] =
       model.componentGroup.present(context).map(_.toLayer)
 
-    def cascade(model: ColorPalette, newBounds: Bounds): ColorPalette =
+    def cascade(context: UiContext[Unit], model: ColorPalette, newBounds: Bounds): ColorPalette =
       model.copy(
-        componentGroup = model.componentGroup.cascade(newBounds)
+        componentGroup = model.componentGroup.cascade(context, newBounds)
       )
 
-    def refresh(model: ColorPalette): ColorPalette =
+    def refresh(context: UiContext[Unit], model: ColorPalette): ColorPalette =
       model.copy(
-        componentGroup = model.componentGroup.reflow
+        componentGroup = model.componentGroup.reflow(context)
       )

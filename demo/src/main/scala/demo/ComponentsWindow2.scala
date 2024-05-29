@@ -51,7 +51,7 @@ object ComponentsWindow2:
           Input(20, Input.Theme(charSheet))
         )
         .add(
-          TextArea("abc.\nde,f\n0123456!", TextArea.Theme(charSheet))
+          TextArea((count: Int) => "abc.\nde,f\n0123456!\nCount: " + count, TextArea.Theme(charSheet))
         )
     )
       .withTitle("More component examples")

@@ -27,11 +27,11 @@ trait WindowContent[A, ReferenceData]:
   /** Called when the window's content area bounds changes, gives the model an opportunity to
     * respond to the new content area.
     */
-  def cascade(model: A, newBounds: Bounds): A
+  def cascade(context: UiContext[ReferenceData], model: A, newBounds: Bounds): A
 
   /** Called when a window has been told to refresh its content, possibly by the content itself.
     */
-  def refresh(model: A): A
+  def refresh(context: UiContext[ReferenceData], model: A): A
 
 object WindowContent:
 
@@ -52,10 +52,11 @@ object WindowContent:
       comp.present(context, model).map(_.toLayer)
 
     def cascade(
+        context: UiContext[ReferenceData],
         model: A,
         newBounds: Bounds
     ): A =
-      comp.cascade(model, newBounds)
+      comp.cascade(context, model, newBounds)
 
-    def refresh(model: A): A =
-      comp.reflow(model)
+    def refresh(context: UiContext[ReferenceData], model: A): A =
+      comp.reflow(context, model)

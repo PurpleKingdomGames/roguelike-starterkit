@@ -20,16 +20,12 @@ import scala.annotation.targetName
   */
 final case class Label[ReferenceData](
     text: ReferenceData => String,
-    bounds: Bounds,
     render: (Coords, String, Dimensions) => Outcome[ComponentFragment]
 ):
   def withText(value: String): Label[ReferenceData] =
     this.copy(text = _ => value)
   def withText(f: ReferenceData => String): Label[ReferenceData] =
     this.copy(text = f)
-
-  def withBounds(value: Bounds): Label[ReferenceData] =
-    this.copy(bounds = value)
 
   // Delegates, for convenience.
 
@@ -43,11 +39,12 @@ final case class Label[ReferenceData](
   ): Outcome[ComponentFragment] =
     summon[StatelessComponent[Label[ReferenceData], ReferenceData]].present(context, this)
 
-  def reflow: Label[ReferenceData] =
-    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].reflow(this)
+  def reflow(context: UiContext[ReferenceData]): Label[ReferenceData] =
+    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].reflow(context, this)
 
-  def cascade(parentBounds: Bounds): Label[ReferenceData] =
-    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].cascade(this, parentBounds)
+  def cascade(context: UiContext[ReferenceData], parentBounds: Bounds): Label[ReferenceData] =
+    summon[StatelessComponent[Label[ReferenceData], ReferenceData]]
+      .cascade(context, this, parentBounds)
 
 object Label:
 
@@ -59,13 +56,13 @@ object Label:
   def apply[ReferenceData](text: String)(
       present: (Coords, String, Dimensions) => Outcome[ComponentFragment]
   ): Label[ReferenceData] =
-    Label(_ => text, findBounds(text), present)
+    Label(_ => text, present)
 
   @targetName("Label_apply_curried")
   def apply[ReferenceData](text: ReferenceData => String)(
       present: (Coords, String, Dimensions) => Outcome[ComponentFragment]
   ): Label[ReferenceData] =
-    Label(text, Bounds(0, 0, 1, 1), present)
+    Label(text, present)
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
@@ -97,7 +94,7 @@ object Label:
   def apply[ReferenceData](text: String, theme: Theme): Label[ReferenceData] =
     Label(
       _ => text,
-      findBounds(text),
+      // findBounds(text),
       presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background)
     )
 
@@ -107,29 +104,35 @@ object Label:
   def apply[ReferenceData](text: ReferenceData => String, theme: Theme): Label[ReferenceData] =
     Label(
       text,
-      Bounds(0, 0, 1, 1),
+      // Bounds(0, 0, 1, 1),
       presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background)
     )
 
   given [ReferenceData]: StatelessComponent[Label[ReferenceData], ReferenceData] with
-    def bounds(model: Label[ReferenceData]): Bounds =
-      model.bounds
+    def bounds(context: UiContext[ReferenceData], model: Label[ReferenceData]): Bounds =
+      findBounds(model.text(context.reference))
 
-    def updateModel(
+    // def updateModel(
+    //     context: UiContext[ReferenceData],
+    //     model: Label[ReferenceData]
+    // ): GlobalEvent => Outcome[Label[ReferenceData]] =
+    //   case FrameTick =>
+    //     Outcome(model.withBounds(findBounds(model.text(context.reference))))
+
+    //   case _ =>
+    //     Outcome(model)
+    def handleEvent(
         context: UiContext[ReferenceData],
         model: Label[ReferenceData]
-    ): GlobalEvent => Outcome[Label[ReferenceData]] =
-      case FrameTick =>
-        Outcome(model.withBounds(findBounds(model.text(context.reference))))
-
-      case _ =>
-        Outcome(model)
+    ): GlobalEvent => Batch[GlobalEvent] =
+      _ => Batch.empty
 
     def present(
         context: UiContext[ReferenceData],
         model: Label[ReferenceData]
     ): Outcome[ComponentFragment] =
-      model.render(context.bounds.coords, model.text(context.reference), model.bounds.dimensions)
+      val bounds = findBounds(model.text(context.reference))
+      model.render(context.bounds.coords, model.text(context.reference), bounds.dimensions)
 
   final case class Theme(
       charSheet: CharSheet,

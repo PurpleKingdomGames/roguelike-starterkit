@@ -156,11 +156,11 @@ final case class Input(
   ): Outcome[ComponentFragment] =
     summon[Component[Input, ?]].present(context, this)
 
-  def reflow: Input =
-    summon[Component[Input, ?]].reflow(this)
+  def reflow(context: UiContext[?]): Input =
+    summon[Component[Input, ?]].reflow(context, this)
 
-  def cascade(parentBounds: Bounds): Input =
-    summon[Component[Input, ?]].cascade(this, parentBounds)
+  def cascade(context: UiContext[?], parentBounds: Bounds): Input =
+    summon[Component[Input, ?]].cascade(context, this, parentBounds)
 
 object Input:
 
@@ -286,7 +286,7 @@ object Input:
     )
 
   given [ReferenceData]: Component[Input, ReferenceData] with
-    def bounds(model: Input): Bounds =
+    def bounds(context: UiContext[ReferenceData], model: Input): Bounds =
       model.bounds.resizeBy(2, 2)
 
     def updateModel(
@@ -345,10 +345,10 @@ object Input:
         context.running
       )
 
-    def reflow(model: Input): Input =
+    def reflow(context: UiContext[ReferenceData], model: Input): Input =
       model
 
-    def cascade(model: Input, parentBounds: Bounds): Input =
+    def cascade(context: UiContext[ReferenceData], model: Input, parentBounds: Bounds): Input =
       model
 
   final case class Theme(

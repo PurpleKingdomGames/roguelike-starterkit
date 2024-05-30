@@ -41,11 +41,17 @@ object ComponentsWindow2:
             )
         )
         .add(
-          ComponentList { (count: Int) =>
+          ComponentList(Bounds(0, 0, 20, 3)) { (count: Int) =>
             Batch(Label[Int]("How many windows: ", Label.Theme(charSheet))) ++
               Batch.fill(count)(Label("x", Label.Theme(charSheet)))
           }
-            .withLayout(ComponentLayout.Horizontal())
+            .withLayout(ComponentLayout.Vertical())
+        )
+        .add(
+          ComponentList(Bounds(0, 0, 20, 3)) { (count: Int) =>
+            Batch.fill(count)(Button("y", Button.Theme(charSheet)))
+          }
+            .withLayout(ComponentLayout.Vertical())
         )
         .add(
           Input(20, Input.Theme(charSheet))

@@ -13,13 +13,13 @@ object ComponentsWindow2:
     WindowModel(
       windowId,
       charSheet,
-      ComponentList(Bounds(0, 0, 20, 3)) { // (count: Int) =>
-        // Batch(Label[Int]("How many windows: ", Label.Theme(charSheet))) ++
-        // Batch.fill(count)(Label("x", Label.Theme(charSheet))) ++
-        // Batch.fill(count)(Button("y", Button.Theme(charSheet)))
-        Button[Int]("test", Button.Theme(charSheet)).onClick(Log("test"))
-      }
-        .withLayout(ComponentLayout.Vertical())
+      ComponentList(Bounds(0, 0, 20, 3)) { (count: Int) =>
+        Batch(Label[Int]("How many windows: ", Label.Theme(charSheet))) ++
+          Batch.fill(count)(Label("x", Label.Theme(charSheet)))
+      }.add((count: Int) =>
+        Batch.fill(count)(Button[Int]("y", Button.Theme(charSheet)).onClick(Log("count: " + count)))
+        // Button[Int]("test", Button.Theme(charSheet)).onClick(Log("test"))
+      ).withLayout(ComponentLayout.Vertical())
       // ComponentGroup()
       //   .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
       //   .add(

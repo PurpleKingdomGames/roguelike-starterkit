@@ -20,7 +20,6 @@ import roguelikestarterkit.ui.datatypes.UiContext
   */
 final case class Label[ReferenceData](
     text: ReferenceData => String,
-    // bounds: Bounds,
     render: (Coords, String, Dimensions) => Outcome[ComponentFragment],
     calculateBounds: (ReferenceData, String) => Bounds
 ):
@@ -28,9 +27,6 @@ final case class Label[ReferenceData](
     this.copy(text = _ => value)
   def withText(f: ReferenceData => String): Label[ReferenceData] =
     this.copy(text = f)
-
-  // def withBounds(value: Bounds): Label[ReferenceData] =
-  //   this.copy(bounds = value)
 
 object Label:
 
@@ -43,12 +39,6 @@ object Label:
       present: (Coords, String, Dimensions) => Outcome[ComponentFragment]
   ): Label[ReferenceData] =
     Label(_ => text, present, calculateBounds)
-
-  def apply[ReferenceData](
-      present: (Coords, String, Dimensions) => Outcome[ComponentFragment],
-      calculateBounds: (ReferenceData, String) => Bounds
-  )(text: ReferenceData => String): Label[ReferenceData] =
-    Label(text, present, calculateBounds)
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
@@ -97,16 +87,6 @@ object Label:
   given [ReferenceData]: StatelessComponent[Label[ReferenceData], ReferenceData] with
     def bounds(reference: ReferenceData, model: Label[ReferenceData]): Bounds =
       model.calculateBounds(reference, model.text(reference))
-
-    // def updateModel(
-    //     context: UiContext[ReferenceData],
-    //     model: Label[ReferenceData]
-    // ): GlobalEvent => Outcome[Label[ReferenceData]] =
-    //   // case FrameTick =>
-    //   //   Outcome(model.withBounds(findBounds(model.text(context.reference))))
-
-    //   case _ =>
-    //     Outcome(model)
 
     def present(
         context: UiContext[ReferenceData],

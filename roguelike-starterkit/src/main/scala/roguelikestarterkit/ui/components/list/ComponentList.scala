@@ -13,14 +13,46 @@ import scala.annotation.tailrec
 final case class ComponentList[ReferenceData] private (
     content: ReferenceData => Batch[ComponentListEntry[?, ReferenceData]],
     layout: ComponentLayout,
-    components: Batch[ComponentListEntry[?, ReferenceData]],
     bounds: Bounds
 ):
 
-  private[list] def withComponents(
-      components: Batch[ComponentListEntry[?, ReferenceData]]
+  private def addSingle[A](entry: ReferenceData => A)(using
+      c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
-    this.copy(components = components)
+    val f =
+      (r: ReferenceData) => content(r) :+ ComponentListEntry(Coords.zero, entry(r), c)
+
+    this.copy(
+      content = f
+    )
+
+  def addOne[A](entry: ReferenceData => A)(using
+      c: StatelessComponent[A, ReferenceData]
+  ): ComponentList[ReferenceData] =
+    addSingle(entry)
+
+  def addOne[A](entry: A)(using
+      c: StatelessComponent[A, ReferenceData]
+  ): ComponentList[ReferenceData] =
+    addSingle(_ => entry)
+
+  def add[A](entries: Batch[ReferenceData => A])(using
+      c: StatelessComponent[A, ReferenceData]
+  ): ComponentList[ReferenceData] =
+    entries.foldLeft(this) { case (acc, next) => acc.addSingle(next) }
+
+  def add[A](entries: (ReferenceData => A)*)(using
+      c: StatelessComponent[A, ReferenceData]
+  ): ComponentList[ReferenceData] =
+    Batch.fromSeq(entries).foldLeft(this) { case (acc, next) => acc.addSingle(next) }
+
+  def add[A](entries: ReferenceData => Batch[A])(using
+      c: StatelessComponent[A, ReferenceData]
+  ): ComponentList[ReferenceData] =
+    this.copy(
+      content = (r: ReferenceData) =>
+        content(r) ++ entries(r).map(v => ComponentListEntry(Coords.zero, v, c))
+    )
 
   def withBounds(value: Bounds): ComponentList[ReferenceData] =
     this.copy(bounds = value)
@@ -63,7 +95,6 @@ object ComponentList:
     ComponentList(
       f,
       ComponentLayout.None,
-      Batch.empty,
       bounds
     )
 
@@ -78,7 +109,6 @@ object ComponentList:
     ComponentList(
       f,
       ComponentLayout.None,
-      Batch.empty,
       bounds
     )
 
@@ -90,38 +120,27 @@ object ComponentList:
     ): Bounds =
       model.bounds
 
-    // def updateModel(
-    //     context: UiContext[ReferenceData],
-    //     model: ComponentList[ReferenceData]
-    // ): GlobalEvent => Outcome[ComponentList[ReferenceData]] =
-    //   case e => Outcome(model)
-
     def present(
         context: UiContext[ReferenceData],
         model: ComponentList[ReferenceData]
     ): Outcome[ComponentFragment] =
       ListFunctions.present(
         context,
-        reflowStateless(context.reference, model.withComponents(model.content(context.reference))).components
+        reflow(context.reference, model)
       )
 
-    private def reflowStateless(
-        context: ReferenceData,
+    private def reflow(
+        reference: ReferenceData,
         model: ComponentList[ReferenceData]
-    ): ComponentList[ReferenceData] =
+    ): Batch[ComponentListEntry[?, ReferenceData]] =
       val nextOffset =
         ListFunctions.calculateNextOffset[ReferenceData](model.bounds, model.layout)
 
-      val newComponents =
-        model.components.foldLeft(Batch.empty[ComponentListEntry[?, ReferenceData]]) {
-          (acc, entry) =>
-            val reflowed = entry.copy(
-              offset = nextOffset(context, acc)
-            )
+      model.content(reference).foldLeft(Batch.empty[ComponentListEntry[?, ReferenceData]]) {
+        (acc, entry) =>
+          val reflowed = entry.copy(
+            offset = nextOffset(reference, acc)
+          )
 
-            acc :+ reflowed
-        }
-
-      model.copy(
-        components = newComponents
-      )
+          acc :+ reflowed
+      }

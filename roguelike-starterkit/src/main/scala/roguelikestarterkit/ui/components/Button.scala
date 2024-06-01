@@ -17,8 +17,6 @@ import roguelikestarterkit.ui.datatypes.UiContext
 /** Buttons `Component`s allow you to create buttons for your UI.
   */
 final case class Button[ReferenceData](
-    // bounds: Bounds,
-    // state: ButtonState,
     up: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment],
     over: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
     down: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
@@ -135,8 +133,6 @@ object Button:
       present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
   ): Button[ReferenceData] =
     Button(
-      // bounds,
-      // ButtonState.Up,
       present,
       None,
       None,
@@ -150,8 +146,6 @@ object Button:
       present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
   ): Button[ReferenceData] =
     Button(
-      // Bounds(0, 0, 1, 1),
-      // ButtonState.Up,
       present,
       None,
       None,
@@ -168,8 +162,6 @@ object Button:
       calculateBounds: ReferenceData => Bounds
   ): Button[ReferenceData] =
     Button(
-      // if theme.hasBorder then Bounds(0, 0, 3, 3) else Bounds(0, 0, 1, 1),
-      // ButtonState.Up,
       presentButton(
         label,
         theme.up.foreground,
@@ -238,34 +230,6 @@ object Button:
   given [ReferenceData]: StatelessComponent[Button[ReferenceData], ReferenceData] with
     def bounds(reference: ReferenceData, model: Button[ReferenceData]): Bounds =
       model.calculateBounds(reference)
-
-    // def updateModel(
-    //     context: UiContext[ReferenceData],
-    //     model: Button[ReferenceData]
-    // ): GlobalEvent => Outcome[Button[ReferenceData]] =
-    //   case FrameTick =>
-    //     val newBounds =
-    //       model.calculateBounds(context.reference)
-
-    //     println(s"newBounds: $newBounds")
-
-    //     Outcome(
-    //       model.copy(
-    //         state =
-    //           if newBounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
-    //             if context.mouse.isLeftDown then ButtonState.Down
-    //             else ButtonState.Over
-    //           else ButtonState.Up,
-    //         bounds = newBounds
-    //       )
-    //     )
-
-    //   case _: MouseEvent.Click
-    //       if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
-    //     Outcome(model).addGlobalEvents(model.click(context.reference))
-
-    //   case _ =>
-    //     Outcome(model)
 
     def present(
         context: UiContext[ReferenceData],

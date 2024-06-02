@@ -148,7 +148,7 @@ object WindowManager:
       model: WindowManagerModel[ReferenceData]
   ): WindowEvent => Outcome[WindowManagerModel[ReferenceData]] =
     case WindowEvent.Refresh(id) =>
-      model.refresh(id)
+      model.refresh(id, context.reference)
 
     case WindowEvent.GiveFocusAt(position) =>
       Outcome(model.giveFocusAndSurfaceAt(position))

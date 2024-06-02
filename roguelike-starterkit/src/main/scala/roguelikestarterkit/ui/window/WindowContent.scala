@@ -8,6 +8,11 @@ import roguelikestarterkit.ComponentGroup
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.UiContext
 
+// The only difference between this and Component is the bounds method. Can we merge them? Oh, and the fact that refresh is called reflow in Component.
+
+/** A typeclass that confirms that some type `A` can be used as a `WindowContent` provides the
+  * necessary operations for that type to act as a window content.
+  */
 trait WindowContent[A, ReferenceData]:
 
   /** Update this content's model.
@@ -31,10 +36,13 @@ trait WindowContent[A, ReferenceData]:
 
   /** Called when a window has been told to refresh its content, possibly by the content itself.
     */
-  def refresh(model: A): A
+  def refresh(reference: ReferenceData, model: A): A
 
+/** Companion object for `WindowContent` */
 object WindowContent:
 
+  /** A `WindowContent` instance for any A with a `Component` instance.
+    */
   given [A, ReferenceData](using
       comp: Component[A, ReferenceData]
   ): WindowContent[A, ReferenceData] with
@@ -57,5 +65,5 @@ object WindowContent:
     ): A =
       comp.cascade(model, newBounds)
 
-    def refresh(model: A): A =
-      comp.reflow(model)
+    def refresh(reference: ReferenceData, model: A): A =
+      comp.reflow(reference, model)

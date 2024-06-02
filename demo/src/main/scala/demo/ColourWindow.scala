@@ -138,7 +138,7 @@ object ColorPalette:
       //   componentGroup = model.componentGroup.cascade(newBounds)
       // )
 
-    def refresh(model: ColorPalette): ColorPalette =
+    def refresh(reference: Unit, model: ColorPalette): ColorPalette =
       model
       // .copy(
       //   componentGroup = model.componentGroup.reflow

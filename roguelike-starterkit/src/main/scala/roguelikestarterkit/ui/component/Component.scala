@@ -30,7 +30,7 @@ trait Component[A, ReferenceData]:
   /** Used internally to instruct the component that the layout has changed in some way, and that it
     * should reflow it's contents - whatever that means in the context of this component type.
     */
-  def reflow(model: A): A
+  def reflow(reference: ReferenceData, model: A): A
 
   /** Informs the Component that something about its parent has changed in case it needs to take
     * action. Currently the only cascaded change is the bounds.

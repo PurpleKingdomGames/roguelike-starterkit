@@ -126,10 +126,10 @@ object ComponentList:
     ): Outcome[ComponentFragment] =
       ListFunctions.present(
         context,
-        reflow(context.reference, model)
+        contentReflow(context.reference, model)
       )
 
-    private def reflow(
+    private def contentReflow(
         reference: ReferenceData,
         model: ComponentList[ReferenceData]
     ): Batch[ComponentListEntry[?, ReferenceData]] =

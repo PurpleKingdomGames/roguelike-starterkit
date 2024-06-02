@@ -144,24 +144,6 @@ final case class Input(
   def withLoseFocusActions(actions: => Batch[GlobalEvent]): Input =
     this.copy(onLoseFocus = () => actions)
 
-  // Delegates, for convenience.
-
-  def update[StartupData, ContextData](
-      context: UiContext[?]
-  ): GlobalEvent => Outcome[Input] =
-    summon[Component[Input, ?]].updateModel(context, this)
-
-  def present[StartupData, ContextData](
-      context: UiContext[?]
-  ): Outcome[ComponentFragment] =
-    summon[Component[Input, ?]].present(context, this)
-
-  def reflow: Input =
-    summon[Component[Input, ?]].reflow(this)
-
-  def cascade(parentBounds: Bounds): Input =
-    summon[Component[Input, ?]].cascade(this, parentBounds)
-
 object Input:
 
   /** Minimal input constructor with custom rendering function
@@ -345,7 +327,7 @@ object Input:
         context.running
       )
 
-    def reflow(model: Input): Input =
+    def reflow(reference: ReferenceData, model: Input): Input =
       model
 
     def cascade(model: Input, parentBounds: Bounds): Input =

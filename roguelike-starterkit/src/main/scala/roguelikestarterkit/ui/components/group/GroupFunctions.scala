@@ -15,8 +15,12 @@ object GroupFunctions:
     private def withPadding(p: Padding): Bounds =
       b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
 
-  def calculateNextOffset[ReferenceData](reference: ReferenceData, bounds: Bounds, layout: ComponentLayout)(
-      components: Batch[ComponentEntry[?, ReferenceData]]
+  def calculateNextOffset[ReferenceData](
+      reference: ReferenceData,
+      bounds: Bounds,
+      layout: ComponentLayout
+  )(
+      components: Batch[ComponentGroupEntry[?, ReferenceData]]
   ): Coords =
     layout match
       case ComponentLayout.None =>
@@ -26,7 +30,9 @@ object GroupFunctions:
         components
           .takeRight(1)
           .headOption
-          .map(c => c.offset + Coords(c.component.bounds(reference, c.model).withPadding(padding).right, 0))
+          .map(c =>
+            c.offset + Coords(c.component.bounds(reference, c.model).withPadding(padding).right, 0)
+          )
           .getOrElse(Coords(padding.left, padding.top))
 
       case ComponentLayout.Horizontal(padding, Overflow.Wrap) =>
@@ -52,7 +58,9 @@ object GroupFunctions:
         components
           .takeRight(1)
           .headOption
-          .map(c => c.offset + Coords(0, c.component.bounds(reference, c.model).withPadding(padding).bottom))
+          .map(c =>
+            c.offset + Coords(0, c.component.bounds(reference, c.model).withPadding(padding).bottom)
+          )
           .getOrElse(Coords(padding.left, padding.top))
 
   def calculateCascadeBounds(
@@ -132,7 +140,7 @@ object GroupFunctions:
 
   def present[ReferenceData](
       context: UiContext[ReferenceData],
-      components: Batch[ComponentEntry[?, ReferenceData]]
+      components: Batch[ComponentGroupEntry[?, ReferenceData]]
   ): Outcome[ComponentFragment] =
     components
       .map { c =>

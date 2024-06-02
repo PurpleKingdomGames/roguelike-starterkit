@@ -73,9 +73,9 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[WindowModel[?,
       )
     )
 
-  def refresh(id: WindowId): Outcome[WindowManagerModel[ReferenceData]] =
+  def refresh(id: WindowId, reference: ReferenceData): Outcome[WindowManagerModel[ReferenceData]] =
     Outcome(
-      this.copy(windows = windows.map(w => if w.id == id then w.refresh else w))
+      this.copy(windows = windows.map(w => if w.id == id then w.refresh(reference) else w))
     )
 
   def update(

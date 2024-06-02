@@ -16,10 +16,15 @@ object ComponentsWindow2:
       ComponentList(Bounds(0, 0, 20, 3)) { (count: Int) =>
         Batch(Label[Int]("How many windows: ", Label.Theme(charSheet))) ++
           Batch.fill(count)(Label("x", Label.Theme(charSheet)))
-      }.add((count: Int) =>
-        Batch.fill(count)(Button[Int]("y", Button.Theme(charSheet)).onClick(Log("count: " + count)))
-        // Button[Int]("test", Button.Theme(charSheet)).onClick(Log("test"))
-      ).withLayout(ComponentLayout.Vertical())
+      }
+        .add((count: Int) =>
+          Batch.fill(count)(
+            Button[Int]("Button", Button.Theme(charSheet)).onClick(Log("count: " + count))
+          )
+            :+ Button[Int]("test", Button.Theme(charSheet)).onClick(Log("test"))
+        )
+        .add((i: Int) => TextArea[Int]("abc.\nde,f\n0123456! " + i, TextArea.Theme(charSheet)))
+        .withLayout(ComponentLayout.Vertical(Padding.zero))
       // ComponentGroup()
       //   .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
       //   .add(

@@ -64,14 +64,3 @@ object ListFunctions:
             c.offset + Coords(0, c.component.bounds(context, c.model).withPadding(padding).bottom)
           )
           .getOrElse(Coords(padding.left, padding.top))
-
-  def present[ReferenceData](
-      context: UiContext[ReferenceData],
-      components: Batch[ComponentListEntry[?, ReferenceData]]
-  ): Outcome[ComponentFragment] =
-    components
-      .map { c =>
-        c.component.present(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)
-      }
-      .sequence
-      .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))

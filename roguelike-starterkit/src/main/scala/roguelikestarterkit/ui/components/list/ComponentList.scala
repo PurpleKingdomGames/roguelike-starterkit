@@ -124,10 +124,12 @@ object ComponentList:
         context: UiContext[ReferenceData],
         model: ComponentList[ReferenceData]
     ): Outcome[ComponentFragment] =
-      ListFunctions.present(
-        context,
-        contentReflow(context.reference, model)
-      )
+      contentReflow(context.reference, model)
+        .map { c =>
+          c.component.present(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)
+        }
+        .sequence
+        .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))
 
     private def contentReflow(
         reference: ReferenceData,

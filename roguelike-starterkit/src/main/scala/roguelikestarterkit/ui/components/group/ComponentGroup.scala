@@ -1,8 +1,13 @@
 package roguelikestarterkit.ui.components.group
 
 import indigo.*
-import roguelikestarterkit.tiles.Tile.r
+import roguelikestarterkit.tiles.Tile
 import roguelikestarterkit.ui.component.*
+import roguelikestarterkit.ui.components.common.ComponentEntry
+import roguelikestarterkit.ui.components.common.ComponentLayout
+import roguelikestarterkit.ui.components.common.ContainerLikeFunctions
+import roguelikestarterkit.ui.components.common.Overflow
+import roguelikestarterkit.ui.components.common.Padding
 import roguelikestarterkit.ui.datatypes.*
 
 import scala.annotation.tailrec
@@ -13,7 +18,7 @@ import scala.annotation.tailrec
 final case class ComponentGroup[ReferenceData] private (
     boundsType: BoundsType,
     layout: ComponentLayout,
-    components: Batch[ComponentGroupEntry[?, ReferenceData]],
+    components: Batch[ComponentEntry[?, ReferenceData]],
     bounds: Bounds,
     contentBounds: Bounds,
     dirty: Boolean
@@ -23,7 +28,7 @@ final case class ComponentGroup[ReferenceData] private (
       c: Component[A, ReferenceData]
   ): ComponentGroup[ReferenceData] =
     this.copy(
-      components = components :+ ComponentGroupEntry(Coords.zero, entry, c),
+      components = components :+ ComponentEntry(Coords.zero, entry, c),
       dirty = true
     )
 
@@ -105,7 +110,8 @@ object ComponentGroup:
   def apply[ReferenceData](): ComponentGroup[ReferenceData] =
     ComponentGroup(
       BoundsType.default,
-      ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
+      roguelikestarterkit.ui.components.common.ComponentLayout
+        .Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       Bounds.zero,
       Bounds.zero,
@@ -115,7 +121,8 @@ object ComponentGroup:
   def apply[ReferenceData](boundsType: BoundsType): ComponentGroup[ReferenceData] =
     ComponentGroup(
       boundsType,
-      ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
+      roguelikestarterkit.ui.components.common.ComponentLayout
+        .Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       Bounds.zero,
       Bounds.zero,
@@ -125,7 +132,8 @@ object ComponentGroup:
   def apply[ReferenceData](bounds: Bounds): ComponentGroup[ReferenceData] =
     ComponentGroup(
       BoundsType.Fixed(bounds),
-      ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
+      roguelikestarterkit.ui.components.common.ComponentLayout
+        .Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       bounds,
       Bounds.zero,
@@ -181,7 +189,7 @@ object ComponentGroup:
 
     private def calculateContentBounds[ReferenceData](
         reference: ReferenceData,
-        components: Batch[ComponentGroupEntry[?, ReferenceData]]
+        components: Batch[ComponentEntry[?, ReferenceData]]
     ): Bounds =
       components.foldLeft(Bounds.zero) { (acc, c) =>
         val bounds = c.component.bounds(reference, c.model).moveTo(c.offset)
@@ -192,30 +200,25 @@ object ComponentGroup:
         context: UiContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): Outcome[ComponentFragment] =
-      model.components
-        .map { c =>
-          c.component.present(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)
-        }
-        .sequence
-        .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))
+      ContainerLikeFunctions.present(context, model.components)
 
     def reflow(
         reference: ReferenceData,
         model: ComponentGroup[ReferenceData]
     ): ComponentGroup[ReferenceData] =
-      val reflowed: Batch[ComponentGroupEntry[?, ReferenceData]] = model.components.map { c =>
+      val reflowed: Batch[ComponentEntry[?, ReferenceData]] = model.components.map { c =>
         c.copy(
           model = c.component.reflow(reference, c.model)
         )
       }
 
       val nextOffset =
-        GroupFunctions.calculateNextOffset[ReferenceData](reference, model.bounds, model.layout)
+        ContainerLikeFunctions.calculateNextOffset[ReferenceData](model.bounds, model.layout)
 
-      val newComponents = reflowed.foldLeft(Batch.empty[ComponentGroupEntry[?, ReferenceData]]) {
+      val newComponents = reflowed.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) {
         (acc, entry) =>
           val reflowed = entry.copy(
-            offset = nextOffset(acc),
+            offset = nextOffset(reference, acc),
             model = entry.component.reflow(reference, entry.model)
           )
 
@@ -231,7 +234,7 @@ object ComponentGroup:
         parentBounds: Bounds
     ): ComponentGroup[ReferenceData] =
       val newBounds: Bounds =
-        GroupFunctions.calculateCascadeBounds(
+        calculateCascadeBounds(
           model.bounds,
           model.contentBounds,
           parentBounds,
@@ -244,3 +247,78 @@ object ComponentGroup:
           components = model.components.map(_.cascade(newBounds)),
           dirty = true
         )
+
+  def calculateCascadeBounds(
+      currentBounds: Bounds,
+      contentBounds: Bounds,
+      parentBounds: Bounds,
+      boundsType: BoundsType
+  ): Bounds =
+    boundsType match
+      case BoundsType.Fixed(b) =>
+        b
+
+      case BoundsType.Inherit =>
+        parentBounds
+
+      case BoundsType.Relative(x, y, width, height) =>
+        Bounds(
+          (parentBounds.width.toDouble * x).toInt,
+          (parentBounds.height.toDouble * y).toInt,
+          (parentBounds.width.toDouble * width).toInt,
+          (parentBounds.height.toDouble * height).toInt
+        )
+
+      case BoundsType.RelativePosition(x, y) =>
+        currentBounds.withPosition(
+          (parentBounds.width.toDouble * x).toInt,
+          (parentBounds.height.toDouble * y).toInt
+        )
+
+      case BoundsType.RelativeSize(width, height) =>
+        currentBounds.withDimensions(
+          (parentBounds.width.toDouble * width).toInt,
+          (parentBounds.height.toDouble * height).toInt
+        )
+
+      case BoundsType.Offset(amountPosition, amountSize) =>
+        Bounds(parentBounds.coords + amountPosition, parentBounds.dimensions + amountSize)
+
+      case BoundsType.OffsetPosition(amount) =>
+        currentBounds.withPosition(parentBounds.coords + amount)
+
+      case BoundsType.OffsetSize(amount) =>
+        currentBounds.withDimensions(parentBounds.dimensions + amount)
+
+      case BoundsType.Dynamic(FitMode.Available, FitMode.Available) =>
+        parentBounds
+
+      case BoundsType.Dynamic(FitMode.Available, FitMode.Content) =>
+        parentBounds.withDimensions(
+          parentBounds.dimensions.width,
+          contentBounds.dimensions.height
+        )
+
+      case BoundsType.Dynamic(FitMode.Available, FitMode.Fixed(units)) =>
+        parentBounds.withDimensions(parentBounds.dimensions.width, units)
+
+      case BoundsType.Dynamic(FitMode.Content, FitMode.Available) =>
+        parentBounds.withDimensions(
+          contentBounds.dimensions.height,
+          parentBounds.dimensions.width
+        )
+
+      case BoundsType.Dynamic(FitMode.Content, FitMode.Content) =>
+        contentBounds
+
+      case BoundsType.Dynamic(FitMode.Content, FitMode.Fixed(units)) =>
+        contentBounds.withDimensions(contentBounds.dimensions.width, units)
+
+      case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Available) =>
+        parentBounds.withDimensions(units, parentBounds.dimensions.height)
+
+      case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Content) =>
+        contentBounds.withDimensions(units, contentBounds.dimensions.height)
+
+      case BoundsType.Dynamic(FitMode.Fixed(unitsW), FitMode.Fixed(unitsH)) =>
+        currentBounds.withDimensions(unitsW, unitsH)

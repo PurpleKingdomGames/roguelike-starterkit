@@ -5,6 +5,7 @@ import roguelikestarterkit.Bounds
 import roguelikestarterkit.Coords
 import roguelikestarterkit.UiContext
 import roguelikestarterkit.ui.component.*
+import roguelikestarterkit.ui.components.common.*
 
 class ComponentGroupTests extends munit.FunSuite:
 
@@ -34,8 +35,7 @@ class ComponentGroupTests extends munit.FunSuite:
     val group: ComponentGroup[Unit] =
       ComponentGroup()
         .withLayout(
-          ComponentLayout
-            .Horizontal(Padding(5), Overflow.Wrap)
+          ComponentLayout.Horizontal(Padding(5), Overflow.Wrap)
         )
         .withBoundsType(BoundsType.Fixed(Bounds(0, 0, 100, 100)))
         .add("abc", "def")
@@ -112,8 +112,7 @@ class ComponentGroupTests extends munit.FunSuite:
   test("Calculate the next offset - horizontal, padding 0, hidden") {
     val group = ComponentGroup(Bounds(0, 0, 5, 5))
       .withLayout(
-        ComponentLayout
-          .Horizontal(Padding(0), Overflow.Hidden)
+        ComponentLayout.Horizontal(Padding(0), Overflow.Hidden)
       )
       .add("abc", "def")
 
@@ -132,8 +131,7 @@ class ComponentGroupTests extends munit.FunSuite:
   test("Calculate the next offset - horizontal, padding 5, hidden") {
     val group = ComponentGroup(Bounds(0, 0, 5, 5))
       .withLayout(
-        ComponentLayout
-          .Horizontal(Padding(5), Overflow.Hidden)
+        ComponentLayout.Horizontal(Padding(5), Overflow.Hidden)
       )
       .add("abc", "def")
 
@@ -152,8 +150,7 @@ class ComponentGroupTests extends munit.FunSuite:
   test("Calculate the next offset - horizontal, padding left=5, hidden") {
     val group = ComponentGroup(Bounds(0, 0, 5, 5))
       .withLayout(
-        ComponentLayout
-          .Horizontal(Padding(0, 0, 0, 5), Overflow.Hidden)
+        ComponentLayout.Horizontal(Padding(0, 0, 0, 5), Overflow.Hidden)
       )
       .add("abc", "def")
 
@@ -172,8 +169,7 @@ class ComponentGroupTests extends munit.FunSuite:
   test("Calculate the next offset - horizontal, padding 0, wrap") {
     val group = ComponentGroup(Bounds(0, 0, 5, 5))
       .withLayout(
-        ComponentLayout
-          .Horizontal(Padding(0), Overflow.Wrap)
+        ComponentLayout.Horizontal(Padding(0), Overflow.Wrap)
       )
       .add("abc", "def")
 
@@ -192,8 +188,7 @@ class ComponentGroupTests extends munit.FunSuite:
   test("Calculate the next offset - horizontal, padding 5, wrap") {
     val group = ComponentGroup(Bounds(0, 0, 5, 5))
       .withLayout(
-        ComponentLayout
-          .Horizontal(Padding(5), Overflow.Wrap)
+        ComponentLayout.Horizontal(Padding(5), Overflow.Wrap)
       )
       .add("abc", "def")
 
@@ -212,8 +207,7 @@ class ComponentGroupTests extends munit.FunSuite:
   test("Calculate the next offset - horizontal, padding left=5 top=2, wrap") {
     val group = ComponentGroup(Bounds(0, 0, 3, 5))
       .withLayout(
-        ComponentLayout
-          .Horizontal(Padding(2, 0, 0, 5), Overflow.Wrap)
+        ComponentLayout.Horizontal(Padding(2, 0, 0, 5), Overflow.Wrap)
       )
       .add("abc", "def")
 

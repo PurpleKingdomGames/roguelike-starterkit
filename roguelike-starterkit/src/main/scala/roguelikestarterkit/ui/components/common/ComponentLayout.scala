@@ -1,4 +1,4 @@
-package roguelikestarterkit.ui.components.group
+package roguelikestarterkit.ui.components.common
 
 /** `ComponentLayout` instructs a `ComponentGroup` how it should layout the components it contains.
   * They are always placed one after another, optionally with some padding unless the layout type is

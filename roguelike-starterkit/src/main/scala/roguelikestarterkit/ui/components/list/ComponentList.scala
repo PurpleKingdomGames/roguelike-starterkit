@@ -3,7 +3,9 @@ package roguelikestarterkit.ui.components.list
 import indigo.*
 import roguelikestarterkit.Padding
 import roguelikestarterkit.ui.component.*
-import roguelikestarterkit.ui.components.group.ComponentLayout
+import roguelikestarterkit.ui.components.common.ComponentEntry
+import roguelikestarterkit.ui.components.common.ComponentLayout
+import roguelikestarterkit.ui.components.common.ContainerLikeFunctions
 import roguelikestarterkit.ui.datatypes.*
 
 import scala.annotation.tailrec
@@ -12,7 +14,7 @@ import scala.annotation.tailrec
   * and presention calls.
   */
 final case class ComponentList[ReferenceData] private (
-    content: ReferenceData => Batch[ComponentListEntry[?, ReferenceData]],
+    content: ReferenceData => Batch[ComponentEntry[?, ReferenceData]],
     layout: ComponentLayout,
     bounds: Bounds
 ):
@@ -21,7 +23,7 @@ final case class ComponentList[ReferenceData] private (
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     val f =
-      (r: ReferenceData) => content(r) :+ ComponentListEntry(Coords.zero, entry(r), c)
+      (r: ReferenceData) => content(r) :+ ComponentEntry(Coords.zero, entry(r), c)
 
     this.copy(
       content = f
@@ -51,8 +53,8 @@ final case class ComponentList[ReferenceData] private (
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     this.copy(
-      content = (r: ReferenceData) =>
-        content(r) ++ entries(r).map(v => ComponentListEntry(Coords.zero, v, c))
+      content =
+        (r: ReferenceData) => content(r) ++ entries(r).map(v => ComponentEntry(Coords.zero, v, c))
     )
 
   def withBounds(value: Bounds): ComponentList[ReferenceData] =
@@ -90,8 +92,8 @@ object ComponentList:
   )(contents: ReferenceData => Batch[A])(using
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
-    val f: ReferenceData => Batch[ComponentListEntry[A, ReferenceData]] =
-      r => contents(r).map(v => ComponentListEntry(Coords.zero, v, c))
+    val f: ReferenceData => Batch[ComponentEntry[A, ReferenceData]] =
+      r => contents(r).map(v => ComponentEntry(Coords.zero, v, c))
 
     ComponentList(
       f,
@@ -104,8 +106,8 @@ object ComponentList:
   )(contents: A*)(using
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
-    val f: ReferenceData => Batch[ComponentListEntry[A, ReferenceData]] =
-      _ => Batch.fromSeq(contents).map(v => ComponentListEntry(Coords.zero, v, c))
+    val f: ReferenceData => Batch[ComponentEntry[A, ReferenceData]] =
+      _ => Batch.fromSeq(contents).map(v => ComponentEntry(Coords.zero, v, c))
 
     ComponentList(
       f,
@@ -125,21 +127,16 @@ object ComponentList:
         context: UiContext[ReferenceData],
         model: ComponentList[ReferenceData]
     ): Outcome[ComponentFragment] =
-      contentReflow(context.reference, model)
-        .map { c =>
-          c.component.present(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)
-        }
-        .sequence
-        .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))
+      ContainerLikeFunctions.present(context, contentReflow(context.reference, model))
 
     private def contentReflow(
         reference: ReferenceData,
         model: ComponentList[ReferenceData]
-    ): Batch[ComponentListEntry[?, ReferenceData]] =
+    ): Batch[ComponentEntry[?, ReferenceData]] =
       val nextOffset =
-        ListFunctions.calculateNextOffset[ReferenceData](model.bounds, model.layout)
+        ContainerLikeFunctions.calculateNextOffset[ReferenceData](model.bounds, model.layout)
 
-      model.content(reference).foldLeft(Batch.empty[ComponentListEntry[?, ReferenceData]]) {
+      model.content(reference).foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) {
         (acc, entry) =>
           val reflowed = entry.copy(
             offset = nextOffset(reference, acc)

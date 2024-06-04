@@ -1,6 +1,7 @@
 package roguelikestarterkit.ui.components.list
 
 import indigo.*
+import roguelikestarterkit.Padding
 import roguelikestarterkit.ui.component.*
 import roguelikestarterkit.ui.components.group.ComponentLayout
 import roguelikestarterkit.ui.datatypes.*
@@ -94,7 +95,7 @@ object ComponentList:
 
     ComponentList(
       f,
-      ComponentLayout.None,
+      ComponentLayout.Vertical(Padding.zero),
       bounds
     )
 
@@ -108,7 +109,7 @@ object ComponentList:
 
     ComponentList(
       f,
-      ComponentLayout.None,
+      ComponentLayout.Vertical(Padding.zero),
       bounds
     )
 

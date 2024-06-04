@@ -5,7 +5,6 @@ package roguelikestarterkit.ui.components.group
   * `None`.
   */
 enum ComponentLayout:
-  case None
   case Horizontal(padding: Padding, overflow: Overflow)
   case Vertical(padding: Padding)
 

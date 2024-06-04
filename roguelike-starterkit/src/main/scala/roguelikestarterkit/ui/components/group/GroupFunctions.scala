@@ -3,6 +3,7 @@ package roguelikestarterkit.ui.components.group
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import roguelikestarterkit.ComponentFragment
+import roguelikestarterkit.ui.components.common.ContainerLikeFunctions.*
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.UiContext
@@ -10,11 +11,6 @@ import roguelikestarterkit.ui.datatypes.UiContext
 import java.lang.ref.Reference
 
 object GroupFunctions:
-
-  extension (b: Bounds)
-    private def withPadding(p: Padding): Bounds =
-      b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
-
   def calculateNextOffset[ReferenceData](
       reference: ReferenceData,
       bounds: Bounds,
@@ -23,9 +19,6 @@ object GroupFunctions:
       components: Batch[ComponentGroupEntry[?, ReferenceData]]
   ): Coords =
     layout match
-      case ComponentLayout.None =>
-        Coords.zero
-
       case ComponentLayout.Horizontal(padding, Overflow.Hidden) =>
         components
           .takeRight(1)

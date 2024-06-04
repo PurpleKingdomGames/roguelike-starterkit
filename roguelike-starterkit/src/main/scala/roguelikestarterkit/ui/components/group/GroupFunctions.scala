@@ -137,14 +137,3 @@ object GroupFunctions:
 
       case BoundsType.Dynamic(FitMode.Fixed(unitsW), FitMode.Fixed(unitsH)) =>
         currentBounds.withDimensions(unitsW, unitsH)
-
-  def present[ReferenceData](
-      context: UiContext[ReferenceData],
-      components: Batch[ComponentGroupEntry[?, ReferenceData]]
-  ): Outcome[ComponentFragment] =
-    components
-      .map { c =>
-        c.component.present(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)
-      }
-      .sequence
-      .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))

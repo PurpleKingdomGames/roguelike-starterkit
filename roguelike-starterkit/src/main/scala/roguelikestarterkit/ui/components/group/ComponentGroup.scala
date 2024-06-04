@@ -192,7 +192,12 @@ object ComponentGroup:
         context: UiContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): Outcome[ComponentFragment] =
-      GroupFunctions.present(context, model.components)
+      model.components
+        .map { c =>
+          c.component.present(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)
+        }
+        .sequence
+        .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))
 
     def reflow(
         reference: ReferenceData,

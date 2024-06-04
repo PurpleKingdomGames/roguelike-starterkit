@@ -4,6 +4,10 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 
+import ui.components.common.ComponentLayout
+import ui.components.common.Overflow
+import ui.components.common.Padding
+
 object syntax:
 
   extension (r: Rectangle)
@@ -119,14 +123,15 @@ val ComponentGroup: ui.components.group.ComponentGroup.type = ui.components.grou
 type ComponentList[ReferenceData] = ui.components.list.ComponentList[ReferenceData]
 val ComponentList: ui.components.list.ComponentList.type = ui.components.list.ComponentList
 
-type ComponentLayout = ui.components.group.ComponentLayout
-val ComponentLayout: ui.components.group.ComponentLayout.type = ui.components.group.ComponentLayout
+type ComponentLayout = ui.components.common.ComponentLayout
+val ComponentLayout: ui.components.common.ComponentLayout.type =
+  ui.components.common.ComponentLayout
 
-type Overflow = ui.components.group.Overflow
-val Overflow: ui.components.group.Overflow.type = ui.components.group.Overflow
+type Overflow = ui.components.common.Overflow
+val Overflow: ui.components.common.Overflow.type = ui.components.common.Overflow
 
-type Padding = ui.components.group.Padding
-val Padding: ui.components.group.Padding.type = ui.components.group.Padding
+type Padding = ui.components.common.Padding
+val Padding: ui.components.common.Padding.type = ui.components.common.Padding
 
 type BoundsType = ui.components.group.BoundsType
 val BoundsType: ui.components.group.BoundsType.type = ui.components.group.BoundsType

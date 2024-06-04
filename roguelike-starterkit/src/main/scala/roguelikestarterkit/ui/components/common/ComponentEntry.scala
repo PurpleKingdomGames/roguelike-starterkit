@@ -1,4 +1,4 @@
-package roguelikestarterkit.ui.components.group
+package roguelikestarterkit.ui.components.common
 
 import indigo.*
 import roguelikestarterkit.ui.component.Component
@@ -8,11 +8,11 @@ import roguelikestarterkit.ui.datatypes.Coords
 /** `ComponentEntry`s record a components model, position, and relevant component typeclass instance
   * for use inside a `ComponentGroup`.
   */
-final case class ComponentGroupEntry[A, ReferenceData](
+final case class ComponentEntry[A, ReferenceData](
     offset: Coords,
     model: A,
     component: Component[A, ReferenceData]
 ):
 
-  def cascade(parentBounds: Bounds): ComponentGroupEntry[A, ReferenceData] =
+  def cascade(parentBounds: Bounds): ComponentEntry[A, ReferenceData] =
     this.copy(model = component.cascade(model, parentBounds))

@@ -1,4 +1,4 @@
-package roguelikestarterkit.ui.components.group
+package roguelikestarterkit.ui.components.common
 
 /** Describes the padding between components.
   */

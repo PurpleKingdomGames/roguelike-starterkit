@@ -105,7 +105,7 @@ object ComponentGroup:
   def apply[ReferenceData](): ComponentGroup[ReferenceData] =
     ComponentGroup(
       BoundsType.default,
-      ComponentLayout.None,
+      ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       Bounds.zero,
       Bounds.zero,
@@ -115,7 +115,7 @@ object ComponentGroup:
   def apply[ReferenceData](boundsType: BoundsType): ComponentGroup[ReferenceData] =
     ComponentGroup(
       boundsType,
-      ComponentLayout.None,
+      ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       Bounds.zero,
       Bounds.zero,
@@ -125,7 +125,7 @@ object ComponentGroup:
   def apply[ReferenceData](bounds: Bounds): ComponentGroup[ReferenceData] =
     ComponentGroup(
       BoundsType.Fixed(bounds),
-      ComponentLayout.None,
+      ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       bounds,
       Bounds.zero,

@@ -34,7 +34,9 @@ object Window:
 
     case WindowInternalEvent.ResizeBy(id, dragData) if model.id == id =>
       Outcome(
-        model.withDimensions(model.bounds.dimensions + (dragData.by - dragData.offset).toDimensions)
+        model
+          .withDimensions(model.bounds.dimensions + (dragData.by - dragData.offset).toDimensions)
+          .refresh(context.reference)
       ).addGlobalEvents(WindowEvent.Resized(id))
 
     case e =>

@@ -170,10 +170,10 @@ object WindowManager:
       Outcome(model.moveTo(id, coords))
 
     case WindowEvent.Resize(id, dimensions) =>
-      Outcome(model.resizeTo(id, dimensions))
+      model.resizeTo(id, dimensions).refresh(id, context.reference)
 
     case WindowEvent.Transform(id, bounds) =>
-      Outcome(model.transformTo(id, bounds))
+      model.transformTo(id, bounds).refresh(id, context.reference)
 
     case WindowEvent.Opened(_) =>
       Outcome(model)

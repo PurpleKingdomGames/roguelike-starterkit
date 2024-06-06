@@ -31,7 +31,7 @@ trait WindowContent[A, ReferenceData]:
 
   /** Called when a window has been told to refresh its content, possibly by the content itself.
     */
-  def refresh(reference: ReferenceData, model: A, parentBounds: Bounds): A
+  def refresh(reference: ReferenceData, model: A, contentBounds: Bounds): A
 
 /** Companion object for `WindowContent` */
 object WindowContent:
@@ -54,5 +54,5 @@ object WindowContent:
     ): Outcome[Layer] =
       comp.present(context, model).map(_.toLayer)
 
-    def refresh(reference: ReferenceData, model: A, parentBounds: Bounds): A =
-      comp.refresh(reference, model, parentBounds)
+    def refresh(reference: ReferenceData, model: A, contentBounds: Bounds): A =
+      comp.refresh(reference, model, contentBounds)

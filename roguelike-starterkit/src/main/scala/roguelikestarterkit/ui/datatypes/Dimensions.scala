@@ -39,3 +39,6 @@ object Dimensions:
     inline def max(value: Int): Dimensions        = d.max(value)
 
     inline def abs: Dimensions = d.abs
+
+    def withWidth(value: Int): Dimensions  = Dimensions(value, d.height)
+    def withHeight(value: Int): Dimensions = Dimensions(d.width, value)

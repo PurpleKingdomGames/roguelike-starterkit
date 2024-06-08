@@ -137,7 +137,7 @@ object Window:
         .addGlobalEvents(close ++ focus)
 
     case e: MouseEvent.MouseDown
-        if model.draggable &&
+        if context.isActive && model.draggable &&
           viewModel.dragData.isEmpty &&
           model.bounds.withDimensions(model.bounds.width, 3).contains(context.mouseCoords) &&
           context.mouseCoords != model.bounds.topRight + Coords(-1, 0) =>
@@ -147,7 +147,7 @@ object Window:
         .addGlobalEvents(WindowEvent.GiveFocusAt(context.mouseCoords))
 
     case e: MouseEvent.MouseDown
-        if model.resizable &&
+        if context.isActive && model.resizable &&
           viewModel.resizeData.isEmpty &&
           model.bounds.bottomRight - Coords(1) == (context.mouseCoords) =>
       val d = calculateDragBy(model.charSheet.charSize, e.position, model.bounds.coords)

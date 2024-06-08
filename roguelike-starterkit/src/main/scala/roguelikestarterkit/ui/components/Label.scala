@@ -13,7 +13,7 @@ import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 
 /** Labels are a simple `Component` that render text.
   */
@@ -88,7 +88,7 @@ object Label:
       model.calculateBounds(reference, model.text(reference))
 
     def present(
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: Label[ReferenceData]
     ): Outcome[ComponentFragment] =
       val t = model.text(context.reference)

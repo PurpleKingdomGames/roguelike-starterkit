@@ -14,7 +14,7 @@ import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 
 import scala.annotation.tailrec
 import scala.annotation.targetName
@@ -273,7 +273,7 @@ object Input:
       Bounds(model.dimensions).resizeBy(2, 2)
 
     def updateModel(
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: Input
     ): GlobalEvent => Outcome[Input] =
       case _: MouseEvent.Click
@@ -322,7 +322,7 @@ object Input:
         Outcome(model)
 
     def present(
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: Input
     ): Outcome[ComponentFragment] =
       model.render(

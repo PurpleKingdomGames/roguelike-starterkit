@@ -4,7 +4,7 @@ import indigo.*
 import roguelikestarterkit.Bounds
 import roguelikestarterkit.Coords
 import roguelikestarterkit.Dimensions
-import roguelikestarterkit.UiContext
+import roguelikestarterkit.UIContext
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.*
 import roguelikestarterkit.ui.components.common.*
@@ -16,13 +16,13 @@ class ComponentGroupTests extends munit.FunSuite:
       Bounds(0, 0, model.length, 1)
 
     def updateModel(
-        context: UiContext[Unit],
+        context: UIContext[Unit],
         model: String
     ): GlobalEvent => Outcome[String] =
       _ => Outcome(model)
 
     def present(
-        context: UiContext[Unit],
+        context: UIContext[Unit],
         model: String
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)
@@ -361,7 +361,7 @@ class ComponentGroupTests extends munit.FunSuite:
       .add(
         ComponentGroup()
           .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
-        .add("abc")
+          .add("abc")
       )
       .add("abc")
 

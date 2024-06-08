@@ -5,7 +5,7 @@ import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 
 object ContainerLikeFunctions:
 
@@ -56,7 +56,7 @@ object ContainerLikeFunctions:
           .getOrElse(Coords(padding.left, padding.top))
 
   def present[ReferenceData](
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       components: Batch[ComponentEntry[?, ReferenceData]]
   ): Outcome[ComponentFragment] =
     components

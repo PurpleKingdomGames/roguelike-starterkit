@@ -24,12 +24,12 @@ object syntax:
 
   extension [A, ReferenceData](component: A)(using c: Component[A, ReferenceData])
     def update[StartupData, ContextData](
-        context: UiContext[ReferenceData]
+        context: UIContext[ReferenceData]
     ): GlobalEvent => Outcome[A] =
       c.updateModel(context, component)
 
     def present[StartupData, ContextData](
-        context: UiContext[ReferenceData]
+        context: UIContext[ReferenceData]
     ): Outcome[ComponentFragment] =
       c.present(context, component)
 
@@ -96,11 +96,11 @@ val Tile: tiles.Tile.type = tiles.Tile
 
 // UI General Datatypes
 
-type UiContext[ReferenceData] = ui.datatypes.UiContext[ReferenceData]
-val UiContext: ui.datatypes.UiContext.type = ui.datatypes.UiContext
+type UIContext[ReferenceData] = ui.datatypes.UIContext[ReferenceData]
+val UIContext: ui.datatypes.UIContext.type = ui.datatypes.UIContext
 
-type UiState = ui.datatypes.UiState
-val UiState: ui.datatypes.UiState.type = ui.datatypes.UiState
+type UIState = ui.datatypes.UIState
+val UIState: ui.datatypes.UIState.type = ui.datatypes.UIState
 
 type CharSheet = ui.datatypes.CharSheet
 val CharSheet: ui.datatypes.CharSheet.type = ui.datatypes.CharSheet

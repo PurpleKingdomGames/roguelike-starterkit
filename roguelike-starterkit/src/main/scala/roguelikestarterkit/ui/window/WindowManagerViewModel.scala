@@ -1,7 +1,7 @@
 package roguelikestarterkit.ui.window
 
 import indigo.*
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 
 final case class WindowManagerViewModel[ReferenceData](
     windows: Batch[WindowViewModel[ReferenceData]],
@@ -11,7 +11,7 @@ final case class WindowManagerViewModel[ReferenceData](
     this.copy(windows = windows.filter(w => model.windows.exists(_.id == w.id)))
 
   def update(
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
       event: GlobalEvent
   ): Outcome[WindowManagerViewModel[ReferenceData]] =

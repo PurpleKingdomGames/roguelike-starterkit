@@ -93,7 +93,7 @@ object ComponentGroup:
       Bounds(model.dimensions)
 
     def updateModel(
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
       case FrameTick =>
@@ -107,7 +107,7 @@ object ComponentGroup:
         updateComponents(context, model)(e)
 
     private def updateComponents[StartupData, ContextData](
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
       e =>
@@ -130,7 +130,7 @@ object ComponentGroup:
           }
 
     def present(
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): Outcome[ComponentFragment] =
       ContainerLikeFunctions.present(context, model.components)

@@ -14,7 +14,7 @@ import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 
 import scala.annotation.targetName
 
@@ -120,7 +120,7 @@ object TextArea:
       model.calculateBounds(reference, model.text(reference))
 
     def present(
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: TextArea[ReferenceData]
     ): Outcome[ComponentFragment] =
       model.render(

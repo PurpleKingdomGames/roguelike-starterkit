@@ -3,8 +3,8 @@ package roguelikestarterkit.ui.window
 import indigo.*
 import indigo.shared.FrameContext
 import roguelikestarterkit.ui.datatypes.CharSheet
-import roguelikestarterkit.ui.datatypes.UiContext
-import roguelikestarterkit.ui.datatypes.UiState
+import roguelikestarterkit.ui.datatypes.UIContext
+import roguelikestarterkit.ui.datatypes.UIState
 
 final case class WindowManager[StartUpData, Model, RefData](
     id: SubSystemId,
@@ -37,13 +37,13 @@ final case class WindowManager[StartUpData, Model, RefData](
     e =>
       for {
         updatedModel <- WindowManager.updateModel[ReferenceData](
-          UiContext(context, charSheet),
+          UIContext(context, charSheet),
           model.model
         )(e)
 
         updatedViewModel <-
           WindowManager.updateViewModel[ReferenceData](
-            UiContext(context, charSheet),
+            UIContext(context, charSheet),
             updatedModel,
             model.viewModel
           )(e)
@@ -55,7 +55,7 @@ final case class WindowManager[StartUpData, Model, RefData](
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(
       layerKey,
-      UiContext(context, charSheet),
+      UIContext(context, charSheet),
       model.model,
       model.viewModel
     )
@@ -126,7 +126,7 @@ object WindowManager:
     )
 
   private[window] def updateModel[ReferenceData](
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: WindowManagerModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
     case e: WindowEvent =>
@@ -136,7 +136,7 @@ object WindowManager:
       model.windows
         .map { w =>
           Window.updateModel(
-            context.copy(state = if w.hasFocus then UiState.Active else UiState.InActive),
+            context.copy(state = if w.hasFocus then UIState.Active else UIState.InActive),
             w
           )(e)
         }
@@ -144,7 +144,7 @@ object WindowManager:
         .map(m => model.copy(windows = m))
 
   private def handleWindowEvents[ReferenceData](
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: WindowManagerModel[ReferenceData]
   ): WindowEvent => Outcome[WindowManagerModel[ReferenceData]] =
     case WindowEvent.Refresh(id) =>
@@ -194,7 +194,7 @@ object WindowManager:
       Outcome(model)
 
   private[window] def updateViewModel[ReferenceData](
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowManagerViewModel[ReferenceData]] =
@@ -214,7 +214,7 @@ object WindowManager:
               case Some(vm) =>
                 Batch(
                   vm.update(
-                    context.copy(state = if m.hasFocus then UiState.Active else UiState.InActive),
+                    context.copy(state = if m.hasFocus then UIState.Active else UIState.InActive),
                     m,
                     e
                   )
@@ -225,7 +225,7 @@ object WindowManager:
 
   private[window] def present[ReferenceData](
       layerKey: Option[BindingKey],
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
@@ -242,7 +242,7 @@ object WindowManager:
               Batch(
                 Window
                   .present(
-                    context.copy(state = if m.hasFocus then UiState.Active else UiState.InActive),
+                    context.copy(state = if m.hasFocus then UIState.Active else UIState.InActive),
                     m,
                     vm
                   )

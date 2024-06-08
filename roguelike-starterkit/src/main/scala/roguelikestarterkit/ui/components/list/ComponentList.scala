@@ -111,7 +111,7 @@ object ComponentList:
       Bounds(model.dimensions)
 
     def present(
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: ComponentList[ReferenceData]
     ): Outcome[ComponentFragment] =
       ContainerLikeFunctions.present(context, contentReflow(context.reference, model))

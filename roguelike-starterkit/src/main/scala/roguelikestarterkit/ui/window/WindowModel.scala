@@ -5,7 +5,7 @@ import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 
 final case class WindowModel[A, ReferenceData](
     id: WindowId,

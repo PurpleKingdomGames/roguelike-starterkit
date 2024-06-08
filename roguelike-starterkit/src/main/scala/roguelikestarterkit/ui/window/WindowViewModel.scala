@@ -9,7 +9,7 @@ import roguelikestarterkit.tiles.Tile
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 
 final case class WindowViewModel[ReferenceData](
     id: WindowId,
@@ -24,7 +24,7 @@ final case class WindowViewModel[ReferenceData](
 ):
 
   def update[A](
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: WindowModel[A, ReferenceData],
       event: GlobalEvent
   ): Outcome[WindowViewModel[ReferenceData]] =

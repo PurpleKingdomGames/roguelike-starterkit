@@ -15,13 +15,13 @@ class WindowModelTests extends munit.FunSuite:
 
   given WindowContent[Bounds, Unit] with
     def updateModel(
-        context: UiContext[Unit],
+        context: UIContext[Unit],
         model: Bounds
     ): GlobalEvent => Outcome[Bounds] =
       _ => Outcome(model)
 
     def present(
-        context: UiContext[Unit],
+        context: UIContext[Unit],
         model: Bounds
     ): Outcome[Layer] =
       Outcome(Layer.empty)
@@ -34,13 +34,13 @@ class WindowModelTests extends munit.FunSuite:
       model
 
     def updateModel(
-        context: UiContext[Unit],
+        context: UIContext[Unit],
         model: Bounds
     ): GlobalEvent => Outcome[Bounds] =
       _ => Outcome(model)
 
     def present(
-        context: UiContext[Unit],
+        context: UIContext[Unit],
         model: Bounds
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)
@@ -53,13 +53,13 @@ class WindowModelTests extends munit.FunSuite:
       Bounds(0, 0, model.length, 1)
 
     def updateModel(
-        context: UiContext[Unit],
+        context: UIContext[Unit],
         model: String
     ): GlobalEvent => Outcome[String] =
       _ => Outcome(model)
 
     def present(
-        context: UiContext[Unit],
+        context: UIContext[Unit],
         model: String
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)

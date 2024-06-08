@@ -7,7 +7,7 @@ import roguelikestarterkit.Component
 import roguelikestarterkit.ComponentGroup
 import roguelikestarterkit.Dimensions
 import roguelikestarterkit.ui.datatypes.Bounds
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 
 /** A typeclass that confirms that some type `A` can be used as a `WindowContent` provides the
   * necessary operations for that type to act as a window content.
@@ -17,14 +17,14 @@ trait WindowContent[A, ReferenceData]:
   /** Update this content's model.
     */
   def updateModel(
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: A
   ): GlobalEvent => Outcome[A]
 
   /** Produce a renderable output for this content base on the model
     */
   def present(
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: A
   ): Outcome[Layer]
 
@@ -42,13 +42,13 @@ object WindowContent:
   ): WindowContent[A, ReferenceData] with
 
     def updateModel(
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: A
     ): GlobalEvent => Outcome[A] =
       e => comp.updateModel(context, model)(e)
 
     def present(
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: A
     ): Outcome[Layer] =
       comp.present(context, model).map(_.toLayer)

@@ -4,7 +4,7 @@ import indigo.*
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 
 final case class WindowManagerModel[ReferenceData](windows: Batch[WindowModel[?, ReferenceData]]):
   def register(windowModels: WindowModel[?, ReferenceData]*): WindowManagerModel[ReferenceData] =
@@ -79,7 +79,7 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[WindowModel[?,
     )
 
   def update(
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       event: GlobalEvent
   ): Outcome[WindowManagerModel[ReferenceData]] =
     WindowManager.updateModel(context, this)(event)

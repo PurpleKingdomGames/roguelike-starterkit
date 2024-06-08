@@ -6,7 +6,7 @@ import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Bounds.dimensions
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 import roguelikestarterkit.ui.shaders.LayerMask
 
 object Window:
@@ -15,7 +15,7 @@ object Window:
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
   def updateModel[A, ReferenceData](
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: WindowModel[A, ReferenceData]
   ): GlobalEvent => Outcome[WindowModel[A, ReferenceData]] =
     case WindowInternalEvent.MoveBy(id, dragData) if model.id == id =>
@@ -63,7 +63,7 @@ object Window:
         .moveTo(workingBounds.coords + Coords(1, 1))
 
   def redraw[A, ReferenceData](
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: WindowModel[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): WindowViewModel[ReferenceData] =
@@ -101,7 +101,7 @@ object Window:
     )
 
   def updateViewModel[A, ReferenceData](
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: WindowModel[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowViewModel[ReferenceData]] =
@@ -223,7 +223,7 @@ object Window:
       Outcome(viewModel)
 
   def present[A, ReferenceData](
-      context: UiContext[ReferenceData],
+      context: UIContext[ReferenceData],
       model: WindowModel[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): Outcome[Layer] =

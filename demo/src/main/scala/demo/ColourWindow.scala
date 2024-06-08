@@ -115,7 +115,7 @@ object ColorPalette:
   given WindowContent[ColorPalette, Unit] with
 
     def updateModel(
-        context: UiContext[Unit],
+        context: UIContext[Unit],
         model: ColorPalette
     ): GlobalEvent => Outcome[ColorPalette] =
       case e =>
@@ -124,7 +124,7 @@ object ColorPalette:
         }
 
     def present(
-        context: UiContext[Unit],
+        context: UIContext[Unit],
         model: ColorPalette
     ): Outcome[Layer] =
       model.componentGroup.present(context).map(_.toLayer)

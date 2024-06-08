@@ -13,7 +13,7 @@ import roguelikestarterkit.ui.components.common.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.datatypes.UIContext
 
 /** Buttons `Component`s allow you to create buttons for your UI.
   */
@@ -233,7 +233,7 @@ object Button:
       model.calculateBounds(reference)
 
     def present(
-        context: UiContext[ReferenceData],
+        context: UIContext[ReferenceData],
         model: Button[ReferenceData]
     ): Outcome[ComponentFragment] =
       val b           = model.calculateBounds(context.reference)

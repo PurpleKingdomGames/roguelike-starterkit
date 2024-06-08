@@ -3,7 +3,7 @@ package roguelikestarterkit.ui.datatypes
 import indigo.*
 import indigo.scenes.SceneContext
 
-final case class UiContext[ReferenceData](
+final case class UIContext[ReferenceData](
     bounds: Bounds,
     charSheet: CharSheet,
     mouseCoords: Coords,
@@ -12,7 +12,7 @@ final case class UiContext[ReferenceData](
     inputState: InputState,
     boundaryLocator: BoundaryLocator,
     reference: ReferenceData,
-    state: UiState
+    state: UIState
 ):
 
   val running: Seconds = gameTime.running
@@ -32,16 +32,16 @@ final case class UiContext[ReferenceData](
     bounds.toScreenSpace(charSheet.size)
 
   val isActive: Boolean =
-    state == UiState.Active
+    state == UIState.Active
 
-object UiContext:
+object UIContext:
 
   def apply[ReferenceData](
       subSystemFrameContext: SubSystemFrameContext[ReferenceData],
       charSheet: CharSheet
-  ): UiContext[ReferenceData] =
+  ): UIContext[ReferenceData] =
     val mouseCoords = Coords(subSystemFrameContext.mouse.position / charSheet.size.toPoint)
-    UiContext(
+    UIContext(
       Bounds.zero,
       charSheet,
       mouseCoords,
@@ -50,8 +50,8 @@ object UiContext:
       subSystemFrameContext.inputState,
       subSystemFrameContext.boundaryLocator,
       subSystemFrameContext.reference,
-      UiState.Active
+      UIState.Active
     )
 
-enum UiState:
+enum UIState:
   case Active, InActive

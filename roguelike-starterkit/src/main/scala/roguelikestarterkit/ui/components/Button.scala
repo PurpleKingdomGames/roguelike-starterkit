@@ -9,6 +9,7 @@ import roguelikestarterkit.tiles.RoguelikeTiles5x6
 import roguelikestarterkit.tiles.Tile
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.component.StatelessComponent
+import roguelikestarterkit.ui.components.common.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
@@ -239,13 +240,14 @@ object Button:
       val mouseWithin = b.moveBy(context.bounds.coords).contains(context.mouseCoords)
 
       val state =
-        if mouseWithin then
+        if context.isActive && mouseWithin then
           if context.mouse.isLeftDown then ButtonState.Down
           else ButtonState.Over
         else ButtonState.Up
 
       val events =
-        if mouseWithin && context.mouse.mouseClicked then model.click(context.reference)
+        if context.isActive && mouseWithin && context.mouse.mouseClicked then
+          model.click(context.reference)
         else Batch.empty
 
       state match

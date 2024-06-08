@@ -11,7 +11,8 @@ final case class UiContext[ReferenceData](
     dice: Dice,
     inputState: InputState,
     boundaryLocator: BoundaryLocator,
-    reference: ReferenceData
+    reference: ReferenceData,
+    state: UiState
 ):
 
   val running: Seconds = gameTime.running
@@ -30,6 +31,9 @@ final case class UiContext[ReferenceData](
   lazy val screenSpaceBounds: Rectangle =
     bounds.toScreenSpace(charSheet.size)
 
+  val isActive: Boolean =
+    state == UiState.Active
+
 object UiContext:
 
   def apply[ReferenceData](
@@ -45,5 +49,9 @@ object UiContext:
       subSystemFrameContext.dice,
       subSystemFrameContext.inputState,
       subSystemFrameContext.boundaryLocator,
-      subSystemFrameContext.reference
+      subSystemFrameContext.reference,
+      UiState.Active
     )
+
+enum UiState:
+  case Active, InActive

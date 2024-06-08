@@ -99,6 +99,9 @@ val Tile: tiles.Tile.type = tiles.Tile
 type UiContext[ReferenceData] = ui.datatypes.UiContext[ReferenceData]
 val UiContext: ui.datatypes.UiContext.type = ui.datatypes.UiContext
 
+type UiState = ui.datatypes.UiState
+val UiState: ui.datatypes.UiState.type = ui.datatypes.UiState
+
 type CharSheet = ui.datatypes.CharSheet
 val CharSheet: ui.datatypes.CharSheet.type = ui.datatypes.CharSheet
 
@@ -174,5 +177,6 @@ val Input: ui.components.Input.type = ui.components.Input
 type TextArea[ReferenceData] = ui.components.TextArea[ReferenceData]
 val TextArea: ui.components.TextArea.type = ui.components.TextArea
 
-type TerminalTileColors = ui.components.TerminalTileColors
-val TerminalTileColors: ui.components.TerminalTileColors.type = ui.components.TerminalTileColors
+type TerminalTileColors = ui.components.common.TerminalTileColors
+val TerminalTileColors: ui.components.common.TerminalTileColors.type =
+  ui.components.common.TerminalTileColors

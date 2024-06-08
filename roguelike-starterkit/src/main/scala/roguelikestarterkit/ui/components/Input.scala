@@ -9,6 +9,7 @@ import roguelikestarterkit.tiles.RoguelikeTiles10x10
 import roguelikestarterkit.tiles.RoguelikeTiles5x6
 import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.components.common.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
@@ -313,6 +314,9 @@ object Input:
       case KeyboardEvent.KeyUp(key) if model.hasFocus && key.isPrintable =>
         val next = model.addCharacterText(key.key).withLastCursorMove(context.running)
         Outcome(next, model.change(next.text))
+
+      case FrameTick if !context.isActive =>
+        model.loseFocus
 
       case _ =>
         Outcome(model)

@@ -361,6 +361,7 @@ class ComponentGroupTests extends munit.FunSuite:
       .add(
         ComponentGroup()
           .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
+        .add("abc")
       )
       .add("abc")
 
@@ -373,8 +374,8 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val expected =
       List(
-        Coords(0, 50000),
-        Coords(0, 70)
+        Coords(0, 0),
+        Coords(0, 1)
       )
 
     assertEquals(actual, expected)

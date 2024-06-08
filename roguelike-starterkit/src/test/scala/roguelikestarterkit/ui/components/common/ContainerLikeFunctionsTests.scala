@@ -1,6 +1,7 @@
 package roguelikestarterkit.ui.components.common
 
 import indigo.*
+import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.*
 import roguelikestarterkit.ui.components.*
 import roguelikestarterkit.ui.components.group.*
@@ -33,7 +34,7 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
         )
 
     val updated: ComponentGroup[Unit] =
-      summon[Component[ComponentGroup[Unit], Unit]].refresh((), group, Dimensions(100, 100))
+      group.refresh((), Dimensions(100, 100))
 
     val actual =
       ContainerLikeFunctions.calculateNextOffset[Unit](
@@ -52,12 +53,12 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
     val group: ComponentGroup[Unit] =
       ComponentGroup()
         .withLayout(
-          ComponentLayout.Horizontal()
+          ComponentLayout.Vertical()
         )
         .add(
           ComponentGroup()
             .withLayout(
-              ComponentLayout.Vertical(Padding.zero)
+              ComponentLayout.Vertical()
             )
             .add(
               Label("label 1", Label.Theme(charSheet)),
@@ -69,22 +70,19 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
     val parentDimensions = Dimensions(100, 100)
 
     val updated: ComponentGroup[Unit] =
-      summon[Component[ComponentGroup[Unit], Unit]].refresh((), group, parentDimensions)
+      group.refresh((), parentDimensions)
 
     assertEquals(updated.contentBounds, Bounds(0, 0, 100, 3))
     assertEquals(updated.dimensions, Dimensions(100, 3))
 
-    val c: Component[ComponentGroup[Unit], Unit] =
-      summon[Component[ComponentGroup[Unit], Unit]]
-
     val actual =
       ContainerLikeFunctions.calculateNextOffset[Unit](
-        Dimensions(20, 20),
+        Dimensions(100, 0), // The layout is dynamic and horizontal, so we'll only know the width
         updated.layout
       )((), updated.components)
 
     val expected =
-      Coords(100, 100)
+      Coords(0, 3)
 
     assertEquals(actual, expected)
   }

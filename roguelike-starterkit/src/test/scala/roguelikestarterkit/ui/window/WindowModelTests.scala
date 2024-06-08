@@ -90,8 +90,11 @@ class WindowModelTests extends munit.FunSuite:
       )
 
     assertEquals(
-      model.withBounds(Bounds(10, 10, 20, 20)).refresh(()).contentModel,
-      Bounds(11, 11, 18, 18)
+      model
+        .withBounds(Bounds(10, 10, 20, 20)) // This isn't important anymore
+        .refresh(())
+        .contentModel,
+      Bounds(0, 0, 18, 18)
     )
   }
 

@@ -13,7 +13,7 @@ object ContainerLikeFunctions:
     def withPadding(p: Padding): Bounds =
       b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
 
-  def calculateNextOffset[ReferenceData](dimensions: Dimensions, layout: ComponentLayout)(
+  def calculateNextOffset[ReferenceData](containerDimensions: Dimensions, layout: ComponentLayout)(
       reference: ReferenceData,
       components: Batch[ComponentEntry[?, ReferenceData]]
   ): Coords =
@@ -41,7 +41,7 @@ object ContainerLikeFunctions:
             val padded      = c.component.bounds(reference, c.model).withPadding(padding)
             val maybeOffset = c.offset + Coords(padded.right, 0)
 
-            if padded.moveBy(maybeOffset).right < dimensions.width then maybeOffset
+            if padded.moveBy(maybeOffset).right < containerDimensions.width then maybeOffset
             else Coords(padding.left, maxY)
           }
           .getOrElse(Coords(padding.left, padding.top))

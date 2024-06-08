@@ -114,7 +114,10 @@ object ComponentGroup:
         model.components
           .map { c =>
             c.component
-              .updateModel(context.copy(bounds = context.bounds), c.model)(e)
+              .updateModel(
+                context.copy(bounds = context.bounds.moveBy(c.offset)),
+                c.model
+              )(e)
               .map { updated =>
                 c.copy(model = updated)
               }

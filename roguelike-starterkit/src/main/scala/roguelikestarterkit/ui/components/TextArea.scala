@@ -89,10 +89,9 @@ object TextArea:
     */
   def apply[ReferenceData](text: String, theme: Theme): TextArea[ReferenceData] =
     val t = text.split("\n").toList
-    // val d = findBounds(t)
+
     TextArea(
       _ => t,
-      // d,
       presentTextArea(
         theme.charSheet,
         theme.colors.foreground,

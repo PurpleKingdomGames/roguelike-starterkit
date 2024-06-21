@@ -2,6 +2,7 @@ package demo
 
 import indigo.*
 import roguelikestarterkit.*
+import roguelikestarterkit.ui.components.TerminalLabel
 
 object ComponentsWindow2:
 
@@ -19,9 +20,9 @@ object ComponentsWindow2:
           ComponentGroup()
             .withLayout(ComponentLayout.Horizontal(Padding(0, 1, 0, 0)))
             .add(
-              Label("label 1", Label.Theme(charSheet)),
-              Label("label 2", Label.Theme(charSheet)),
-              Label("label 3", Label.Theme(charSheet))
+              TerminalLabel("label 1", TerminalLabel.Theme(charSheet)),
+              TerminalLabel("label 2", TerminalLabel.Theme(charSheet)),
+              TerminalLabel("label 3", TerminalLabel.Theme(charSheet))
             )
         )
         .add(
@@ -42,8 +43,8 @@ object ComponentsWindow2:
         )
         .add(
           ComponentList(Dimensions(20, 8)) { (count: Int) =>
-            Batch(Label[Int]("How many windows: ", Label.Theme(charSheet))) ++
-              Batch.fill(count)(Label("x", Label.Theme(charSheet)))
+            Batch(TerminalLabel[Int]("How many windows: ", TerminalLabel.Theme(charSheet))) ++
+              Batch.fill(count)(TerminalLabel("x", TerminalLabel.Theme(charSheet)))
           }
             .add((count: Int) =>
               Batch.fill(count)(

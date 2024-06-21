@@ -3,6 +3,7 @@ package demo
 import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
+import roguelikestarterkit.ui.components.TerminalLabel
 
 object ComponentsWindow:
 
@@ -81,9 +82,9 @@ object ComponentsWindow:
           }
         )
         .add(
-          Label("Terminal rendered label", Label.Theme(charSheet, RGBA.Magenta, RGBA.Cyan)),
-          Label("Default theme", Label.Theme(charSheet)),
-          Label((count: Int) => "Mouse over windows: " + count, Label.Theme(charSheet))
+          TerminalLabel("Terminal rendered label", TerminalLabel.Theme(charSheet, RGBA.Magenta, RGBA.Cyan)),
+          TerminalLabel("Default theme", TerminalLabel.Theme(charSheet)),
+          TerminalLabel((count: Int) => "Mouse over windows: " + count, TerminalLabel.Theme(charSheet))
         )
     )
       .withTitle("Components example")

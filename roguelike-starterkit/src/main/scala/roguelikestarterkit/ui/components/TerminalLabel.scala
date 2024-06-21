@@ -16,29 +16,12 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
-/** Labels are a simple `Component` that render text.
+/** TerminalLabel are a simple `Component`s that render text using a Terminal.
   */
-final case class Label[ReferenceData](
-    text: ReferenceData => String,
-    render: (Coords, String, Dimensions) => Outcome[ComponentFragment],
-    calculateBounds: (ReferenceData, String) => Bounds
-):
-  def withText(value: String): Label[ReferenceData] =
-    this.copy(text = _ => value)
-  def withText(f: ReferenceData => String): Label[ReferenceData] =
-    this.copy(text = f)
-
-object Label:
+object TerminalLabel:
 
   private def findBounds(text: String): Bounds =
     Bounds(0, 0, text.length, 1)
-
-  /** Minimal label constructor with custom rendering function
-    */
-  def apply[ReferenceData](text: String, calculateBounds: (ReferenceData, String) => Bounds)(
-      present: (Coords, String, Dimensions) => Outcome[ComponentFragment]
-  ): Label[ReferenceData] =
-    Label(_ => text, present, calculateBounds)
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 

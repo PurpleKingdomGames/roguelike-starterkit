@@ -10,7 +10,7 @@ import roguelikestarterkit.tiles.RoguelikeTiles5x6
 import roguelikestarterkit.tiles.Tile
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.component.StatelessComponent
-import roguelikestarterkit.ui.components.common.TerminalTileColors
+import roguelikestarterkit.ui.components.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords

@@ -19,7 +19,7 @@ object MenuWindow:
   ): WindowModel[ComponentList[Int], Int] =
     WindowModel(
       windowId,
-      charSheet,
+      Size(charSheet.charSize),
       ComponentList(Dimensions(20, 3)) { (_: Int) =>
         Batch(
           TerminalButton[Int](

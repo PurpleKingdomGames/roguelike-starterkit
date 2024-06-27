@@ -4,6 +4,7 @@ import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalButton
+import roguelikestarterkit.ui.components.TerminalInput
 import roguelikestarterkit.ui.components.TerminalLabel
 import roguelikestarterkit.ui.components.TerminalTextArea
 import roguelikestarterkit.ui.components.common.ComponentLayout
@@ -64,7 +65,7 @@ object ComponentsWindow2:
             .withLayout(ComponentLayout.Vertical(Padding.zero))
         )
         .add(
-          Input(20, Input.Theme(charSheet))
+          TerminalInput(20, TerminalInput.Theme(charSheet))
         )
     )
       .withTitle("More component examples")

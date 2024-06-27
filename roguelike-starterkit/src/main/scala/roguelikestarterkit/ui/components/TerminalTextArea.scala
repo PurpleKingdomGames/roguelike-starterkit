@@ -15,41 +15,7 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 import scala.annotation.targetName
 
-/** TextAreas are a simple `Component` that render text.
-  */
-final case class TextArea[ReferenceData](
-    text: ReferenceData => List[String],
-    render: (Coords, List[String], Dimensions) => Outcome[ComponentFragment],
-    calculateBounds: (ReferenceData, List[String]) => Bounds
-):
-  def withText(value: String): TextArea[ReferenceData] =
-    this.copy(text = _ => value.split("\n").toList)
-  def withText(f: ReferenceData => String): TextArea[ReferenceData] =
-    this.copy(text = (r: ReferenceData) => f(r).split("\n").toList)
-
-object TextArea:
-
-  def apply[ReferenceData](text: String, calculateBounds: (ReferenceData, List[String]) => Bounds)(
-      present: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
-  ): TextArea[ReferenceData] =
-    TextArea(
-      (_: ReferenceData) => text.split("\n").toList,
-      present,
-      calculateBounds
-    )
-
-  @targetName("TextAreaRefToString")
-  def apply[ReferenceData](
-      text: ReferenceData => String,
-      calculateBounds: (ReferenceData, List[String]) => Bounds
-  )(
-      present: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
-  ): TextArea[ReferenceData] =
-    TextArea(
-      (r: ReferenceData) => text(r).split("\n").toList,
-      present,
-      calculateBounds
-    )
+object TerminalTextArea:
 
   private def findBounds(text: List[String]): Bounds =
     val maxLength =
@@ -82,8 +48,8 @@ object TextArea:
       Outcome(ComponentFragment(terminal))
   }
 
-  /** Creates a TextArea rendered using the RogueTerminalEmulator based on a `TextArea.Theme`, with
-    * bounds based on the text length
+  /** Creates a TerminalTextArea rendered using the RogueTerminalEmulator based on a
+    * `TerminalTextArea.Theme`, with bounds based on the text length
     */
   def apply[ReferenceData](text: String, theme: Theme): TextArea[ReferenceData] =
     val t = text.split("\n").toList
@@ -98,8 +64,8 @@ object TextArea:
       (_, t) => findBounds(t)
     )
 
-  /** Creates a TextArea rendered using the RogueTerminalEmulator based on a `TextArea.Theme`, with
-    * custom bounds
+  /** Creates a TerminalTextArea rendered using the RogueTerminalEmulator based on a
+    * `TerminalTextArea.Theme`, with custom bounds
     */
   def apply[ReferenceData](text: ReferenceData => String, theme: Theme): TextArea[ReferenceData] =
     TextArea(
@@ -111,20 +77,6 @@ object TextArea:
       ),
       (r, t) => findBounds(text(r).split("\n").toList)
     )
-
-  given [ReferenceData]: StatelessComponent[TextArea[ReferenceData], ReferenceData] with
-    def bounds(reference: ReferenceData, model: TextArea[ReferenceData]): Bounds =
-      model.calculateBounds(reference, model.text(reference))
-
-    def present(
-        context: UIContext[ReferenceData],
-        model: TextArea[ReferenceData]
-    ): Outcome[ComponentFragment] =
-      model.render(
-        context.bounds.coords,
-        model.text(context.reference),
-        bounds(context.reference, model).dimensions
-      )
 
   final case class Theme(
       charSheet: CharSheet,

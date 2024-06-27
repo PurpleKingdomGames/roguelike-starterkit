@@ -22,7 +22,7 @@ object ComponentsWindow2:
   ): WindowModel[ComponentGroup[Int], Int] =
     WindowModel(
       windowId,
-      charSheet,
+      Size(charSheet.charSize),
       ComponentGroup()
         .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
         .add(

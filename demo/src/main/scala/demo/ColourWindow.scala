@@ -46,7 +46,7 @@ object ColourWindow:
   ): WindowModel[ColorPalette, Unit] =
     WindowModel(
       windowId,
-      charSheet,
+      Size(charSheet.charSize),
       ColorPalette(
         ComponentGroup()
           .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))

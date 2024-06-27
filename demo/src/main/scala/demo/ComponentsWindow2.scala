@@ -5,6 +5,7 @@ import roguelikestarterkit.*
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
+import roguelikestarterkit.ui.components.TerminalTextArea
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
@@ -59,7 +60,7 @@ object ComponentsWindow2:
               )
                 :+ TerminalButton[Int]("test", TerminalButton.Theme(charSheet)).onClick(Log("test"))
             )
-            .add((i: Int) => TextArea[Int]("abc.\nde,f\n0123456! " + i, TextArea.Theme(charSheet)))
+            .add((i: Int) => TerminalTextArea[Int]("abc.\nde,f\n0123456! " + i, TerminalTextArea.Theme(charSheet)))
             .withLayout(ComponentLayout.Vertical(Padding.zero))
         )
         .add(

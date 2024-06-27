@@ -1,13 +1,13 @@
-// package roguelikestarterkit.ui.window
+package roguelikestarterkit.ui.window
 
-// import indigo.*
-// import roguelikestarterkit.ui.datatypes.Coords
+import indigo.*
+import roguelikestarterkit.ui.datatypes.Coords
 
-// final case class DragData(by: Coords, offset: Coords)
+final case class DragData(by: Coords, offset: Coords)
 
-// object DragData:
-//   def apply(d: Coords): DragData =
-//     DragData(d, d)
+object DragData:
+  def apply(d: Coords): DragData =
+    DragData(d, d)
 
-//   val zero: DragData =
-//     DragData(Coords.zero, Coords.zero)
+  val zero: DragData =
+    DragData(Coords.zero, Coords.zero)

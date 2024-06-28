@@ -19,8 +19,8 @@ object ComponentsWindow:
 
   def window(
       charSheet: CharSheet
-  ): WindowModel[ComponentGroup[Int], Int] =
-    WindowModel(
+  ): Window[ComponentGroup[Int], Int] =
+    Window(
       windowId,
       Size(charSheet.charSize),
       ComponentGroup()
@@ -88,9 +88,15 @@ object ComponentsWindow:
           }
         )
         .add(
-          TerminalLabel("Terminal rendered label", TerminalLabel.Theme(charSheet, RGBA.Magenta, RGBA.Cyan)),
+          TerminalLabel(
+            "Terminal rendered label",
+            TerminalLabel.Theme(charSheet, RGBA.Magenta, RGBA.Cyan)
+          ),
           TerminalLabel("Default theme", TerminalLabel.Theme(charSheet)),
-          TerminalLabel((count: Int) => "Mouse over windows: " + count, TerminalLabel.Theme(charSheet))
+          TerminalLabel(
+            (count: Int) => "Mouse over windows: " + count,
+            TerminalLabel.Theme(charSheet)
+          )
         )
     )
       .withTitle("Components example")

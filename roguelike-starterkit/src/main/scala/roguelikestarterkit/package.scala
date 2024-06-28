@@ -130,8 +130,8 @@ val WindowManager: ui.window.WindowManager.type = ui.window.WindowManager
 type WindowId = ui.window.WindowId
 val WindowId: ui.window.WindowId.type = ui.window.WindowId
 
-type WindowModel[A, ReferenceData] = ui.window.WindowModel[A, ReferenceData]
-val WindowModel: ui.window.WindowModel.type = ui.window.WindowModel
+type Window[A, ReferenceData] = ui.window.Window[A, ReferenceData]
+val Window: ui.window.Window.type = ui.window.Window
 
 type WindowEvent = ui.window.WindowEvent
 val WindowEvent: ui.window.WindowEvent.type = ui.window.WindowEvent

@@ -19,8 +19,8 @@ object ComponentsWindow2:
 
   def window(
       charSheet: CharSheet
-  ): WindowModel[ComponentGroup[Int], Int] =
-    WindowModel(
+  ): Window[ComponentGroup[Int], Int] =
+    Window(
       windowId,
       Size(charSheet.charSize),
       ComponentGroup()
@@ -57,11 +57,15 @@ object ComponentsWindow2:
           }
             .add((count: Int) =>
               Batch.fill(count)(
-                TerminalButton[Int]("Button", TerminalButton.Theme(charSheet)).onClick(Log("count: " + count))
+                TerminalButton[Int]("Button", TerminalButton.Theme(charSheet)).onClick(
+                  Log("count: " + count)
+                )
               )
                 :+ TerminalButton[Int]("test", TerminalButton.Theme(charSheet)).onClick(Log("test"))
             )
-            .add((i: Int) => TerminalTextArea[Int]("abc.\nde,f\n0123456! " + i, TerminalTextArea.Theme(charSheet)))
+            .add((i: Int) =>
+              TerminalTextArea[Int]("abc.\nde,f\n0123456! " + i, TerminalTextArea.Theme(charSheet))
+            )
             .withLayout(ComponentLayout.Vertical(Padding.zero))
         )
         .add(

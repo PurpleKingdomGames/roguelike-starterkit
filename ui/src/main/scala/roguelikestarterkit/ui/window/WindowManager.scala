@@ -12,7 +12,7 @@ final case class WindowManager[StartUpData, Model, RefData](
     extractReference: Model => RefData,
     startUpData: StartUpData,
     layerKey: Option[BindingKey],
-    windows: Batch[WindowModel[?, RefData]]
+    windows: Batch[Window[?, RefData]]
 ) extends SubSystem[Model]:
   type EventType      = GlobalEvent
   type ReferenceData  = RefData
@@ -60,11 +60,11 @@ final case class WindowManager[StartUpData, Model, RefData](
     )
 
   def register(
-      windowModels: WindowModel[?, ReferenceData]*
+      windowModels: Window[?, ReferenceData]*
   ): WindowManager[StartUpData, Model, ReferenceData] =
     register(Batch.fromSeq(windowModels))
   def register(
-      windowModels: Batch[WindowModel[?, ReferenceData]]
+      windowModels: Batch[Window[?, ReferenceData]]
   ): WindowManager[StartUpData, Model, ReferenceData] =
     this.copy(windows = windows ++ windowModels)
 
@@ -147,7 +147,7 @@ object WindowManager:
 
       model.windows
         .map { w =>
-          WindowModel.updateModel(
+          Window.updateModel(
             context.copy(state =
               if w.hasFocus || windowUnderMouse.exists(_ == w.id) then UIState.Active
               else UIState.InActive
@@ -294,7 +294,7 @@ final case class ModelHolder[ReferenceData](
 )
 object ModelHolder:
   def initial[ReferenceData](
-      windows: Batch[WindowModel[?, ReferenceData]],
+      windows: Batch[Window[?, ReferenceData]],
       magnification: Int
   ): ModelHolder[ReferenceData] =
     ModelHolder(

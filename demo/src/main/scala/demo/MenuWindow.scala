@@ -9,6 +9,7 @@ import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
 import roguelikestarterkit.ui.components.group.ComponentGroup
 import roguelikestarterkit.ui.components.list.ComponentList
+import roguelikestarterkit.ui.window.TerminalWindow
 
 object MenuWindow:
 
@@ -19,9 +20,9 @@ object MenuWindow:
   def window(
       charSheet: CharSheet
   ): Window[ComponentList[Int], Int] =
-    Window(
+    TerminalWindow(
       windowId,
-      Size(charSheet.charSize),
+      charSheet,
       ComponentList(Dimensions(20, 3)) { (_: Int) =>
         Batch(
           TerminalButton[Int](

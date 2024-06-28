@@ -1,0 +1,70 @@
+package roguelikestarterkit.ui.window
+
+import indigo.*
+import roguelikestarterkit.ui.datatypes.Bounds
+import roguelikestarterkit.ui.datatypes.Bounds.dimensions
+import roguelikestarterkit.ui.datatypes.Coords
+import roguelikestarterkit.ui.datatypes.Dimensions
+import roguelikestarterkit.ui.datatypes.UIContext
+import roguelikestarterkit.ui.shaders.LayerMask
+
+object WindowView:
+
+  def present[A, ReferenceData](
+      context: UIContext[ReferenceData],
+      model: WindowModel[A, ReferenceData],
+      viewModel: WindowViewModel[ReferenceData]
+  ): Outcome[Layer] =
+    model.windowContent
+      .present(
+        context.copy(bounds = viewModel.contentRectangle),
+        model.contentModel
+      )
+      .map {
+        case l: Layer.Content =>
+          Layer.Stack(
+            // Layer
+            //   .Content(viewModel.terminalClones.clones)
+            //   .addCloneBlanks(viewModel.terminalClones.blanks),
+            l.withBlendMaterial(
+              LayerMask(
+                viewModel.contentRectangle
+                  .toScreenSpace(context.snapGrid * viewModel.magnification)
+              )
+            )
+          )
+
+        case l: Layer.Stack =>
+          val masked =
+            l.layers.map {
+              case l: Layer.Content =>
+                l.withBlendMaterial(
+                  LayerMask(
+                    viewModel.contentRectangle
+                      .toScreenSpace(context.snapGrid * viewModel.magnification)
+                  )
+                )
+
+              case l =>
+                l
+            }
+
+          Layer.Stack(
+            // Layer
+            //   .Content(viewModel.terminalClones.clones)
+            //   .addCloneBlanks(viewModel.terminalClones.blanks) :: masked
+          )
+      }
+
+  def calculateContentRectangle[A, ReferenceData](
+      workingBounds: Bounds,
+      model: WindowModel[A, ReferenceData]
+  ): Bounds =
+    if model.title.isDefined then
+      workingBounds
+        .resize((workingBounds.dimensions - Dimensions(2, 4)).max(Dimensions.zero))
+        .moveTo(workingBounds.coords + Coords(1, 3))
+    else
+      workingBounds
+        .resize((workingBounds.dimensions - Dimensions(2, 2)).max(Dimensions.zero))
+        .moveTo(workingBounds.coords + Coords(1, 1))

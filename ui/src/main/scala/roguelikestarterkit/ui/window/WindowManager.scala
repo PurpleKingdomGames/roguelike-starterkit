@@ -147,7 +147,7 @@ object WindowManager:
 
       model.windows
         .map { w =>
-          Window.updateModel(
+          WindowModel.updateModel(
             context.copy(state =
               if w.hasFocus || windowUnderMouse.exists(_ == w.id) then UIState.Active
               else UIState.InActive
@@ -262,7 +262,7 @@ object WindowManager:
 
             case Some(vm) =>
               Batch(
-                Window
+                WindowView
                   .present(
                     context.copy(state =
                       if m.hasFocus || windowUnderMouse.exists(_ == m.id) then UIState.Active

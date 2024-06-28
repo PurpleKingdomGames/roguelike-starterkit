@@ -128,7 +128,7 @@ final case class WindowModel[A, ReferenceData](
       windowContent.refresh(
         reference,
         contentModel,
-        Window.calculateContentRectangle(bounds, this).dimensions
+        WindowView.calculateContentRectangle(bounds, this).dimensions
       )
     )
 
@@ -155,3 +155,35 @@ object WindowModel:
       None,
       WindowState.Closed
     )
+
+  def updateModel[A, ReferenceData](
+      context: UIContext[ReferenceData],
+      model: WindowModel[A, ReferenceData]
+  ): GlobalEvent => Outcome[WindowModel[A, ReferenceData]] =
+    case WindowInternalEvent.MoveBy(id, dragData) if model.id == id =>
+      Outcome(
+        model.copy(
+          bounds = model.bounds.moveBy(dragData.by - dragData.offset)
+        )
+      )
+
+    case WindowInternalEvent.MoveTo(id, position) if model.id == id =>
+      Outcome(
+        model.copy(
+          bounds = model.bounds.moveTo(position)
+        )
+      )
+
+    case WindowInternalEvent.ResizeBy(id, dragData) if model.id == id =>
+      Outcome(
+        model
+          .withDimensions(model.bounds.dimensions + (dragData.by - dragData.offset).toDimensions)
+          .refresh(context.reference)
+      ).addGlobalEvents(WindowEvent.Resized(id))
+
+    case e =>
+      val contentRectangle = WindowView.calculateContentRectangle(model.bounds, model)
+
+      model.windowContent
+        .updateModel(context.copy(bounds = contentRectangle), model.contentModel)(e)
+        .map(model.withModel)

@@ -19,12 +19,12 @@ final case class WindowViewModel[ReferenceData](
 
   def update[A](
       context: UIContext[ReferenceData],
-      model: WindowModel[A, ReferenceData],
+      model: Window[A, ReferenceData],
       event: GlobalEvent
   ): Outcome[WindowViewModel[ReferenceData]] =
     WindowViewModel.updateViewModel(context, model, this)(event)
 
-  def resize[A](model: WindowModel[A, ReferenceData]): WindowViewModel[ReferenceData] =
+  def resize[A](model: Window[A, ReferenceData]): WindowViewModel[ReferenceData] =
     this // TODO
     // this.copy(terminal = WindowViewModel.makeWindowTerminal(model, terminal))
 
@@ -43,7 +43,7 @@ object WindowViewModel:
 
   def updateViewModel[A, ReferenceData](
       context: UIContext[ReferenceData],
-      model: WindowModel[A, ReferenceData],
+      model: Window[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowViewModel[ReferenceData]] =
     case FrameTick
@@ -156,7 +156,7 @@ object WindowViewModel:
 
   def redraw[A, ReferenceData](
       context: UIContext[ReferenceData],
-      model: WindowModel[A, ReferenceData],
+      model: Window[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): WindowViewModel[ReferenceData] =
     val tempModel =

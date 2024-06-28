@@ -12,7 +12,7 @@ object WindowView:
 
   def present[A, ReferenceData](
       context: UIContext[ReferenceData],
-      model: WindowModel[A, ReferenceData],
+      model: Window[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): Outcome[Layer] =
     model.windowContent
@@ -58,7 +58,7 @@ object WindowView:
 
   def calculateContentRectangle[A, ReferenceData](
       workingBounds: Bounds,
-      model: WindowModel[A, ReferenceData]
+      model: Window[A, ReferenceData]
   ): Bounds =
     if model.title.isDefined then
       workingBounds

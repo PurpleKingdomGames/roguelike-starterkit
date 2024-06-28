@@ -16,8 +16,8 @@ object MenuWindow:
 
   def window(
       charSheet: CharSheet
-  ): WindowModel[ComponentList[Int], Int] =
-    WindowModel(
+  ): Window[ComponentList[Int], Int] =
+    Window(
       windowId,
       Size(charSheet.charSize),
       ComponentList(Dimensions(20, 3)) { (_: Int) =>

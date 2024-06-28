@@ -6,11 +6,11 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
-final case class WindowManagerModel[ReferenceData](windows: Batch[WindowModel[?, ReferenceData]]):
-  def register(windowModels: WindowModel[?, ReferenceData]*): WindowManagerModel[ReferenceData] =
+final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, ReferenceData]]):
+  def register(windowModels: Window[?, ReferenceData]*): WindowManagerModel[ReferenceData] =
     register(Batch.fromSeq(windowModels))
   def register(
-      windowModels: Batch[WindowModel[?, ReferenceData]]
+      windowModels: Batch[Window[?, ReferenceData]]
   ): WindowManagerModel[ReferenceData] =
     this.copy(windows = windows ++ windowModels)
 

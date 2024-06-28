@@ -41,8 +41,8 @@ object ColourWindow:
 
   def window(
       charSheet: CharSheet
-  ): WindowModel[ColorPalette, Unit] =
-    WindowModel(
+  ): Window[ColorPalette, Unit] =
+    Window(
       windowId,
       Size(charSheet.charSize),
       ColorPalette(

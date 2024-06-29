@@ -20,33 +20,15 @@ object TerminalWindow:
       id: WindowId,
       charSheet: CharSheet,
       content: A
-  )(using c: WindowContent[A, ReferenceData]): Window[A, ReferenceData] =
-    Window(
-      id,
-      charSheet.size,
-      Bounds(Coords.zero, Dimensions.zero),
-      None,
-      content,
-      c,
-      false,
-      false,
-      false,
-      false,
-      false,
-      None,
-      None,
-      WindowState.Closed,
-      (context: UIContext[ReferenceData], model: Window[A, ReferenceData]) =>
-        present(context, model, charSheet)
-    )
+  )(using WindowContent[A, ReferenceData]): Window[A, ReferenceData] =
+    Window(id, charSheet.size, content)(present(charSheet))
 
   private val graphic: Graphic[TerminalMaterial] =
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
-  def present[A, ReferenceData](
+  def present[A, ReferenceData](charSheet: CharSheet)(
       context: UIContext[ReferenceData],
-      model: Window[A, ReferenceData],
-      charSheet: CharSheet
+      model: Window[A, ReferenceData]
   ): Outcome[Layer] =
     val validSize =
       model.bounds.dimensions.max(if model.title.isDefined then Dimensions(3) else Dimensions(2))
@@ -143,7 +125,6 @@ object TerminalWindow:
             case Point(x, y) =>
               // Window background
               coords -> MapTile(Tile.`░`, grey, RGBA.Black)
-
         }
       }
 
@@ -151,7 +132,7 @@ object TerminalWindow:
       RogueTerminalEmulator(validSize.unsafeToSize)
         .put(tiles)
         .toCloneTiles(
-          CloneId("window_tile"),
+          CloneId("terminal_window_tile_clone_id"),
           model.bounds.coords.toScreenSpace(charSheet.size),
           charSheet.charCrops
         ) { case (fg, bg) =>

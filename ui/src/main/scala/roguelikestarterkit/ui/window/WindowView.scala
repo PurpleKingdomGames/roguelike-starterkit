@@ -1,6 +1,7 @@
 package roguelikestarterkit.ui.window
 
 import indigo.*
+import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Bounds.dimensions
 import roguelikestarterkit.ui.datatypes.Coords
@@ -15,11 +16,12 @@ object WindowView:
       model: Window[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): Outcome[Layer] =
-    model.windowContent
+    model.component
       .present(
         context.copy(bounds = viewModel.contentRectangle),
-        model.contentModel
+        model.content
       )
+      .map(_.toLayer)
       .flatMap {
         case l: Layer.Content =>
           model.present(context, model).map { windowChrome =>
@@ -56,15 +58,11 @@ object WindowView:
           }
       }
 
+  // TODO: This is now wrong.
   def calculateContentRectangle[A, ReferenceData](
       workingBounds: Bounds,
       model: Window[A, ReferenceData]
   ): Bounds =
-    if model.title.isDefined then
-      workingBounds
-        .resize((workingBounds.dimensions - Dimensions(2, 4)).max(Dimensions.zero))
-        .moveTo(workingBounds.coords + Coords(1, 3))
-    else
-      workingBounds
-        .resize((workingBounds.dimensions - Dimensions(2, 2)).max(Dimensions.zero))
-        .moveTo(workingBounds.coords + Coords(1, 1))
+    workingBounds
+      .resize((workingBounds.dimensions - Dimensions(2, 2)).max(Dimensions.zero))
+      .moveTo(workingBounds.coords + Coords(1, 1))

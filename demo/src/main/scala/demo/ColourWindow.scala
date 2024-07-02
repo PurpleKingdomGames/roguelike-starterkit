@@ -76,6 +76,20 @@ object ColourWindow:
               )
             )
           )
+          .add(
+            TerminalButton(
+              "x",
+              TerminalButton.Theme(
+                charSheet,
+                RGBA.Black -> RGBA.Silver,
+                RGBA.Black -> RGBA.White,
+                RGBA.White -> RGBA.Black,
+                hasBorder = false
+              )
+            ).onClick(
+              WindowEvent.Close(windowId)
+            )
+          )
       )
     )
       .moveTo(0, 0)

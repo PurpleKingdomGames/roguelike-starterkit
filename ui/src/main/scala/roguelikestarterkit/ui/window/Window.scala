@@ -1,32 +1,60 @@
 package roguelikestarterkit.ui.window
 
 import indigo.*
+import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
+/*
+
+Let's start over.
+
+A Component group is a ...group of components. Anything with a 'Component' instance available.
+
+They are laid out according to some options, but the layout is basically sequential. Horizontal or vertical. Overflow is wrapped or hidden.
+
+So far so good. This all works.
+
+A window, should just be an allocation of space on the screen, in which to hold a Component (usually a group). It has some other jobs like managing events, and depth, but it's primary function is to reserve screen space.
+
+Windows, holders of space on the screen, can be controlled (resized, closed, moved, etc) via events.
+
+Those events should come from the components, not the window itself.
+
+---
+
+In order to replicate a "traditional" window, our components need some new functionality:
+
+1. The ability to be anchored inside the component group, i.e. the close button should be top right (less padding), regardless of the component groups designated 'layout' style.
+
+2. The optional ability to be draggable, and when dragged, to fire an event so that we can 'drag the title bar to drag the window' or 'drag the resize button to resize the window'.
+
+---
+
+Oh and we're still missing scrolling. Not totally sure where that goes yet. Clearly it's going to be important. I _think_ it's _probably_ and component group / list thing.
+
+Might also need model windows that sit above everything.
+
+ */
+
 final case class Window[A, ReferenceData](
     id: WindowId,
     snapGrid: Size,
     bounds: Bounds,
-    title: Option[String],
-    contentModel: A,
-    windowContent: WindowContent[A, ReferenceData],
-    draggable: Boolean,
-    resizable: Boolean,
-    closeable: Boolean,
+    content: A,
+    component: Component[A, ReferenceData],
     hasFocus: Boolean,
-    static: Boolean,
     minSize: Option[Dimensions],
     maxSize: Option[Dimensions],
     state: WindowState,
     present: (UIContext[ReferenceData], Window[A, ReferenceData]) => Outcome[Layer]
 ):
 
+  // TODO: Does this still make sense? 3 whats?
   lazy val minAllowedSize: Dimensions =
-    val m = if title.isEmpty then Dimensions(3) else Dimensions(3, 5)
-    minSize.fold(m)(_.max(m))
+    Dimensions(3)
 
   def withId(value: WindowId): Window[A, ReferenceData] =
     this.copy(id = value)
@@ -57,32 +85,8 @@ final case class Window[A, ReferenceData](
   def resizeBy(x: Int, y: Int): Window[A, ReferenceData] =
     resizeBy(Dimensions(x, y))
 
-  def withTitle(value: String): Window[A, ReferenceData] =
-    this.copy(title = Option(value))
-
   def withModel(value: A): Window[A, ReferenceData] =
-    this.copy(contentModel = value)
-
-  def withDraggable(value: Boolean): Window[A, ReferenceData] =
-    this.copy(draggable = value)
-  def isDraggable: Window[A, ReferenceData] =
-    withDraggable(true)
-  def notDraggable: Window[A, ReferenceData] =
-    withDraggable(false)
-
-  def withResizable(value: Boolean): Window[A, ReferenceData] =
-    this.copy(resizable = value)
-  def isResizable: Window[A, ReferenceData] =
-    withResizable(true)
-  def notResizable: Window[A, ReferenceData] =
-    withResizable(false)
-
-  def withCloseable(value: Boolean): Window[A, ReferenceData] =
-    this.copy(closeable = value)
-  def isCloseable: Window[A, ReferenceData] =
-    withCloseable(true)
-  def notCloseable: Window[A, ReferenceData] =
-    withCloseable(false)
+    this.copy(content = value)
 
   def withFocus(value: Boolean): Window[A, ReferenceData] =
     this.copy(hasFocus = value)
@@ -90,13 +94,6 @@ final case class Window[A, ReferenceData](
     withFocus(true)
   def blur: Window[A, ReferenceData] =
     withFocus(false)
-
-  def withStatic(value: Boolean): Window[A, ReferenceData] =
-    this.copy(static = value)
-  def isStatic: Window[A, ReferenceData] =
-    withStatic(true)
-  def notStatic: Window[A, ReferenceData] =
-    withStatic(false)
 
   def withMinSize(min: Dimensions): Window[A, ReferenceData] =
     this.copy(minSize = Option(min))
@@ -125,10 +122,10 @@ final case class Window[A, ReferenceData](
     state == WindowState.Closed
 
   def refresh(reference: ReferenceData): Window[A, ReferenceData] =
-    this.copy(contentModel =
-      windowContent.refresh(
+    this.copy(content =
+      component.refresh(
         reference,
-        contentModel,
+        content,
         WindowView.calculateContentRectangle(bounds, this).dimensions
       )
     )
@@ -141,18 +138,13 @@ object Window:
       content: A
   )(
       present: (UIContext[ReferenceData], Window[A, ReferenceData]) => Outcome[Layer]
-  )(using c: WindowContent[A, ReferenceData]): Window[A, ReferenceData] =
+  )(using c: Component[A, ReferenceData]): Window[A, ReferenceData] =
     Window(
       id,
       snapGrid,
       Bounds(Coords.zero, Dimensions.zero),
-      None,
       content,
       c,
-      false,
-      false,
-      false,
-      false,
       false,
       None,
       None,
@@ -188,6 +180,6 @@ object Window:
     case e =>
       val contentRectangle = WindowView.calculateContentRectangle(model.bounds, model)
 
-      model.windowContent
-        .updateModel(context.copy(bounds = contentRectangle), model.contentModel)(e)
+      model.component
+        .updateModel(context.copy(bounds = contentRectangle), model.content)(e)
         .map(model.withModel)

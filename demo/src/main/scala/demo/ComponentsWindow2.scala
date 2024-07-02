@@ -73,9 +73,5 @@ object ComponentsWindow2:
           TerminalInput(20, TerminalInput.Theme(charSheet))
         )
     )
-      .withTitle("More component examples")
       .moveTo(2, 5)
       .resizeTo(25, 25)
-      .isDraggable
-      .isResizable
-      .isCloseable

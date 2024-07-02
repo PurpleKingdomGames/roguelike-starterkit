@@ -132,9 +132,6 @@ val Window: ui.window.Window.type = ui.window.Window
 type WindowEvent = ui.window.WindowEvent
 val WindowEvent: ui.window.WindowEvent.type = ui.window.WindowEvent
 
-type WindowContent[A, ReferenceData] = ui.window.WindowContent[A, ReferenceData]
-val WindowContent: ui.window.WindowContent.type = ui.window.WindowContent
-
 // UI Built-in components
 
 type Button[ReferenceData] = ui.components.Button[ReferenceData]

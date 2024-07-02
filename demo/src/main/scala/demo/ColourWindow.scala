@@ -3,6 +3,7 @@ package demo
 import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
+import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.common.ComponentLayout
@@ -77,12 +78,8 @@ object ColourWindow:
           )
       )
     )
-      .withTitle("Colour Palette")
       .moveTo(0, 0)
       .resizeTo(25, 25)
-      .isDraggable
-      .isResizable
-      .isCloseable
 
   def presentSwatch(
       charSheet: CharSheet,
@@ -117,7 +114,10 @@ object ColourWindow:
 final case class ColorPalette(componentGroup: ComponentGroup[Unit])
 object ColorPalette:
 
-  given WindowContent[ColorPalette, Unit] with
+  given Component[ColorPalette, Unit] with
+
+    def bounds(reference: Unit, model: ColorPalette): Bounds =
+      Bounds(model.componentGroup.dimensions)
 
     def updateModel(
         context: UIContext[Unit],
@@ -131,8 +131,8 @@ object ColorPalette:
     def present(
         context: UIContext[Unit],
         model: ColorPalette
-    ): Outcome[Layer] =
-      model.componentGroup.present(context).map(_.toLayer)
+    ): Outcome[ComponentFragment] =
+      model.componentGroup.present(context)
 
     def refresh(reference: Unit, model: ColorPalette, contentDimensions: Dimensions): ColorPalette =
       model.copy(

@@ -10,6 +10,7 @@ import roguelikestarterkit.TerminalMaterial
 import roguelikestarterkit.Tile
 import roguelikestarterkit.UIContext
 import roguelikestarterkit.terminal.RogueTerminalEmulator
+import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.datatypes.Bounds
 
 import scala.collection.immutable.LazyList.cons
@@ -20,7 +21,7 @@ object TerminalWindow:
       id: WindowId,
       charSheet: CharSheet,
       content: A
-  )(using WindowContent[A, ReferenceData]): Window[A, ReferenceData] =
+  )(using Component[A, ReferenceData]): Window[A, ReferenceData] =
     Window(id, charSheet.size, content)(present(charSheet))
 
   private val graphic: Graphic[TerminalMaterial] =
@@ -31,11 +32,10 @@ object TerminalWindow:
       model: Window[A, ReferenceData]
   ): Outcome[Layer] =
     val validSize =
-      model.bounds.dimensions.max(if model.title.isDefined then Dimensions(3) else Dimensions(2))
+      model.bounds.dimensions.max(Dimensions(2))
 
     val tiles: Batch[(Point, MapTile)] =
       val grey  = RGBA.White.mix(RGBA.Black, if model.hasFocus then 0.4 else 0.8)
-      val title = model.title.getOrElse("").take(model.bounds.dimensions.width - 2).toCharArray()
 
       (0 to validSize.height).toBatch.flatMap { _y =>
         (0 to validSize.width).toBatch.map { _x =>
@@ -44,51 +44,9 @@ object TerminalWindow:
           val coords = Point(_x, _y)
 
           coords match
-            // When there is a title
-            case Point(0, 1) if model.title.isDefined =>
-              // Title bar left
-              coords -> MapTile(Tile.`│`, RGBA.White, RGBA.Black)
-
-            case Point(x, 1) if model.title.isDefined && x == maxX =>
-              // Title bar right
-              coords -> MapTile(Tile.`│`, RGBA.White, RGBA.Black)
-
-            case Point(x, 1) if model.title.isDefined =>
-              // Title text, x starts at 2
-              val idx = x - 1
-              val tile =
-                if idx >= 0 && idx < title.length then
-                  val c = title(idx)
-                  Tile.charCodes.get(if c == '\\' then "\\" else c.toString) match
-                    case None       => Tile.SPACE
-                    case Some(char) => Tile(char)
-                else Tile.SPACE
-
-              coords -> MapTile(tile, RGBA.White, RGBA.Black)
-
-            case Point(0, 2) if model.title.isDefined =>
-              // Title bar line left
-              val tile = if maxY > 2 then Tile.`├` else Tile.`└`
-              coords -> MapTile(Tile.`│`, RGBA.White, RGBA.Black)
-
-            case Point(x, 2) if model.title.isDefined && x == maxX =>
-              // Title bar line right
-              val tile = if maxY > 2 then Tile.`┤` else Tile.`┘`
-              coords -> MapTile(tile, RGBA.White, RGBA.Black)
-
-            case Point(x, 2) if model.title.isDefined =>
-              // Title bar line
-              coords -> MapTile(Tile.`─`, RGBA.White, RGBA.Black)
-
-            // Normal window frame
-
             case Point(0, 0) =>
               // top left
               coords -> MapTile(Tile.`┌`, RGBA.White, RGBA.Black)
-
-            case Point(x, 0) if model.closeable && x == maxX =>
-              // top right closable
-              coords -> MapTile(Tile.`x`, RGBA.Black, RGBA.White)
 
             case Point(x, 0) if x == maxX =>
               // top right
@@ -101,10 +59,6 @@ object TerminalWindow:
             case Point(0, y) if y == maxY =>
               // bottom left
               coords -> MapTile(Tile.`└`, RGBA.White, RGBA.Black)
-
-            case Point(x, y) if model.resizable && x == maxX && y == maxY =>
-              // bottom right with resize
-              coords -> MapTile(Tile.`▼`, RGBA.White, RGBA.Black)
 
             case Point(x, y) if x == maxX && y == maxY =>
               // bottom right

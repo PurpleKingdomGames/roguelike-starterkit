@@ -51,4 +51,3 @@ object MenuWindow:
     )
       .moveTo(0, 0)
       .resizeTo(20, 3)
-      .isStatic

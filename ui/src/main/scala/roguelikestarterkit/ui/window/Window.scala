@@ -41,6 +41,12 @@ Oh and we're still missing scrolling. Not totally sure where that goes yet. Clea
 
 Might also need model windows that sit above everything.
 
+Padding on anchors.
+
+Labels with borders.
+
+Some way to define the content rectangle of a window?
+
  */
 
 final case class Window[A, ReferenceData](

@@ -126,27 +126,45 @@ object ComponentList:
     ): GlobalEvent => Outcome[ComponentList[ReferenceData]] =
       case e =>
         // What we're doing here it updating the stateMap, not the content function.
+        // However, to do that properly, we need to reflow the content too, to make sure things
+        // like mouse clicks are still in the right place.
+        val nextOffset =
+          ContainerLikeFunctions
+            .calculateNextOffset[ReferenceData](model.dimensions, model.layout)
+
+        val entries =
+          model.content(context.reference)
 
         val nextStateMap =
-          model
-            .content(context.reference)
-            .map { entry =>
-              model.stateMap.get(entry.id) match
-                case None =>
-                  // No entry, so we make one based on the component's default state
-                  entry.component.updateModel(context, entry.model)(e).map { newModel =>
-                    entry.id -> newModel
-                  }
+          entries
+            .foldLeft(Outcome(Batch.empty[ComponentEntry[?, ReferenceData]])) { (accum, entry) =>
+              accum.flatMap { acc =>
+                val offset = nextOffset(context.reference, acc)
 
-                case Some(savedState) =>
-                  // We have an entry, so we update it
-                  entry.component.updateModel(context, savedState.asInstanceOf[entry.Out])(e).map {
-                    newModel =>
-                      entry.id -> newModel
-                  }
+                val updated =
+                  model.stateMap.get(entry.id) match
+                    case None =>
+                      // No entry, so we make one based on the component's default state
+                      entry.component
+                        .updateModel(
+                          context.copy(bounds = context.bounds.moveBy(offset)),
+                          entry.model
+                        )(e)
+                        .map(m => entry.copy(offset = offset, model = m))
+
+                    case Some(savedState) =>
+                      // We have an entry, so we update it
+                      entry.component
+                        .updateModel(
+                          context.copy(bounds = context.bounds.moveBy(offset)),
+                          savedState.asInstanceOf[entry.Out]
+                        )(e)
+                        .map(m => entry.copy(offset = offset, model = m))
+
+                updated.map(u => acc :+ u)
+              }
             }
-            .sequence
-            .map(_.toMap)
+            .map(_.map(e => e.id -> e.model).toMap)
 
         nextStateMap.map { newStateMap =>
           model.copy(stateMap = newStateMap)
@@ -176,33 +194,15 @@ object ComponentList:
         contentReflow(context.reference, model.dimensions, model.layout, entries)
       )
 
+    // ComponentList's have a fixed size, so we don't need to do anything here,
+    // and since this component's size doesn't change, nor do we need to
+    // propagate further.
     def refresh(
         reference: ReferenceData,
         model: ComponentList[ReferenceData],
         parentDimensions: Dimensions
     ): ComponentList[ReferenceData] =
-      // Similar to updateModel, we're updating the stateMap, not the content function, but this time by invoking refresh
-
-      val nextStateMap =
-        model
-          .content(reference)
-          .map { entry =>
-            model.stateMap.get(entry.id) match
-              case None =>
-                // No entry, so we make one based on the component's default state
-                entry.id -> entry.component.refresh(reference, entry.model, parentDimensions)
-
-              case Some(savedState) =>
-                // We have an entry, so we update it
-                entry.id -> entry.component.refresh(
-                  reference,
-                  savedState.asInstanceOf[entry.Out],
-                  parentDimensions
-                )
-          }
-          .toMap
-
-      model.copy(stateMap = nextStateMap)
+      model
 
     private def contentReflow(
         reference: ReferenceData,

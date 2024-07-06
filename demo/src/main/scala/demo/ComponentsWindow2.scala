@@ -1,12 +1,14 @@
 package demo
 
 import indigo.*
+import indigo.syntax.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalInput
 import roguelikestarterkit.ui.components.TerminalLabel
 import roguelikestarterkit.ui.components.TerminalTextArea
+import roguelikestarterkit.ui.components.common.ComponentId
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
@@ -52,20 +54,39 @@ object ComponentsWindow2:
             )
         )
         .add(
-          ComponentList(Dimensions(20, 8)) { (count: Int) =>
-            Batch(TerminalLabel[Int]("How many windows: ", TerminalLabel.Theme(charSheet))) ++
-              Batch.fill(count)(TerminalLabel("x", TerminalLabel.Theme(charSheet)))
+          ComponentList(Dimensions(20, 11)) { (count: Int) =>
+            Batch(
+              ComponentId("window count") -> TerminalLabel[Int](
+                "How many windows: ",
+                TerminalLabel.Theme(charSheet)
+              )
+            ) ++
+              (0 to count).toBatch.map { i =>
+                ComponentId("w" + i) -> TerminalLabel("x " + i, TerminalLabel.Theme(charSheet))
+              }
           }
+            .add((_: Int) =>
+              ComponentId("input_dynamic") -> TerminalInput(20, TerminalInput.Theme(charSheet))
+            )
             .add((count: Int) =>
-              Batch.fill(count)(
-                TerminalButton[Int]("Button", TerminalButton.Theme(charSheet)).onClick(
+              (0 to count).toBatch.map { i =>
+                ComponentId("btn" + i) -> TerminalButton[Int](
+                  "Button " + i,
+                  TerminalButton.Theme(charSheet)
+                ).onClick(
                   Log("count: " + count)
                 )
-              )
-                :+ TerminalButton[Int]("test", TerminalButton.Theme(charSheet)).onClick(Log("test"))
+              }
+                :+ ComponentId("btnX") -> TerminalButton[Int](
+                  "test",
+                  TerminalButton.Theme(charSheet)
+                ).onClick(Log("test"))
             )
             .add((i: Int) =>
-              TerminalTextArea[Int]("abc.\nde,f\n0123456! " + i, TerminalTextArea.Theme(charSheet))
+              ComponentId("textarea") -> TerminalTextArea[Int](
+                "abc.\nde,f\n0123456! " + i,
+                TerminalTextArea.Theme(charSheet)
+              )
             )
             .withLayout(ComponentLayout.Vertical(Padding.zero))
         )

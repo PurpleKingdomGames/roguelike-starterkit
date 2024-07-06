@@ -2,10 +2,11 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import indigo.syntax.*
+import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
-import roguelikestarterkit.ui.component.StatelessComponent
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
+import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
 /** Buttons `Component`s allow you to create buttons for your UI.
@@ -67,9 +68,15 @@ object Button:
       calculateBounds
     )
 
-  given [ReferenceData]: StatelessComponent[Button[ReferenceData], ReferenceData] with
+  given [ReferenceData]: Component[Button[ReferenceData], ReferenceData] with
     def bounds(reference: ReferenceData, model: Button[ReferenceData]): Bounds =
       model.calculateBounds(reference)
+
+    def updateModel(
+        context: UIContext[ReferenceData],
+        model: Button[ReferenceData]
+    ): GlobalEvent => Outcome[Button[ReferenceData]] =
+      _ => Outcome(model)
 
     def present(
         context: UIContext[ReferenceData],
@@ -104,6 +111,13 @@ object Button:
           model.down
             .getOrElse(model.up)(context.bounds.coords, b, context.reference)
             .addGlobalEvents(events)
+
+    def refresh(
+        reference: ReferenceData,
+        model: Button[ReferenceData],
+        parentDimensions: Dimensions
+    ): Button[ReferenceData] =
+      model
 
 enum ButtonState:
   case Up, Over, Down

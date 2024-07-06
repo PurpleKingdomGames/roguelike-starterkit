@@ -4,6 +4,7 @@ import indigo.*
 import roguelikestarterkit.ui.component.*
 import roguelikestarterkit.ui.components.common.Anchor
 import roguelikestarterkit.ui.components.common.ComponentEntry
+import roguelikestarterkit.ui.components.common.ComponentId
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.ContainerLikeFunctions
 import roguelikestarterkit.ui.components.common.Overflow
@@ -29,7 +30,8 @@ final case class ComponentGroup[ReferenceData] private[group] (
       c: Component[A, ReferenceData]
   ): ComponentGroup[ReferenceData] =
     this.copy(
-      components = components :+ ComponentEntry(Coords.zero, entry, c, Anchor.None),
+      components =
+        components :+ ComponentEntry(ComponentId.None, Coords.zero, entry, c, Anchor.None),
       dirty = true
     )
 
@@ -47,7 +49,7 @@ final case class ComponentGroup[ReferenceData] private[group] (
       c: Component[A, ReferenceData]
   ): ComponentGroup[ReferenceData] =
     this.copy(
-      components = components :+ ComponentEntry(Coords.zero, entry, c, anchor),
+      components = components :+ ComponentEntry(ComponentId.None, Coords.zero, entry, c, anchor),
       dirty = true
     )
 

@@ -13,8 +13,7 @@ import roguelikestarterkit.ui.datatypes.*
 
 import scala.annotation.tailrec
 
-/** Describes a fixed arrangement of components, manages their layout, and propagates updates and
-  * presention calls.
+/** Describes a fixed arrangement of components, manages their layout, which may include anchored components.
   */
 final case class ComponentGroup[ReferenceData] private[group] (
     boundsType: BoundsType,

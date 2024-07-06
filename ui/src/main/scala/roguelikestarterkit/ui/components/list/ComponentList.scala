@@ -13,8 +13,7 @@ import ultraviolet.syntax.layout
 
 import scala.annotation.tailrec
 
-/** Describes a dynamic list of components, their realtive layout, and propagates update and
-  * presention calls.
+/** Describes a dynamic list of components, and their realtive layout.
   */
 final case class ComponentList[ReferenceData] private (
     content: ReferenceData => Batch[ComponentEntry[?, ReferenceData]],

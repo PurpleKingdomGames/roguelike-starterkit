@@ -6,13 +6,11 @@ import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
 import roguelikestarterkit.ui.component.ComponentFragment
-import roguelikestarterkit.ui.component.StatelessComponent
 import roguelikestarterkit.ui.components.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UIContext
 
 /** TerminalLabel are a simple `Component`s that render text using a Terminal.
   */
@@ -64,17 +62,6 @@ object TerminalLabel:
       presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background),
       (_, t) => findBounds(t)
     )
-
-  given [ReferenceData]: StatelessComponent[Label[ReferenceData], ReferenceData] with
-    def bounds(reference: ReferenceData, model: Label[ReferenceData]): Bounds =
-      model.calculateBounds(reference, model.text(reference))
-
-    def present(
-        context: UIContext[ReferenceData],
-        model: Label[ReferenceData]
-    ): Outcome[ComponentFragment] =
-      val t = model.text(context.reference)
-      model.render(context.bounds.coords, t, model.calculateBounds(context.reference, t).dimensions)
 
   final case class Theme(
       charSheet: CharSheet,

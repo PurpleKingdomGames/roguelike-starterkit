@@ -4,6 +4,7 @@ import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalButton
+import roguelikestarterkit.ui.components.common.ComponentId
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
@@ -23,26 +24,28 @@ object MenuWindow:
       charSheet,
       ComponentList(Dimensions(20, 3)) { (_: Int) =>
         Batch(
-          TerminalButton[Int](
-            "Window 1",
-            TerminalButton.Theme(
-              charSheet,
-              RGBA.Silver -> RGBA.Black,
-              RGBA.White  -> RGBA.Black,
-              RGBA.Black  -> RGBA.White,
-              hasBorder = false
-            )
-          ).onClick(Log("Window 1"), WindowEvent.Open(ComponentsWindow.windowId)),
-          TerminalButton[Int](
-            "Window 2",
-            TerminalButton.Theme(
-              charSheet,
-              RGBA.Silver -> RGBA.Black,
-              RGBA.Green  -> RGBA.Black,
-              RGBA.Black  -> RGBA.Yellow,
-              hasBorder = false
-            )
-          ).onClick(Log("Window 2"), WindowEvent.Open(ComponentsWindow2.windowId))
+          ComponentId("btn1") ->
+            TerminalButton[Int](
+              "Window 1",
+              TerminalButton.Theme(
+                charSheet,
+                RGBA.Silver -> RGBA.Black,
+                RGBA.White  -> RGBA.Black,
+                RGBA.Black  -> RGBA.White,
+                hasBorder = false
+              )
+            ).onClick(Log("Window 1"), WindowEvent.Open(ComponentsWindow.windowId)),
+          ComponentId("btn2") ->
+            TerminalButton[Int](
+              "Window 2",
+              TerminalButton.Theme(
+                charSheet,
+                RGBA.Silver -> RGBA.Black,
+                RGBA.Green  -> RGBA.Black,
+                RGBA.Black  -> RGBA.Yellow,
+                hasBorder = false
+              )
+            ).onClick(Log("Window 2"), WindowEvent.Open(ComponentsWindow2.windowId))
         )
       }
         .withLayout(ComponentLayout.Horizontal(Padding(0, 1, 0, 0)))

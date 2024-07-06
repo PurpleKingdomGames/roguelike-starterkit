@@ -9,8 +9,10 @@ import roguelikestarterkit.ui.datatypes.Coords
   * for use inside a `ComponentGroup`.
   */
 final case class ComponentEntry[A, ReferenceData](
+    id: ComponentId,
     offset: Coords,
     model: A,
     component: Component[A, ReferenceData],
     anchor: Anchor
-)
+):
+  type Out = A

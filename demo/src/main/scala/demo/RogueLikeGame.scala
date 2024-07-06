@@ -5,6 +5,7 @@ import indigo.scenes.*
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.components.common.ComponentId
 import roguelikestarterkit.ui.components.group.BoundsType
 import roguelikestarterkit.ui.components.group.ComponentGroup
 import roguelikestarterkit.ui.components.list.ComponentList
@@ -93,6 +94,8 @@ final case class Model(mouseOverWindows: Batch[WindowId], components: ComponentG
 
 object Model:
 
+  import indigo.syntax.*
+
   val defaultCharSheet: CharSheet =
     CharSheet(
       Assets.assets.AnikkiSquare10x10,
@@ -107,9 +110,9 @@ object Model:
       ComponentGroup(BoundsType.fixed(200, 200))
         .add(
           ComponentList(Dimensions(200, 40)) { (_: Int) =>
-            Batch.fill(3) {
-              Label[Int](
-                "Custom rendered label",
+            (1 to 3).toBatch.map { i =>
+              ComponentId("lbl" + i) -> Label[Int](
+                "Custom rendered label " + i,
                 (_, label) => Bounds(0, 0, 150, 10)
               ) { case (offset, label, dimensions) =>
                 Outcome(

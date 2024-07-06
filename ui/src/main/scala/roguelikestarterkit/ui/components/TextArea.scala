@@ -2,8 +2,8 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import indigo.syntax.*
+import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
-import roguelikestarterkit.ui.component.StatelessComponent
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
@@ -47,9 +47,15 @@ object TextArea:
       calculateBounds
     )
 
-  given [ReferenceData]: StatelessComponent[TextArea[ReferenceData], ReferenceData] with
+  given [ReferenceData]: Component[TextArea[ReferenceData], ReferenceData] with
     def bounds(reference: ReferenceData, model: TextArea[ReferenceData]): Bounds =
       model.calculateBounds(reference, model.text(reference))
+
+    def updateModel(
+        context: UIContext[ReferenceData],
+        model: TextArea[ReferenceData]
+    ): GlobalEvent => Outcome[TextArea[ReferenceData]] =
+      _ => Outcome(model)
 
     def present(
         context: UIContext[ReferenceData],
@@ -60,3 +66,10 @@ object TextArea:
         model.text(context.reference),
         bounds(context.reference, model).dimensions
       )
+
+    def refresh(
+        reference: ReferenceData,
+        model: TextArea[ReferenceData],
+        parentDimensions: Dimensions
+    ): TextArea[ReferenceData] =
+      model

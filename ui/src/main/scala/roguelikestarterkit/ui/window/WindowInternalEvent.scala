@@ -9,4 +9,3 @@ enum WindowInternalEvent extends GlobalEvent:
   case ResizeBy(id: WindowId, dragData: DragData)
   case MoveBy(id: WindowId, dragData: DragData)
   case Redraw
-  case ClearData

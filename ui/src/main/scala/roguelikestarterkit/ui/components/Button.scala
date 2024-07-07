@@ -24,7 +24,7 @@ final case class Button[ReferenceData](
     calculateBounds: ReferenceData => Bounds,
     isDown: Boolean,
     dragOptions: DragOptions,
-    dragStart: Option[Coords]
+    dragStart: Option[DragData]
 ):
   val isDragged: Boolean = dragStart.isDefined
 
@@ -68,7 +68,9 @@ final case class Button[ReferenceData](
     * The Coords argument to the function are RELATIVE to the button's position, i.e. dragging up
     * and left will result in negative coordinates.
     */
-  def onDrag(events: (ReferenceData, DragData) => Batch[GlobalEvent]): Button[ReferenceData] =
+  def onDrag(
+      events: (ReferenceData, DragData) => Batch[GlobalEvent]
+  ): Button[ReferenceData] =
     this.copy(drag = events)
   def onDrag(events: Batch[GlobalEvent]): Button[ReferenceData] =
     onDrag((_, _) => events)
@@ -172,22 +174,28 @@ object Button:
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
 
       case _: MouseEvent.Move if model.isDown && model.dragOptions.isDraggable =>
-        val newDragStart =
-          if model.dragStart.isEmpty then Option(context.mouseCoords) else model.dragStart
-
-        val start = newDragStart.getOrElse(Coords.zero)
-
-        val dragData =
+        def makeDragData =
           DragData(
-            start = start,
-            current = context.mouseCoords,
-            delta = context.mouseCoords - start
+            start = context.mouseCoords,
+            position = context.mouseCoords,
+            offset = context.mouseCoords - context.bounds.coords,
+            delta = Coords.zero
+          )
+
+        val newDragStart =
+          if model.dragStart.isEmpty then makeDragData
+          else model.dragStart.getOrElse(makeDragData)
+
+        val updatedDragData =
+          newDragStart.copy(
+            position = context.mouseCoords,
+            delta = context.mouseCoords - newDragStart.start
           )
 
         Outcome(
-          model.copy(dragStart = newDragStart)
+          model.copy(dragStart = Option(updatedDragData))
         ).addGlobalEvents(
-          model.drag(context.reference, dragData)
+          model.drag(context.reference, updatedDragData)
         )
 
       case _ =>
@@ -200,7 +208,7 @@ object Button:
       val b =
         if model.isDragged && model.dragOptions.followMouse then
           model.bounds.moveBy(
-            model.dragStart.map(pt => context.mouseCoords - pt).getOrElse(Coords.zero)
+            model.dragStart.map(dd => context.mouseCoords - dd.start).getOrElse(Coords.zero)
           )
         else model.bounds
 
@@ -271,8 +279,20 @@ enum DragOptions:
       case ReportDrag => false
       case Drag       => true
 
+/** Data about the ongoing drag operation, all positions are in screen space.
+  *
+  * @param start
+  *   The position of the mouse when the drag started
+  * @param position
+  *   The current position of the mouse
+  * @param offset
+  *   The start position relative to the component
+  * @param delta
+  *   The change in position since the drag started
+  */
 final case class DragData(
     start: Coords,
-    current: Coords,
+    position: Coords,
+    offset: Coords,
     delta: Coords
 )

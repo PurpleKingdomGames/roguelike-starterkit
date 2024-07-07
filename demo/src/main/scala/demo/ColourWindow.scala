@@ -101,9 +101,13 @@ object ColourWindow:
                 RGBA.White -> RGBA.Black,
                 hasBorder = false
               )
-            ).onClick(
-              WindowEvent.Close(windowId)
-            ),
+            ).onDrag {
+              (
+                  _: Unit,
+                  coords
+              ) => // TODO this needs to be relative somehow... window info in the context?
+                Batch(WindowEvent.Resize(windowId, coords.toDimensions))
+            }.reportDrag,
             Anchor.BottomRight
           )
           .anchor(
@@ -123,8 +127,8 @@ object ColourWindow:
           )
       )
     )
-      .moveTo(0, 0)
-      .resizeTo(25, 25)
+      .moveTo(5, 5)
+      .resizeTo(20, 20)
 
   def presentSwatch(
       charSheet: CharSheet,

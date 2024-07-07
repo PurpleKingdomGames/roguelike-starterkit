@@ -20,9 +20,14 @@ final case class Button[ReferenceData](
     click: ReferenceData => Batch[GlobalEvent],
     press: ReferenceData => Batch[GlobalEvent],
     release: ReferenceData => Batch[GlobalEvent],
+    drag: (ReferenceData, Coords) => Batch[GlobalEvent],
     calculateBounds: ReferenceData => Bounds,
-    isDown: Boolean
+    isDown: Boolean,
+    dragOptions: DragOptions,
+    dragStart: Option[Coords]
 ):
+  val isDragged: Boolean = dragStart.isDefined
+
   def presentUp(
       up: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
   ): Button[ReferenceData] =
@@ -59,6 +64,26 @@ final case class Button[ReferenceData](
   def onRelease(events: GlobalEvent*): Button[ReferenceData] =
     onRelease(Batch.fromSeq(events))
 
+  def onDrag(events: (ReferenceData, Coords) => Batch[GlobalEvent]): Button[ReferenceData] =
+    this.copy(drag = events)
+  def onDrag(events: Batch[GlobalEvent]): Button[ReferenceData] =
+    onDrag((_, _) => events)
+  def onDrag(events: GlobalEvent*): Button[ReferenceData] =
+    onDrag(Batch.fromSeq(events))
+
+  def withDragOptions(value: DragOptions): Button[ReferenceData] =
+    this.copy(dragOptions = value)
+  def makeDraggable: Button[ReferenceData] =
+    withDragOptions(DragOptions.Drag(None))
+  def reportDrag: Button[ReferenceData] =
+    withDragOptions(DragOptions.ReportDrag(None))
+  def notDraggable: Button[ReferenceData] =
+    withDragOptions(DragOptions.None)
+  def constrainDragTo(bounds: Bounds): Button[ReferenceData] =
+    this.copy(dragOptions = dragOptions.contrainTo(bounds))
+  def unconstrainDrag: Button[ReferenceData] =
+    this.copy(dragOptions = dragOptions.uncontrain)
+
 object Button:
 
   /** Minimal button constructor with custom rendering function
@@ -75,8 +100,11 @@ object Button:
       _ => Batch.empty,
       _ => Batch.empty,
       _ => Batch.empty,
+      (_, _) => Batch.empty,
       _ => bounds,
-      isDown = false
+      isDown = false,
+      dragOptions = DragOptions.None,
+      dragStart = None
     )
 
   /** Minimal button constructor with custom rendering function and dynamic sizing
@@ -93,8 +121,11 @@ object Button:
       _ => Batch.empty,
       _ => Batch.empty,
       _ => Batch.empty,
+      (_, _) => Batch.empty,
       calculateBounds,
-      isDown = false
+      isDown = false,
+      dragOptions = DragOptions.None,
+      dragStart = None
     )
 
   given [ReferenceData]: Component[Button[ReferenceData], ReferenceData] with
@@ -123,20 +154,29 @@ object Button:
 
       case _: MouseEvent.Click
           if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
-        Outcome(model.copy(state = ButtonState.Up, isDown = false))
+        Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.click(context.reference))
 
       case _: MouseEvent.MouseDown
           if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
-        Outcome(model.copy(state = ButtonState.Down, isDown = true))
+        Outcome(model.copy(state = ButtonState.Down, isDown = true, dragStart = None))
+          .addGlobalEvents(model.press(context.reference))
 
       case _: MouseEvent.MouseUp
           if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
-        Outcome(model.copy(state = ButtonState.Up, isDown = false))
+        Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
+          .addGlobalEvents(model.release(context.reference))
 
       case _: MouseEvent.MouseUp =>
         // Released Outside.
-        Outcome(model.copy(state = ButtonState.Up, isDown = false))
+        Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
+
+      case _: MouseEvent.Move if model.isDown && model.dragOptions.isDraggable =>
+        Outcome(
+          model.copy(dragStart =
+            if model.dragStart.isEmpty then Option(context.mouseCoords) else model.dragStart
+          )
+        ).addGlobalEvents(model.drag(context.reference, context.mouseCoords))
 
       case _ =>
         Outcome(model)
@@ -145,8 +185,12 @@ object Button:
         context: UIContext[ReferenceData],
         model: Button[ReferenceData]
     ): Outcome[ComponentFragment] =
-      val b           = model.bounds
-      val mouseWithin = b.moveBy(context.bounds.coords).contains(context.mouseCoords)
+      val b =
+        if model.isDragged && model.dragOptions.followMouse then
+          model.bounds.moveBy(
+            model.dragStart.map(pt => context.mouseCoords - pt).getOrElse(Coords.zero)
+          )
+        else model.bounds
 
       model.state match
         case ButtonState.Up =>
@@ -185,3 +229,44 @@ enum ButtonState:
     this match
       case Down => true
       case _    => false
+
+/** Describes the drag behaviour of the component
+  */
+enum DragOptions:
+
+  /** Cannot be dragged
+    */
+  case None
+
+  /** The drag movement is tracked and reported (via events), but the component is rendered as
+    * normal, i.e. does not move.
+    */
+  case ReportDrag(contraints: Option[Bounds])
+
+  /** The component follows the mouse movement as well as emitting relevant events.
+    */
+  case Drag(contraints: Option[Bounds])
+
+  def isDraggable: Boolean =
+    this match
+      case None          => false
+      case ReportDrag(_) => true
+      case Drag(_)       => true
+
+  def followMouse: Boolean =
+    this match
+      case None          => false
+      case ReportDrag(_) => false
+      case Drag(_)       => true
+
+  def contrainTo(bounds: Bounds): DragOptions =
+    this match
+      case DragOptions.None          => DragOptions.None
+      case DragOptions.ReportDrag(_) => DragOptions.ReportDrag(Option(bounds))
+      case DragOptions.Drag(_)       => DragOptions.Drag(Option(bounds))
+
+  def uncontrain: DragOptions =
+    this match
+      case DragOptions.None          => DragOptions.None
+      case DragOptions.ReportDrag(_) => DragOptions.ReportDrag(Option.empty)
+      case DragOptions.Drag(_)       => DragOptions.Drag(Option.empty)

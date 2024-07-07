@@ -262,33 +262,6 @@ object WindowManager:
               // Shouldn't get here.
               Batch.empty
 
-            case Some(vm) if vm.resizeData.isDefined || vm.dragData.isDefined =>
-              val tempModel =
-                m
-                  .withDimensions(
-                    m.bounds.dimensions + vm.resizeData
-                      .map(d => d.by - d.offset)
-                      .getOrElse(Coords.zero)
-                      .toDimensions
-                  )
-                  .moveBy(
-                    vm.dragData
-                      .map(d => d.by - d.offset)
-                      .getOrElse(Coords.zero)
-                  )
-
-              Batch(
-                WindowView
-                  .present(
-                    context.copy(state =
-                      if m.hasFocus || windowUnderMouse.exists(_ == m.id) then UIState.Active
-                      else UIState.InActive
-                    ),
-                    tempModel,
-                    vm
-                  )
-              )
-
             case Some(vm) =>
               Batch(
                 WindowView

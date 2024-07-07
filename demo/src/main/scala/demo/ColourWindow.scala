@@ -82,14 +82,25 @@ object ColourWindow:
             )
           )
           .anchor(
-            TerminalLabel(
+            TerminalButton(
               "Colour palette",
-              TerminalLabel.Theme(
-                charSheet,
-                RGBA.White,
-                RGBA.Black
+              TerminalButton
+                .Theme(
+                  charSheet,
+                  RGBA.White,
+                  RGBA.Black
+                )
+                .addBorder
+            ).onDrag { (_: Unit, dragData) =>
+              Batch(
+                WindowEvent
+                  .Move(
+                    windowId,
+                    dragData.position - dragData.offset - 1, // The +2 is to account for the border, for now.
+                    Space.Screen
+                  )
               )
-            ),
+            }.reportDrag,
             Anchor.TopLeft
           )
           .anchor(
@@ -102,19 +113,15 @@ object ColourWindow:
                 RGBA.White -> RGBA.Black,
                 hasBorder = false
               )
-            ).onDrag {
-              (
-                  _: Unit,
-                  dragData
-              ) =>
-                Batch(
-                  WindowEvent
-                    .Resize(
-                      windowId,
-                      dragData.current.toDimensions + 2, // The +2 is to account for the border, for now.
-                      Space.Screen
-                    )
-                )
+            ).onDrag { (_: Unit, dragData) =>
+              Batch(
+                WindowEvent
+                  .Resize(
+                    windowId,
+                    dragData.position.toDimensions + 2, // The +2 is to account for the border, for now.
+                    Space.Screen
+                  )
+              )
             }.reportDrag,
             Anchor.BottomRight
           )

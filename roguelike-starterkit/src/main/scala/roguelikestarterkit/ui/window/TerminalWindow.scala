@@ -13,8 +13,6 @@ import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.datatypes.Bounds
 
-import scala.collection.immutable.LazyList.cons
-
 object TerminalWindow:
 
   def apply[A, ReferenceData](
@@ -35,7 +33,7 @@ object TerminalWindow:
       model.bounds.dimensions.max(Dimensions(2))
 
     val tiles: Batch[(Point, MapTile)] =
-      val grey  = RGBA.White.mix(RGBA.Black, if model.hasFocus then 0.4 else 0.8)
+      val grey = RGBA.White.mix(RGBA.Black, if model.hasFocus then 0.4 else 0.8)
 
       (0 to validSize.height).toBatch.flatMap { _y =>
         (0 to validSize.width).toBatch.map { _x =>

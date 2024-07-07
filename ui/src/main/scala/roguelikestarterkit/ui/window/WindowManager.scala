@@ -175,7 +175,7 @@ object WindowManager:
       model.open(id)
 
     case WindowEvent.OpenAt(id, coords) =>
-      model.open(id).map(_.moveTo(id, coords))
+      model.open(id).map(_.moveTo(id, coords, Space.Screen))
 
     case WindowEvent.Close(id) =>
       model.close(id)
@@ -183,14 +183,14 @@ object WindowManager:
     case WindowEvent.Toggle(id) =>
       model.toggle(id)
 
-    case WindowEvent.Move(id, coords) =>
-      Outcome(model.moveTo(id, coords))
+    case WindowEvent.Move(id, coords, space) =>
+      Outcome(model.moveTo(id, coords, space))
 
-    case WindowEvent.Resize(id, dimensions) =>
-      model.resizeTo(id, dimensions).refresh(id, context.reference)
+    case WindowEvent.Resize(id, dimensions, space) =>
+      model.resizeTo(id, dimensions, space).refresh(id, context.reference)
 
-    case WindowEvent.Transform(id, bounds) =>
-      model.transformTo(id, bounds).refresh(id, context.reference)
+    case WindowEvent.Transform(id, bounds, space) =>
+      model.transformTo(id, bounds, space).refresh(id, context.reference)
 
     case WindowEvent.Opened(_) =>
       Outcome(model)

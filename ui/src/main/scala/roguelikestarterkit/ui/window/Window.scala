@@ -45,9 +45,12 @@ Padding on anchors.
 
 Labels with borders.
 
-Some way to define the content rectangle of a window?
-
 Terminal components, supplying a string isn't always nice, would be good to allow a Batch[Tile] or something.
+
+Some way to define the content rectangle of a window? Or just remove it.
+Terminal window border. Shouldn't be a thing. Content has padding, and the window has a background, that's all. I think.
+
+We need a standard window template. Title bar, close button, resize button.
 
  */
 
@@ -168,27 +171,6 @@ object Window:
       context: UIContext[ReferenceData],
       model: Window[A, ReferenceData]
   ): GlobalEvent => Outcome[Window[A, ReferenceData]] =
-    case WindowInternalEvent.MoveBy(id, dragData) if model.id == id =>
-      Outcome(
-        model.copy(
-          bounds = model.bounds.moveBy(dragData.by - dragData.offset)
-        )
-      )
-
-    case WindowInternalEvent.MoveTo(id, position) if model.id == id =>
-      Outcome(
-        model.copy(
-          bounds = model.bounds.moveTo(position)
-        )
-      )
-
-    case WindowInternalEvent.ResizeBy(id, dragData) if model.id == id =>
-      Outcome(
-        model
-          .withDimensions(model.bounds.dimensions + (dragData.by - dragData.offset).toDimensions)
-          .refresh(context.reference)
-      ).addGlobalEvents(WindowEvent.Resized(id))
-
     case e =>
       val contentRectangle = WindowView.calculateContentRectangle(model.bounds, model)
 

@@ -20,7 +20,7 @@ final case class Button[ReferenceData](
     click: ReferenceData => Batch[GlobalEvent],
     press: ReferenceData => Batch[GlobalEvent],
     release: ReferenceData => Batch[GlobalEvent],
-    drag: (ReferenceData, Coords) => Batch[GlobalEvent],
+    drag: (ReferenceData, DragData) => Batch[GlobalEvent],
     calculateBounds: ReferenceData => Bounds,
     isDown: Boolean,
     dragOptions: DragOptions,
@@ -64,7 +64,11 @@ final case class Button[ReferenceData](
   def onRelease(events: GlobalEvent*): Button[ReferenceData] =
     onRelease(Batch.fromSeq(events))
 
-  def onDrag(events: (ReferenceData, Coords) => Batch[GlobalEvent]): Button[ReferenceData] =
+  /** Drag events are fired when the mouse is pressed on the button and then moved without release.
+    * The Coords argument to the function are RELATIVE to the button's position, i.e. dragging up
+    * and left will result in negative coordinates.
+    */
+  def onDrag(events: (ReferenceData, DragData) => Batch[GlobalEvent]): Button[ReferenceData] =
     this.copy(drag = events)
   def onDrag(events: Batch[GlobalEvent]): Button[ReferenceData] =
     onDrag((_, _) => events)
@@ -74,15 +78,11 @@ final case class Button[ReferenceData](
   def withDragOptions(value: DragOptions): Button[ReferenceData] =
     this.copy(dragOptions = value)
   def makeDraggable: Button[ReferenceData] =
-    withDragOptions(DragOptions.Drag(None))
+    withDragOptions(DragOptions.Drag)
   def reportDrag: Button[ReferenceData] =
-    withDragOptions(DragOptions.ReportDrag(None))
+    withDragOptions(DragOptions.ReportDrag)
   def notDraggable: Button[ReferenceData] =
     withDragOptions(DragOptions.None)
-  def constrainDragTo(bounds: Bounds): Button[ReferenceData] =
-    this.copy(dragOptions = dragOptions.contrainTo(bounds))
-  def unconstrainDrag: Button[ReferenceData] =
-    this.copy(dragOptions = dragOptions.uncontrain)
 
 object Button:
 
@@ -172,11 +172,23 @@ object Button:
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
 
       case _: MouseEvent.Move if model.isDown && model.dragOptions.isDraggable =>
-        Outcome(
-          model.copy(dragStart =
-            if model.dragStart.isEmpty then Option(context.mouseCoords) else model.dragStart
+        val newDragStart =
+          if model.dragStart.isEmpty then Option(context.mouseCoords) else model.dragStart
+
+        val start = newDragStart.getOrElse(Coords.zero)
+
+        val dragData =
+          DragData(
+            start = start,
+            current = context.mouseCoords,
+            delta = context.mouseCoords - start
           )
-        ).addGlobalEvents(model.drag(context.reference, context.mouseCoords))
+
+        Outcome(
+          model.copy(dragStart = newDragStart)
+        ).addGlobalEvents(
+          model.drag(context.reference, dragData)
+        )
 
       case _ =>
         Outcome(model)
@@ -241,32 +253,26 @@ enum DragOptions:
   /** The drag movement is tracked and reported (via events), but the component is rendered as
     * normal, i.e. does not move.
     */
-  case ReportDrag(contraints: Option[Bounds])
+  case ReportDrag
 
   /** The component follows the mouse movement as well as emitting relevant events.
     */
-  case Drag(contraints: Option[Bounds])
+  case Drag
 
   def isDraggable: Boolean =
     this match
-      case None          => false
-      case ReportDrag(_) => true
-      case Drag(_)       => true
+      case None       => false
+      case ReportDrag => true
+      case Drag       => true
 
   def followMouse: Boolean =
     this match
-      case None          => false
-      case ReportDrag(_) => false
-      case Drag(_)       => true
+      case None       => false
+      case ReportDrag => false
+      case Drag       => true
 
-  def contrainTo(bounds: Bounds): DragOptions =
-    this match
-      case DragOptions.None          => DragOptions.None
-      case DragOptions.ReportDrag(_) => DragOptions.ReportDrag(Option(bounds))
-      case DragOptions.Drag(_)       => DragOptions.Drag(Option(bounds))
-
-  def uncontrain: DragOptions =
-    this match
-      case DragOptions.None          => DragOptions.None
-      case DragOptions.ReportDrag(_) => DragOptions.ReportDrag(Option.empty)
-      case DragOptions.Drag(_)       => DragOptions.Drag(Option.empty)
+final case class DragData(
+    start: Coords,
+    current: Coords,
+    delta: Coords
+)

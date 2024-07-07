@@ -42,16 +42,20 @@ enum WindowEvent extends GlobalEvent:
   case GiveFocusAt(coords: Coords)
 
   /** Moves a window to the location given */
-  case Move(id: WindowId, position: Coords)
+  case Move(id: WindowId, position: Coords, space: Space)
 
   /** Resizes a window to a given size */
-  case Resize(id: WindowId, dimensions: Dimensions)
+  case Resize(id: WindowId, dimensions: Dimensions, space: Space)
 
   /** Changes the bounds of a window */
-  case Transform(id: WindowId, bounds: Bounds)
+  case Transform(id: WindowId, bounds: Bounds, space: Space)
 
   /** Changes the magnification of all windows */
   case ChangeMagnification(newMagnification: Int)
 
   /** Tells a window request its content to refresh */
   case Refresh(id: WindowId)
+
+enum Space:
+  case Screen
+  case Window

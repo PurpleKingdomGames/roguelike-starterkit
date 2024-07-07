@@ -104,6 +104,8 @@ object TerminalButton:
       calculateBounds: ReferenceData => Bounds
   ): Button[ReferenceData] =
     Button(
+      Bounds.zero,
+      ButtonState.Up,
       presentButton(
         label,
         theme.up.foreground,
@@ -130,7 +132,10 @@ object TerminalButton:
         )
       ),
       _ => Batch.empty,
-      calculateBounds
+      _ => Batch.empty,
+      _ => Batch.empty,
+      calculateBounds,
+      isDown = false
     )
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with

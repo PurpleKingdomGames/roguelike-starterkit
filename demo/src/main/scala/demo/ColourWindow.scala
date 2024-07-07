@@ -13,6 +13,7 @@ import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
 import roguelikestarterkit.ui.components.group.BoundsType
 import roguelikestarterkit.ui.components.group.ComponentGroup
+import roguelikestarterkit.ui.window.Space
 import roguelikestarterkit.ui.window.TerminalWindow
 
 object ColourWindow:
@@ -104,9 +105,16 @@ object ColourWindow:
             ).onDrag {
               (
                   _: Unit,
-                  coords
-              ) => // TODO this needs to be relative somehow... window info in the context?
-                Batch(WindowEvent.Resize(windowId, coords.toDimensions))
+                  dragData
+              ) =>
+                Batch(
+                  WindowEvent
+                    .Resize(
+                      windowId,
+                      dragData.current.toDimensions + 2, // The +2 is to account for the border, for now.
+                      Space.Screen
+                    )
+                )
             }.reportDrag,
             Anchor.BottomRight
           )

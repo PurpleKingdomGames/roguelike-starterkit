@@ -59,18 +59,63 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
   def windowAt(coords: Coords): Option[WindowId] =
     windows.reverse.find(_.bounds.contains(coords)).map(_.id)
 
-  def moveTo(id: WindowId, position: Coords): WindowManagerModel[ReferenceData] =
-    this.copy(windows = windows.map(w => if w.id == id then w.moveTo(position) else w))
+  def moveTo(
+      id: WindowId,
+      position: Coords,
+      space: Space
+  ): WindowManagerModel[ReferenceData] =
+    this.copy(
+      windows = windows.map { w =>
+        if w.id == id then
+          space match
+            case Space.Screen =>
+              w.moveTo(position)
 
-  def resizeTo(id: WindowId, dimensions: Dimensions): WindowManagerModel[ReferenceData] =
-    this.copy(windows = windows.map(w => if w.id == id then w.resizeTo(dimensions) else w))
+            case Space.Window =>
+              // The coords are relative to the window, so we need to adjust them to screen coords.
+              w.moveTo(position + w.bounds.coords)
+        else w
+      }
+    )
 
-  def transformTo(id: WindowId, bounds: Bounds): WindowManagerModel[ReferenceData] =
-    this.copy(windows =
-      windows.map(w =>
+  def resizeTo(
+      id: WindowId,
+      dimensions: Dimensions,
+      space: Space
+  ): WindowManagerModel[ReferenceData] =
+    this.copy(
+      windows = windows.map { w =>
+        if w.id == id then
+          space match
+            case Space.Screen =>
+              // The dimensions are relative to the screen, so we need to adjust them to window dimensions.
+              w.resizeTo(dimensions - w.bounds.coords.toDimensions)
+
+            case Space.Window =>
+              w.resizeTo(dimensions)
+        else w
+      }
+    )
+
+  def transformTo(
+      id: WindowId,
+      bounds: Bounds,
+      space: Space
+  ): WindowManagerModel[ReferenceData] =
+    this.copy(
+      windows = windows.map { w =>
         // Note: We do _not_ use .withBounds here because that won't do the min size checks.
-        if w.id == id then w.moveTo(bounds.coords).resizeTo(bounds.dimensions) else w
-      )
+        if w.id == id then
+          space match
+            case Space.Screen =>
+              // See above (moveTo / resizeTo) for the reasoning behind these adjustments.
+              w.moveTo(bounds.coords).resizeTo(bounds.dimensions - w.bounds.coords.toDimensions)
+
+            case Space.Window =>
+              // See above (moveTo / resizeTo) for the reasoning behind these adjustments.
+              w.moveTo(bounds.coords + w.bounds.coords).resizeTo(bounds.dimensions)
+        else w
+      }
     )
 
   def refresh(id: WindowId, reference: ReferenceData): Outcome[WindowManagerModel[ReferenceData]] =

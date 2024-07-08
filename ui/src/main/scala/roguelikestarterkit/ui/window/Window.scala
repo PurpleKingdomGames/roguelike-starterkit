@@ -2,6 +2,7 @@ package roguelikestarterkit.ui.window
 
 import indigo.*
 import roguelikestarterkit.ui.component.Component
+import roguelikestarterkit.ui.components.common.Padding
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
@@ -21,8 +22,6 @@ Terminal components, supplying a string isn't always nice, would be good to allo
 
 We need a standard window template. Title bar, close button, resize button.
 
-Wrapping needs to take padding into account.
-
 Components need a way to fill the available space.
 
 One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance. That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
@@ -39,7 +38,8 @@ final case class Window[A, ReferenceData](
     minSize: Dimensions,
     maxSize: Option[Dimensions],
     state: WindowState,
-    present: (UIContext[ReferenceData], Window[A, ReferenceData]) => Outcome[Layer]
+    present: (UIContext[ReferenceData], Window[A, ReferenceData]) => Outcome[Layer],
+    mask: Padding
 ):
 
   def withId(value: WindowId): Window[A, ReferenceData] =
@@ -105,6 +105,9 @@ final case class Window[A, ReferenceData](
   def isClosed: Boolean =
     state == WindowState.Closed
 
+  def withMaskPadding(value: Padding): Window[A, ReferenceData] =
+    this.copy(mask = value)
+
   def refresh(reference: ReferenceData): Window[A, ReferenceData] =
     this.copy(content =
       component.refresh(
@@ -134,7 +137,8 @@ object Window:
       minSize,
       None,
       WindowState.Closed,
-      present
+      present,
+      Padding.zero
     )
 
   def updateModel[A, ReferenceData](

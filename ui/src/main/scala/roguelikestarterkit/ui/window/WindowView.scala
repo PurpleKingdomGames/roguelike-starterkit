@@ -29,7 +29,12 @@ object WindowView:
               windowChrome,
               l.withBlendMaterial(
                 LayerMask(
-                  model.bounds
+                  (model.bounds + Bounds(
+                    model.mask.left,
+                    model.mask.top,
+                    -model.mask.right,
+                    -model.mask.bottom
+                  ))
                     .toScreenSpace(context.snapGrid * viewModel.magnification)
                 )
               )
@@ -42,7 +47,12 @@ object WindowView:
               case l: Layer.Content =>
                 l.withBlendMaterial(
                   LayerMask(
-                    model.bounds
+                    (model.bounds + Bounds(
+                      model.mask.left,
+                      model.mask.top,
+                      -model.mask.right,
+                      -model.mask.bottom
+                    ))
                       .toScreenSpace(context.snapGrid * viewModel.magnification)
                   )
                 )

@@ -1,5 +1,7 @@
 package roguelikestarterkit.ui.components.common
 
+import roguelikestarterkit.ui.datatypes.Bounds
+
 /** Describes the padding between components.
   */
 final case class Padding(top: Int, right: Int, bottom: Int, left: Int):

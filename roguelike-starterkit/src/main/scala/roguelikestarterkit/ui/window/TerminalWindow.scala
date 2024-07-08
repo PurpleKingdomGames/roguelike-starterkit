@@ -11,6 +11,7 @@ import roguelikestarterkit.Tile
 import roguelikestarterkit.UIContext
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.ui.component.Component
+import roguelikestarterkit.ui.components.common.Padding
 import roguelikestarterkit.ui.datatypes.Bounds
 
 object TerminalWindow:
@@ -20,7 +21,9 @@ object TerminalWindow:
       charSheet: CharSheet,
       content: A
   )(using Component[A, ReferenceData]): Window[A, ReferenceData] =
-    Window(id, charSheet.size, Dimensions(3), content)(present(charSheet))
+    val w: Window[A, ReferenceData] =
+      Window(id, charSheet.size, Dimensions(3), content)(present(charSheet))
+    w.withMaskPadding(Padding.bottom(1).withRight(1))
 
   private val graphic: Graphic[TerminalMaterial] =
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))

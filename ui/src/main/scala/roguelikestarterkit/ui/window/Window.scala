@@ -9,30 +9,6 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 /*
 
-Let's start over.
-
-A Component group is a ...group of components. Anything with a 'Component' instance available.
-
-They are laid out according to some options, but the layout is basically sequential. Horizontal or vertical. Overflow is wrapped or hidden.
-
-So far so good. This all works.
-
-A window, should just be an allocation of space on the screen, in which to hold a Component (usually a group). It has some other jobs like managing events, and depth, but it's primary function is to reserve screen space.
-
-Windows, holders of space on the screen, can be controlled (resized, closed, moved, etc) via events.
-
-Those events should come from the components, not the window itself.
-
----
-
-In order to replicate a "traditional" window, our components need some new functionality:
-
-1. The ability to be anchored inside the component group, i.e. the close button should be top right (less padding), regardless of the component groups designated 'layout' style.
-
-2. The optional ability to be draggable, and when dragged, to fire an event so that we can 'drag the title bar to drag the window' or 'drag the resize button to resize the window'.
-
----
-
 Missing stuff:
 
 Optional backgrounds on ComponentGroups? Would allow you to make title bars our of a component group and a label, for example.
@@ -41,13 +17,11 @@ Oh and we're still missing scrolling. Not totally sure where that goes yet. Clea
 
 Might also need model windows that sit above everything.
 
-Padding on anchors.
-
 Terminal components, supplying a string isn't always nice, would be good to allow a Batch[Tile] or something.
 
 We need a standard window template. Title bar, close button, resize button.
 
-Warpping needs to take padding into account.
+Wrapping needs to take padding into account.
 
 Components need a way to fill the available space.
 

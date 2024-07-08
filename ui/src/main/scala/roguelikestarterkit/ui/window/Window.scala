@@ -12,6 +12,8 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 Missing stuff:
 
+Components need a way to fill the available space.
+
 Oh and we're still missing scrolling. Not totally sure where that goes yet. Clearly it's going to be important. I _think_ it's _probably_ and component group / list thing.
 
 Might also need 'modal' windows that sit above everything.
@@ -20,9 +22,11 @@ Terminal components, supplying a string isn't always nice, would be good to allo
 
 We need a standard window template. Title bar, close button, resize button.
 
-Components need a way to fill the available space.
-
 One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance. That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
+
+Package aliases.
+
+A demo of a non-ASCII window.
 
  */
 

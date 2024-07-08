@@ -154,6 +154,9 @@ object ComponentGroup:
       // First, calculate the bounds without content
       val boundsWithoutContent =
         model.boundsType match
+
+          // Available
+
           case BoundsType(FitMode.Available, FitMode.Available) =>
             parentDimensions
 
@@ -165,6 +168,11 @@ object ComponentGroup:
 
           case BoundsType(FitMode.Available, FitMode.Relative(amountH)) =>
             parentDimensions.withHeight((parentDimensions.height * amountH).toInt)
+
+          case BoundsType(FitMode.Available, FitMode.OffsetAvailable(amount)) =>
+            parentDimensions.withHeight(parentDimensions.height + amount)
+
+          // Content
 
           case BoundsType(FitMode.Content, FitMode.Available) =>
             Dimensions(0, parentDimensions.height)
@@ -178,6 +186,11 @@ object ComponentGroup:
           case BoundsType(FitMode.Content, FitMode.Relative(amountH)) =>
             Dimensions(0, (parentDimensions.height * amountH).toInt)
 
+          case BoundsType(FitMode.Content, FitMode.OffsetAvailable(amount)) =>
+            Dimensions(0, parentDimensions.height + amount)
+
+          // Fixed
+
           case BoundsType(FitMode.Fixed(width), FitMode.Available) =>
             Dimensions(width, parentDimensions.height)
 
@@ -189,6 +202,11 @@ object ComponentGroup:
 
           case BoundsType(FitMode.Fixed(width), FitMode.Relative(amountH)) =>
             Dimensions(width, (parentDimensions.height * amountH).toInt)
+
+          case BoundsType(FitMode.Fixed(width), FitMode.OffsetAvailable(amount)) =>
+            Dimensions(width, parentDimensions.height + amount)
+
+          // Relative
 
           case BoundsType(FitMode.Relative(amountW), FitMode.Available) =>
             Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height)
@@ -204,6 +222,26 @@ object ComponentGroup:
               (parentDimensions.width * amountW).toInt,
               (parentDimensions.height * amountH).toInt
             )
+
+          case BoundsType(FitMode.Relative(amountW), FitMode.OffsetAvailable(amount)) =>
+            Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height + amount)
+
+          // Offset
+
+          case BoundsType(FitMode.OffsetAvailable(amount), FitMode.Available) =>
+            parentDimensions.withWidth(parentDimensions.width + amount)
+
+          case BoundsType(FitMode.OffsetAvailable(amount), FitMode.Content) =>
+            Dimensions(parentDimensions.width + amount, 0)
+
+          case BoundsType(FitMode.OffsetAvailable(amount), FitMode.Fixed(height)) =>
+            Dimensions(parentDimensions.width + amount, height)
+
+          case BoundsType(FitMode.OffsetAvailable(amount), FitMode.Relative(amountH)) =>
+            Dimensions(parentDimensions.width + amount, (parentDimensions.height * amountH).toInt)
+
+          case BoundsType(FitMode.OffsetAvailable(w), FitMode.OffsetAvailable(h)) =>
+            parentDimensions + Dimensions(w, h)
 
       // Next, loop over all the children, calling refresh on each one, and supplying the best guess for the bounds
       val updatedComponents =

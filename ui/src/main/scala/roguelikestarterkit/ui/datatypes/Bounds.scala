@@ -44,6 +44,15 @@ object Bounds:
     inline def center: Coords       = Coords(horizontalCenter, verticalCenter)
     inline def halfSize: Dimensions = (dimensions / 2).abs
 
+    def +(other: Bounds): Bounds =
+      Bounds(x + other.x, y + other.y, width + other.width, height + other.height)
+    def -(other: Bounds): Bounds =
+      Bounds(x - other.x, y - other.y, width - other.width, height - other.height)
+    def *(other: Bounds): Bounds =
+      Bounds(x * other.x, y * other.y, width * other.width, height * other.height)
+    def /(other: Bounds): Bounds =
+      Bounds(x / other.x, y / other.y, width / other.width, height / other.height)
+
     def contains(coords: Coords): Boolean =
       r.contains(coords.unsafeToPoint)
     def contains(x: Int, y: Int): Boolean =

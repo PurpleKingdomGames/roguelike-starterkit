@@ -22,8 +22,13 @@ object BoundsType:
   def fixed(width: Int, height: Int): BoundsType =
     fixed(Dimensions(width, height))
 
-  def inherit: BoundsType =
+  def available: BoundsType =
     BoundsType(FitMode.Available, FitMode.Available)
+  def inherit: BoundsType =
+    available
+
+  def offset(offsetWidth: Int, offsetHeight: Int): BoundsType =
+    BoundsType(FitMode.OffsetAvailable(offsetWidth), FitMode.OffsetAvailable(offsetHeight))
 
   def fit: BoundsType =
     BoundsType(FitMode.Content, FitMode.Content)

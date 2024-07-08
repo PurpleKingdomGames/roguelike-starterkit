@@ -100,12 +100,12 @@ object ColourWindow:
             WindowEvent
               .Resize(
                 windowId,
-                dragData.position.toDimensions,
+                dragData.position.toDimensions + Dimensions(1),
                 Space.Screen
               )
           )
         }.reportDrag,
-        Anchor.BottomRight
+        Anchor.BottomRight.withPadding(Padding(1))
       )
       .anchor(
         TerminalButton(
@@ -125,7 +125,7 @@ object ColourWindow:
 
   def content(charSheet: CharSheet): ComponentGroup[Unit] =
     ComponentGroup()
-      .withBoundsType(BoundsType.inherit)
+      .withBoundsType(BoundsType.offset(-2, -5))
       .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))
       .add(
         ComponentGroup()

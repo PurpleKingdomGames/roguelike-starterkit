@@ -11,7 +11,7 @@ import roguelikestarterkit.ui.components.common.Anchor
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
-import roguelikestarterkit.ui.components.group.BoundsType
+import roguelikestarterkit.ui.components.group.BoundsMode
 import roguelikestarterkit.ui.components.group.ComponentGroup
 import roguelikestarterkit.ui.window.Space
 import roguelikestarterkit.ui.window.TerminalWindow
@@ -60,7 +60,7 @@ object ColourWindow:
 
   def windowChrome(charSheet: CharSheet, content: ComponentGroup[Unit]): ComponentGroup[Unit] =
     ComponentGroup()
-      .withBoundsType(BoundsType.inherit)
+      .withBoundsType(BoundsMode.inherit)
       .withLayout(ComponentLayout.Vertical(Padding(3, 1, 1, 1)))
       .add(content)
       .anchor(
@@ -125,7 +125,7 @@ object ColourWindow:
 
   def content(charSheet: CharSheet): ComponentGroup[Unit] =
     ComponentGroup()
-      .withBoundsType(BoundsType.offset(-2, -5))
+      .withBoundsType(BoundsMode.offset(-2, -5))
       .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))
       .add(
         ComponentGroup()

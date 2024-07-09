@@ -17,7 +17,7 @@ import scala.annotation.tailrec
   * components.
   */
 final case class ComponentGroup[ReferenceData] private[group] (
-    boundsType: BoundsType,
+    boundsType: BoundsMode,
     layout: ComponentLayout,
     components: Batch[ComponentEntry[?, ReferenceData]],
     background: Bounds => ComponentFragment,
@@ -57,7 +57,7 @@ final case class ComponentGroup[ReferenceData] private[group] (
   def withDimensions(value: Dimensions): ComponentGroup[ReferenceData] =
     this.copy(dimensions = value, dirty = true)
 
-  def withBoundsType(value: BoundsType): ComponentGroup[ReferenceData] =
+  def withBoundsType(value: BoundsMode): ComponentGroup[ReferenceData] =
     this.copy(boundsType = value, dirty = true)
 
   def withLayout(value: ComponentLayout): ComponentGroup[ReferenceData] =
@@ -70,7 +70,7 @@ object ComponentGroup:
 
   def apply[ReferenceData](): ComponentGroup[ReferenceData] =
     ComponentGroup(
-      BoundsType.default,
+      BoundsMode.default,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       _ => ComponentFragment.empty,
@@ -79,7 +79,7 @@ object ComponentGroup:
       dirty = true
     )
 
-  def apply[ReferenceData](boundsType: BoundsType): ComponentGroup[ReferenceData] =
+  def apply[ReferenceData](boundsType: BoundsMode): ComponentGroup[ReferenceData] =
     ComponentGroup(
       boundsType,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
@@ -92,7 +92,7 @@ object ComponentGroup:
 
   def apply[ReferenceData](dimensions: Dimensions): ComponentGroup[ReferenceData] =
     ComponentGroup(
-      BoundsType.fixed(dimensions),
+      BoundsMode.fixed(dimensions),
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       _ => ComponentFragment.empty,
@@ -167,90 +167,90 @@ object ComponentGroup:
 
           // Available
 
-          case BoundsType(FitMode.Available, FitMode.Available) =>
+          case BoundsMode(FitMode.Available, FitMode.Available) =>
             parentDimensions
 
-          case BoundsType(FitMode.Available, FitMode.Content) =>
+          case BoundsMode(FitMode.Available, FitMode.Content) =>
             parentDimensions.withHeight(0)
 
-          case BoundsType(FitMode.Available, FitMode.Fixed(height)) =>
+          case BoundsMode(FitMode.Available, FitMode.Fixed(height)) =>
             parentDimensions.withHeight(height)
 
-          case BoundsType(FitMode.Available, FitMode.Relative(amountH)) =>
+          case BoundsMode(FitMode.Available, FitMode.Relative(amountH)) =>
             parentDimensions.withHeight((parentDimensions.height * amountH).toInt)
 
-          case BoundsType(FitMode.Available, FitMode.OffsetAvailable(amount)) =>
+          case BoundsMode(FitMode.Available, FitMode.OffsetAvailable(amount)) =>
             parentDimensions.withHeight(parentDimensions.height + amount)
 
           // Content
 
-          case BoundsType(FitMode.Content, FitMode.Available) =>
+          case BoundsMode(FitMode.Content, FitMode.Available) =>
             Dimensions(0, parentDimensions.height)
 
-          case BoundsType(FitMode.Content, FitMode.Content) =>
+          case BoundsMode(FitMode.Content, FitMode.Content) =>
             Dimensions.zero
 
-          case BoundsType(FitMode.Content, FitMode.Fixed(height)) =>
+          case BoundsMode(FitMode.Content, FitMode.Fixed(height)) =>
             Dimensions(0, height)
 
-          case BoundsType(FitMode.Content, FitMode.Relative(amountH)) =>
+          case BoundsMode(FitMode.Content, FitMode.Relative(amountH)) =>
             Dimensions(0, (parentDimensions.height * amountH).toInt)
 
-          case BoundsType(FitMode.Content, FitMode.OffsetAvailable(amount)) =>
+          case BoundsMode(FitMode.Content, FitMode.OffsetAvailable(amount)) =>
             Dimensions(0, parentDimensions.height + amount)
 
           // Fixed
 
-          case BoundsType(FitMode.Fixed(width), FitMode.Available) =>
+          case BoundsMode(FitMode.Fixed(width), FitMode.Available) =>
             Dimensions(width, parentDimensions.height)
 
-          case BoundsType(FitMode.Fixed(width), FitMode.Content) =>
+          case BoundsMode(FitMode.Fixed(width), FitMode.Content) =>
             Dimensions(width, 0)
 
-          case BoundsType(FitMode.Fixed(width), FitMode.Fixed(height)) =>
+          case BoundsMode(FitMode.Fixed(width), FitMode.Fixed(height)) =>
             Dimensions(width, height)
 
-          case BoundsType(FitMode.Fixed(width), FitMode.Relative(amountH)) =>
+          case BoundsMode(FitMode.Fixed(width), FitMode.Relative(amountH)) =>
             Dimensions(width, (parentDimensions.height * amountH).toInt)
 
-          case BoundsType(FitMode.Fixed(width), FitMode.OffsetAvailable(amount)) =>
+          case BoundsMode(FitMode.Fixed(width), FitMode.OffsetAvailable(amount)) =>
             Dimensions(width, parentDimensions.height + amount)
 
           // Relative
 
-          case BoundsType(FitMode.Relative(amountW), FitMode.Available) =>
+          case BoundsMode(FitMode.Relative(amountW), FitMode.Available) =>
             Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height)
 
-          case BoundsType(FitMode.Relative(amountW), FitMode.Content) =>
+          case BoundsMode(FitMode.Relative(amountW), FitMode.Content) =>
             Dimensions((parentDimensions.width * amountW).toInt, 0)
 
-          case BoundsType(FitMode.Relative(amountW), FitMode.Fixed(height)) =>
+          case BoundsMode(FitMode.Relative(amountW), FitMode.Fixed(height)) =>
             Dimensions((parentDimensions.width * amountW).toInt, height)
 
-          case BoundsType(FitMode.Relative(amountW), FitMode.Relative(amountH)) =>
+          case BoundsMode(FitMode.Relative(amountW), FitMode.Relative(amountH)) =>
             Dimensions(
               (parentDimensions.width * amountW).toInt,
               (parentDimensions.height * amountH).toInt
             )
 
-          case BoundsType(FitMode.Relative(amountW), FitMode.OffsetAvailable(amount)) =>
+          case BoundsMode(FitMode.Relative(amountW), FitMode.OffsetAvailable(amount)) =>
             Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height + amount)
 
           // Offset
 
-          case BoundsType(FitMode.OffsetAvailable(amount), FitMode.Available) =>
+          case BoundsMode(FitMode.OffsetAvailable(amount), FitMode.Available) =>
             parentDimensions.withWidth(parentDimensions.width + amount)
 
-          case BoundsType(FitMode.OffsetAvailable(amount), FitMode.Content) =>
+          case BoundsMode(FitMode.OffsetAvailable(amount), FitMode.Content) =>
             Dimensions(parentDimensions.width + amount, 0)
 
-          case BoundsType(FitMode.OffsetAvailable(amount), FitMode.Fixed(height)) =>
+          case BoundsMode(FitMode.OffsetAvailable(amount), FitMode.Fixed(height)) =>
             Dimensions(parentDimensions.width + amount, height)
 
-          case BoundsType(FitMode.OffsetAvailable(amount), FitMode.Relative(amountH)) =>
+          case BoundsMode(FitMode.OffsetAvailable(amount), FitMode.Relative(amountH)) =>
             Dimensions(parentDimensions.width + amount, (parentDimensions.height * amountH).toInt)
 
-          case BoundsType(FitMode.OffsetAvailable(w), FitMode.OffsetAvailable(h)) =>
+          case BoundsMode(FitMode.OffsetAvailable(w), FitMode.OffsetAvailable(h)) =>
             parentDimensions + Dimensions(w, h)
 
       // Next, loop over all the children, calling refresh on each one, and supplying the best guess for the bounds
@@ -287,13 +287,13 @@ object ComponentGroup:
       // We can now calculate the boundsWithoutContent updating in the FitMode.Content cases and leaving as-is in others
       val updatedBounds =
         model.boundsType match
-          case BoundsType(FitMode.Content, FitMode.Content) =>
+          case BoundsMode(FitMode.Content, FitMode.Content) =>
             contentBounds.dimensions
 
-          case BoundsType(FitMode.Content, _) =>
+          case BoundsMode(FitMode.Content, _) =>
             boundsWithoutContent.withWidth(contentBounds.width)
 
-          case BoundsType(_, FitMode.Content) =>
+          case BoundsMode(_, FitMode.Content) =>
             boundsWithoutContent.withHeight(contentBounds.height)
 
           case _ =>

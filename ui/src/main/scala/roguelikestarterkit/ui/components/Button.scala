@@ -21,7 +21,7 @@ final case class Button[ReferenceData](
     press: ReferenceData => Batch[GlobalEvent],
     release: ReferenceData => Batch[GlobalEvent],
     drag: (ReferenceData, DragData) => Batch[GlobalEvent],
-    calculateBounds: ReferenceData => Bounds,
+    boundsType: BoundsType[ReferenceData, Unit],
     isDown: Boolean,
     dragOptions: DragOptions,
     dragStart: Option[DragData]
@@ -86,7 +86,31 @@ final case class Button[ReferenceData](
   def notDraggable: Button[ReferenceData] =
     withDragOptions(DragOptions.None)
 
+  def withBoundsType(value: BoundsType[ReferenceData, Unit]): Button[ReferenceData] =
+    this.copy(boundsType = value)
+
 object Button:
+
+  /** Minimal button constructor with custom rendering function
+    */
+  def apply[ReferenceData](boundsType: BoundsType[ReferenceData, Unit])(
+      present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+  ): Button[ReferenceData] =
+    Button(
+      Bounds.zero,
+      ButtonState.Up,
+      present,
+      None,
+      None,
+      _ => Batch.empty,
+      _ => Batch.empty,
+      _ => Batch.empty,
+      (_, _) => Batch.empty,
+      boundsType,
+      isDown = false,
+      dragOptions = DragOptions.None,
+      dragStart = None
+    )
 
   /** Minimal button constructor with custom rendering function
     */
@@ -103,7 +127,7 @@ object Button:
       _ => Batch.empty,
       _ => Batch.empty,
       (_, _) => Batch.empty,
-      _ => bounds,
+      BoundsType.Fixed(bounds),
       isDown = false,
       dragOptions = DragOptions.None,
       dragStart = None
@@ -124,7 +148,7 @@ object Button:
       _ => Batch.empty,
       _ => Batch.empty,
       (_, _) => Batch.empty,
-      calculateBounds,
+      BoundsType.Calculated(calculateBounds),
       isDown = false,
       dragOptions = DragOptions.None,
       dragStart = None
@@ -132,7 +156,7 @@ object Button:
 
   given [ReferenceData]: Component[Button[ReferenceData], ReferenceData] with
     def bounds(reference: ReferenceData, model: Button[ReferenceData]): Bounds =
-      model.calculateBounds(reference)
+      model.bounds
 
     def updateModel(
         context: UIContext[ReferenceData],
@@ -140,7 +164,15 @@ object Button:
     ): GlobalEvent => Outcome[Button[ReferenceData]] =
       case FrameTick =>
         val newBounds =
-          model.calculateBounds(context.reference)
+          model.boundsType match
+            case BoundsType.Fixed(bounds) =>
+              bounds
+
+            case BoundsType.Calculated(calculate) =>
+              calculate(context.reference, ())
+
+            case _ =>
+              model.bounds
 
         Outcome(
           model.copy(
@@ -230,7 +262,38 @@ object Button:
         model: Button[ReferenceData],
         parentDimensions: Dimensions
     ): Button[ReferenceData] =
-      model
+      model.boundsType match
+        case BoundsType.Fixed(bounds) =>
+          model.copy(
+            bounds = bounds
+          )
+
+        case BoundsType.Calculated(calculate) =>
+          model
+
+        case BoundsType.FillWidth(height, padding) =>
+          model.copy(
+            bounds = Bounds(
+              parentDimensions.width - padding.left - padding.right,
+              height
+            )
+          )
+
+        case BoundsType.FillHeight(width, padding) =>
+          model.copy(
+            bounds = Bounds(
+              width,
+              parentDimensions.height - padding.top - padding.bottom
+            )
+          )
+
+        case BoundsType.Fill(padding) =>
+          model.copy(
+            bounds = Bounds(
+              parentDimensions.width - padding.left - padding.right,
+              parentDimensions.height - padding.top - padding.bottom
+            )
+          )
 
 enum ButtonState:
   case Up, Over, Down

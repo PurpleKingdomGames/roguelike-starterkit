@@ -5,6 +5,7 @@ import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.components.BoundsType
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
 import roguelikestarterkit.ui.components.common.Anchor
@@ -60,8 +61,8 @@ object ColourWindow:
 
   def windowChrome(charSheet: CharSheet, content: ComponentGroup[Unit]): ComponentGroup[Unit] =
     ComponentGroup()
-      .withBoundsType(BoundsMode.inherit)
-      .withLayout(ComponentLayout.Vertical(Padding(3, 1, 1, 1)))
+      .withBoundsMode(BoundsMode.inherit)
+      .withLayout(ComponentLayout.Vertical(Padding(4, 1, 1, 1)))
       .add(content)
       .anchor(
         TerminalButton(
@@ -82,8 +83,9 @@ object ColourWindow:
                 Space.Screen
               )
           )
-        }.reportDrag,
-        Anchor.TopLeft
+        }.reportDrag
+        .withBoundsType(BoundsType.FillWidth(3, Padding(1))),
+        Anchor.TopLeft.withPadding(Padding(1))
       )
       .anchor(
         TerminalButton(
@@ -125,7 +127,7 @@ object ColourWindow:
 
   def content(charSheet: CharSheet): ComponentGroup[Unit] =
     ComponentGroup()
-      .withBoundsType(BoundsMode.offset(-2, -5))
+      .withBoundsMode(BoundsMode.offset(-2, -5))
       .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))
       .add(
         ComponentGroup()

@@ -38,6 +38,7 @@ object TerminalButton:
 
       val terminal =
         RogueTerminalEmulator(size)
+          .fill(Tile.` `, fgColor, bgColor)
           .putLine(Point.zero, label(ref), fgColor, bgColor)
           .toCloneTiles(
             CloneId(s"button_${charSheet.assetName.toString}"),
@@ -58,12 +59,13 @@ object TerminalButton:
       charSheet: CharSheet
   ): (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment] =
     (offset, bounds, ref) =>
-      val txt  = label(ref)
-      val hBar = Batch.fill(txt.length)("─").mkString
+      val txt  = label(ref).take(bounds.width - 2)
+      val hBar = Batch.fill(bounds.width - 2)("─").mkString
       val size = bounds.dimensions.unsafeToSize
 
       val terminal =
         RogueTerminalEmulator(size)
+          .fill(Tile.` `, fgColor, bgColor)
           .put(Point(0, 0), Tile.`┌`, fgColor, bgColor)
           .put(Point(size.width - 1, 0), Tile.`┐`, fgColor, bgColor)
           .put(Point(0, size.height - 1), Tile.`└`, fgColor, bgColor)

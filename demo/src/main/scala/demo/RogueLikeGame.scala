@@ -6,7 +6,7 @@ import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.common.ComponentId
-import roguelikestarterkit.ui.components.group.BoundsType
+import roguelikestarterkit.ui.components.group.BoundsMode
 import roguelikestarterkit.ui.components.group.ComponentGroup
 import roguelikestarterkit.ui.components.list.ComponentList
 
@@ -107,7 +107,7 @@ object Model:
   val initial: Model =
     Model(
       Batch.empty,
-      ComponentGroup(BoundsType.fixed(200, 200))
+      ComponentGroup(BoundsMode.fixed(200, 200))
         .add(
           ComponentList(Dimensions(200, 40)) { (_: Int) =>
             (1 to 3).toBatch.map { i =>

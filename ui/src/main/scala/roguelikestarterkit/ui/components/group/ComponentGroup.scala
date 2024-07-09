@@ -57,7 +57,7 @@ final case class ComponentGroup[ReferenceData] private[group] (
   def withDimensions(value: Dimensions): ComponentGroup[ReferenceData] =
     this.copy(dimensions = value, dirty = true)
 
-  def withBoundsType(value: BoundsMode): ComponentGroup[ReferenceData] =
+  def withBoundsMode(value: BoundsMode): ComponentGroup[ReferenceData] =
     this.copy(boundsType = value, dirty = true)
 
   def withLayout(value: ComponentLayout): ComponentGroup[ReferenceData] =

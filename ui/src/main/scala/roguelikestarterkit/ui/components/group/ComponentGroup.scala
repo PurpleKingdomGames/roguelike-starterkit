@@ -179,7 +179,7 @@ object ComponentGroup:
           case BoundsMode(FitMode.Available, FitMode.Relative(amountH)) =>
             parentDimensions.withHeight((parentDimensions.height * amountH).toInt)
 
-          case BoundsMode(FitMode.Available, FitMode.OffsetAvailable(amount)) =>
+          case BoundsMode(FitMode.Available, FitMode.Offset(amount)) =>
             parentDimensions.withHeight(parentDimensions.height + amount)
 
           // Content
@@ -196,7 +196,7 @@ object ComponentGroup:
           case BoundsMode(FitMode.Content, FitMode.Relative(amountH)) =>
             Dimensions(0, (parentDimensions.height * amountH).toInt)
 
-          case BoundsMode(FitMode.Content, FitMode.OffsetAvailable(amount)) =>
+          case BoundsMode(FitMode.Content, FitMode.Offset(amount)) =>
             Dimensions(0, parentDimensions.height + amount)
 
           // Fixed
@@ -213,7 +213,7 @@ object ComponentGroup:
           case BoundsMode(FitMode.Fixed(width), FitMode.Relative(amountH)) =>
             Dimensions(width, (parentDimensions.height * amountH).toInt)
 
-          case BoundsMode(FitMode.Fixed(width), FitMode.OffsetAvailable(amount)) =>
+          case BoundsMode(FitMode.Fixed(width), FitMode.Offset(amount)) =>
             Dimensions(width, parentDimensions.height + amount)
 
           // Relative
@@ -233,24 +233,24 @@ object ComponentGroup:
               (parentDimensions.height * amountH).toInt
             )
 
-          case BoundsMode(FitMode.Relative(amountW), FitMode.OffsetAvailable(amount)) =>
+          case BoundsMode(FitMode.Relative(amountW), FitMode.Offset(amount)) =>
             Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height + amount)
 
           // Offset
 
-          case BoundsMode(FitMode.OffsetAvailable(amount), FitMode.Available) =>
+          case BoundsMode(FitMode.Offset(amount), FitMode.Available) =>
             parentDimensions.withWidth(parentDimensions.width + amount)
 
-          case BoundsMode(FitMode.OffsetAvailable(amount), FitMode.Content) =>
+          case BoundsMode(FitMode.Offset(amount), FitMode.Content) =>
             Dimensions(parentDimensions.width + amount, 0)
 
-          case BoundsMode(FitMode.OffsetAvailable(amount), FitMode.Fixed(height)) =>
+          case BoundsMode(FitMode.Offset(amount), FitMode.Fixed(height)) =>
             Dimensions(parentDimensions.width + amount, height)
 
-          case BoundsMode(FitMode.OffsetAvailable(amount), FitMode.Relative(amountH)) =>
+          case BoundsMode(FitMode.Offset(amount), FitMode.Relative(amountH)) =>
             Dimensions(parentDimensions.width + amount, (parentDimensions.height * amountH).toInt)
 
-          case BoundsMode(FitMode.OffsetAvailable(w), FitMode.OffsetAvailable(h)) =>
+          case BoundsMode(FitMode.Offset(w), FitMode.Offset(h)) =>
             parentDimensions + Dimensions(w, h)
 
       // Next, loop over all the children, calling refresh on each one, and supplying the best guess for the bounds

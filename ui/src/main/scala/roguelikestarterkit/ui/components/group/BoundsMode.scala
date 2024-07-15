@@ -28,7 +28,7 @@ object BoundsMode:
     available
 
   def offset(offsetWidth: Int, offsetHeight: Int): BoundsMode =
-    BoundsMode(FitMode.OffsetAvailable(offsetWidth), FitMode.OffsetAvailable(offsetHeight))
+    BoundsMode(FitMode.Offset(offsetWidth), FitMode.Offset(offsetHeight))
 
   def fit: BoundsMode =
     BoundsMode(FitMode.Content, FitMode.Content)

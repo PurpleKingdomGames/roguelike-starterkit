@@ -84,44 +84,49 @@ object ColourWindow:
               )
           )
         }.reportDrag
-        .withBoundsType(BoundsType.FillWidth(3, Padding(1))),
+          .withBoundsType(BoundsType.FillWidth(3, Padding(1))),
         Anchor.TopLeft.withPadding(Padding(1))
       )
       .anchor(
-        TerminalButton(
-          ">",
-          TerminalButton.Theme(
-            charSheet,
-            RGBA.Black -> RGBA.Silver,
-            RGBA.Black -> RGBA.White,
-            RGBA.White -> RGBA.Black,
-            hasBorder = false
+        TerminalButton
+          .fromTile(
+            Tile.BLACK_DOWN_POINTING_TRIANGLE,
+            TerminalButton.Theme(
+              charSheet,
+              RGBA.Black -> RGBA.Silver,
+              RGBA.Black -> RGBA.White,
+              RGBA.White -> RGBA.Black,
+              hasBorder = false
+            )
           )
-        ).onDrag { (_: Unit, dragData) =>
-          Batch(
-            WindowEvent
-              .Resize(
-                windowId,
-                dragData.position.toDimensions + Dimensions(1),
-                Space.Screen
-              )
-          )
-        }.reportDrag,
+          .onDrag { (_: Unit, dragData) =>
+            Batch(
+              WindowEvent
+                .Resize(
+                  windowId,
+                  dragData.position.toDimensions + Dimensions(1),
+                  Space.Screen
+                )
+            )
+          }
+          .reportDrag,
         Anchor.BottomRight.withPadding(Padding(1))
       )
       .anchor(
-        TerminalButton(
-          "x",
-          TerminalButton.Theme(
-            charSheet,
-            RGBA.Black -> RGBA.Silver,
-            RGBA.Black -> RGBA.White,
-            RGBA.White -> RGBA.Black,
-            hasBorder = false
+        TerminalButton
+          .fromTile(
+            Tile.x,
+            TerminalButton.Theme(
+              charSheet,
+              RGBA.Black -> RGBA.Silver,
+              RGBA.Black -> RGBA.White,
+              RGBA.White -> RGBA.Black,
+              hasBorder = false
+            )
           )
-        ).onClick(
-          WindowEvent.Close(windowId)
-        ),
+          .onClick(
+            WindowEvent.Close(windowId)
+          ),
         Anchor.TopRight.withPadding(Padding(1))
       )
 

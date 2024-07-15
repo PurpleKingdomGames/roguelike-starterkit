@@ -2,6 +2,7 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import indigo.syntax.*
+import roguelikestarterkit.TerminalEmulator
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
@@ -18,7 +19,7 @@ object TerminalButton:
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
   private def presentButton[ReferenceData](
-      label: ReferenceData => String,
+      label: ReferenceData => Batch[Tile],
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet,
@@ -28,7 +29,7 @@ object TerminalButton:
     else presentButtonNoBorder(label, fgColor, bgColor, charSheet)
 
   private def presentButtonNoBorder[ReferenceData](
-      label: ReferenceData => String,
+      label: ReferenceData => Batch[Tile],
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet
@@ -39,7 +40,7 @@ object TerminalButton:
       val terminal =
         RogueTerminalEmulator(size)
           .fill(Tile.` `, fgColor, bgColor)
-          .putLine(Point.zero, label(ref), fgColor, bgColor)
+          .putTileLine(Point.zero, label(ref), fgColor, bgColor)
           .toCloneTiles(
             CloneId(s"button_${charSheet.assetName.toString}"),
             bounds.coords
@@ -53,7 +54,7 @@ object TerminalButton:
       Outcome(ComponentFragment(terminal))
 
   private def presentButtonWithBorder[ReferenceData](
-      label: ReferenceData => String,
+      label: ReferenceData => Batch[Tile],
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet
@@ -73,7 +74,7 @@ object TerminalButton:
           .put(Point(0, 1), Tile.`│`, fgColor, bgColor)
           .put(Point(size.width - 1, 1), Tile.`│`, fgColor, bgColor)
           .putLine(Point(1, 0), hBar, fgColor, bgColor)
-          .putLine(Point(1, 1), txt, fgColor, bgColor)
+          .putTileLine(Point(1, 1), txt, fgColor, bgColor)
           .putLine(Point(1, 2), hBar, fgColor, bgColor)
 
       val terminalClones =
@@ -94,8 +95,8 @@ object TerminalButton:
         ).addCloneBlanks(terminalClones.blanks)
       )
 
-  private def findBounds(label: String, hasBorder: Boolean): Bounds =
-    if hasBorder then Bounds(0, 0, label.length + 2, 3) else Bounds(0, 0, label.length, 1)
+  private def findBounds(labelLength: Int, hasBorder: Boolean): Bounds =
+    if hasBorder then Bounds(0, 0, labelLength + 2, 3) else Bounds(0, 0, labelLength, 1)
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
     * dynamically calculated bounds
@@ -105,33 +106,8 @@ object TerminalButton:
       theme: Theme,
       calculateBounds: ReferenceData => Bounds
   ): Button[ReferenceData] =
-    Button(calculateBounds) {
-      presentButton(
-        label,
-        theme.up.foreground,
-        theme.up.background,
-        theme.charSheet,
-        theme.hasBorder
-      )
-    }
-      .presentOver(
-        presentButton(
-          label,
-          theme.over.foreground,
-          theme.over.background,
-          theme.charSheet,
-          theme.hasBorder
-        )
-      )
-      .presentDown(
-        presentButton(
-          label,
-          theme.down.foreground,
-          theme.down.background,
-          theme.charSheet,
-          theme.hasBorder
-        )
-      )
+    val tileLabel = (ref: ReferenceData) => TerminalEmulator.stringToTileBatch(label(ref))
+    fromTiles(tileLabel, theme, calculateBounds)
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
     * custom bounds
@@ -153,7 +129,7 @@ object TerminalButton:
     TerminalButton(
       label,
       theme,
-      findBounds(label, theme.hasBorder)
+      findBounds(label.length, theme.hasBorder)
     )
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
@@ -166,7 +142,105 @@ object TerminalButton:
     TerminalButton(
       label,
       theme,
-      (ref: ReferenceData) => findBounds(label(ref), theme.hasBorder)
+      (ref: ReferenceData) => findBounds(label(ref).length, theme.hasBorder)
+    )
+
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
+    * dynamically calculated bounds, where the label is a row of tiles.
+    */
+  def fromTiles[ReferenceData](
+      tileLabel: ReferenceData => Batch[Tile],
+      theme: Theme,
+      calculateBounds: ReferenceData => Bounds
+  ): Button[ReferenceData] =
+    Button(calculateBounds) {
+      presentButton(
+        tileLabel,
+        theme.up.foreground,
+        theme.up.background,
+        theme.charSheet,
+        theme.hasBorder
+      )
+    }
+      .presentOver(
+        presentButton(
+          tileLabel,
+          theme.over.foreground,
+          theme.over.background,
+          theme.charSheet,
+          theme.hasBorder
+        )
+      )
+      .presentDown(
+        presentButton(
+          tileLabel,
+          theme.down.foreground,
+          theme.down.background,
+          theme.charSheet,
+          theme.hasBorder
+        )
+      )
+
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
+    * custom bounds, where the label is a row of tiles.
+    */
+  def fromTiles[ReferenceData](
+      label: Batch[Tile],
+      theme: Theme,
+      bounds: Bounds
+  ): Button[ReferenceData] =
+    TerminalButton.fromTiles(_ => label, theme, _ => bounds)
+
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
+    * bounds are based on the label size, which is assumed to be a single row of tiles.
+    */
+  def fromTiles[ReferenceData](
+      label: Batch[Tile],
+      theme: Theme
+  ): Button[ReferenceData] =
+    TerminalButton.fromTiles(
+      label,
+      theme,
+      findBounds(label.length, theme.hasBorder)
+    )
+
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
+    * bounds are based on the label size, which is assumed to be a single row of tiles.
+    */
+  def fromTiles[ReferenceData](
+      label: ReferenceData => Batch[Tile],
+      theme: Theme
+  ): Button[ReferenceData] =
+    TerminalButton.fromTiles(
+      label,
+      theme,
+      (ref: ReferenceData) => findBounds(label(ref).length, theme.hasBorder)
+    )
+
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
+    * bounds are based on the label size, which is assumed to be a single Tile.
+    */
+  def fromTile[ReferenceData](
+      label: Tile,
+      theme: Theme
+  ): Button[ReferenceData] =
+    TerminalButton.fromTiles(
+      Batch(label),
+      theme,
+      findBounds(1, theme.hasBorder)
+    )
+
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
+    * bounds are based on the label size, which is assumed to be a Tile.
+    */
+  def fromTile[ReferenceData](
+      label: ReferenceData => Tile,
+      theme: Theme
+  ): Button[ReferenceData] =
+    TerminalButton.fromTiles(
+      (ref: ReferenceData) => Batch(label(ref)),
+      theme,
+      (ref: ReferenceData) => findBounds(1, theme.hasBorder)
     )
 
   final case class Theme(

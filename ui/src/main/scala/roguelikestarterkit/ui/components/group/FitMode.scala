@@ -13,7 +13,7 @@ enum FitMode:
 
   /** Fills the available space in one dimension, plus an offset amount, which can be negative.
     */
-  case OffsetAvailable(offset: Int)
+  case Offset(offset: Int)
 
   /** Fits the size of the group's contents in one dimension.
     */

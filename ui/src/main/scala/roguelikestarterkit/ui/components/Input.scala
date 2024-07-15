@@ -164,7 +164,7 @@ object Input:
         model: Input
     ): GlobalEvent => Outcome[Input] =
       case _: MouseEvent.Click
-          if Bounds(model.dimensions)
+          if context.isActive && Bounds(model.dimensions)
             .resizeBy(2, 2)
             .moveBy(context.bounds.coords)
             .contains(context.mouseCoords) =>

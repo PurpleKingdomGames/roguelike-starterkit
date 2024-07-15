@@ -55,3 +55,11 @@ object UIContext:
 
 enum UIState:
   case Active, InActive
+
+  def isActive: Boolean =
+    this match
+      case UIState.Active   => true
+      case UIState.InActive => false
+
+  def isInActive: Boolean =
+    !isActive

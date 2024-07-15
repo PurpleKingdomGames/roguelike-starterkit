@@ -174,30 +174,40 @@ object Button:
             case _ =>
               model.bounds
 
+        def decideState: ButtonState =
+          if model.isDown then ButtonState.Down
+          else if newBounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
+            if context.mouse.isLeftDown then ButtonState.Down
+            else ButtonState.Over
+          else ButtonState.Up
+
         Outcome(
           model.copy(
             state =
-              if model.isDown then ButtonState.Down
-              else if newBounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
-                if context.mouse.isLeftDown then ButtonState.Down
-                else ButtonState.Over
+              if context.isActive then decideState
               else ButtonState.Up,
             bounds = newBounds
           )
         )
 
       case _: MouseEvent.Click
-          if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
+          if context.isActive && model.bounds
+            .moveBy(context.bounds.coords)
+            .contains(context.mouseCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.click(context.reference))
 
       case _: MouseEvent.MouseDown
-          if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
+          if context.isActive && model.bounds
+            .moveBy(context.bounds.coords)
+            .contains(context.mouseCoords) =>
         Outcome(model.copy(state = ButtonState.Down, isDown = true, dragStart = None))
           .addGlobalEvents(model.press(context.reference))
 
       case _: MouseEvent.MouseUp
-          if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
+          if context.isActive && model.bounds
+            .moveBy(context.bounds.coords)
+            .contains(context.mouseCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.release(context.reference))
 
@@ -205,7 +215,8 @@ object Button:
         // Released Outside.
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
 
-      case _: MouseEvent.Move if model.isDown && model.dragOptions.isDraggable =>
+      case _: MouseEvent.Move
+          if context.isActive && model.isDown && model.dragOptions.isDraggable =>
         def makeDragData =
           DragData(
             start = context.mouseCoords,

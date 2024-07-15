@@ -12,7 +12,7 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 Missing stuff:
 
-- Support for Pointer events on components and windows(?).
+- Support for Pointer events on components and windows(?). (Once the issues with PointerState are resolved.)
 - Oh and we're still missing scrolling. Not totally sure where that goes yet. Clearly it's going to be important. I _think_ it's _probably_ and component group / list thing.
 - One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance. That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
 

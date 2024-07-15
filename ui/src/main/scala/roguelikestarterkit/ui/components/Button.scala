@@ -184,7 +184,7 @@ object Button:
         Outcome(
           model.copy(
             state =
-              if context.isActive then decideState
+              if context.isActive || model.isDragged then decideState
               else ButtonState.Up,
             bounds = newBounds
           )
@@ -216,7 +216,7 @@ object Button:
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
 
       case _: MouseEvent.Move
-          if context.isActive && model.isDown && model.dragOptions.isDraggable =>
+          if (context.isActive || model.isDragged) && model.isDown && model.dragOptions.isDraggable =>
         def makeDragData =
           DragData(
             start = context.mouseCoords,

@@ -1,5 +1,7 @@
 package roguelikestarterkit.ui.components.common
 
+import roguelikestarterkit.ui.datatypes.Dimensions
+
 /** `ComponentLayout` instructs a `ComponentGroup` how it should layout the components it contains.
   * They are always placed one after another, optionally with some padding unless the layout type is
   * `None`.
@@ -7,6 +9,21 @@ package roguelikestarterkit.ui.components.common
 enum ComponentLayout:
   case Horizontal(padding: Padding, overflow: Overflow)
   case Vertical(padding: Padding)
+
+  def withPadding(value: Padding): ComponentLayout =
+    this match
+      case Horizontal(_, overflow) => Horizontal(value, overflow)
+      case Vertical(_)             => Vertical(value)
+
+  def givePadding: Padding =
+    this match
+      case Horizontal(padding, _) => padding
+      case Vertical(padding)      => padding
+
+  def topPadding: Int    = givePadding.top
+  def rightPadding: Int  = givePadding.right
+  def bottomPadding: Int = givePadding.bottom
+  def leftPadding: Int   = givePadding.left
 
 object ComponentLayout:
 

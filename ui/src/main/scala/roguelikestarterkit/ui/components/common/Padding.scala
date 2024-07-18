@@ -10,7 +10,7 @@ final case class Padding(top: Int, right: Int, bottom: Int, left: Int):
   def withBottom(amount: Int): Padding     = this.copy(bottom = amount)
   def withLeft(amount: Int): Padding       = this.copy(left = amount)
   def withHorizontal(amount: Int): Padding = this.copy(right = amount, left = amount)
-  def withVerticl(amount: Int): Padding    = this.copy(top = amount, bottom = amount)
+  def withVertical(amount: Int): Padding   = this.copy(top = amount, bottom = amount)
 
 object Padding:
   def apply(amount: Int): Padding =

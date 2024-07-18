@@ -27,8 +27,14 @@ object BoundsMode:
   def inherit: BoundsMode =
     available
 
+  def availableWidth: BoundsMode =
+    BoundsMode(FitMode.Available, FitMode.Content)
+
   def offset(offsetWidth: Int, offsetHeight: Int): BoundsMode =
     BoundsMode(FitMode.Offset(offsetWidth), FitMode.Offset(offsetHeight))
+
+  def offsetWidth(offsetWidth: Int): BoundsMode =
+    BoundsMode(FitMode.Offset(offsetWidth), FitMode.Content)
 
   def fit: BoundsMode =
     BoundsMode(FitMode.Content, FitMode.Content)

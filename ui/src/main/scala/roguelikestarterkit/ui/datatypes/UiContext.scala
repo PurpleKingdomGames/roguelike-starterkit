@@ -12,7 +12,8 @@ final case class UIContext[ReferenceData](
     inputState: InputState,
     boundaryLocator: BoundaryLocator,
     reference: ReferenceData,
-    state: UIState
+    state: UIState,
+    magnification: Int
 ):
 
   val running: Seconds = gameTime.running
@@ -38,7 +39,8 @@ object UIContext:
 
   def apply[ReferenceData](
       subSystemFrameContext: SubSystemFrameContext[ReferenceData],
-      snapGrid: Size
+      snapGrid: Size,
+      magnification: Int
   ): UIContext[ReferenceData] =
     val mouseCoords = Coords(subSystemFrameContext.mouse.position / snapGrid.toPoint)
     UIContext(
@@ -50,7 +52,8 @@ object UIContext:
       subSystemFrameContext.inputState,
       subSystemFrameContext.boundaryLocator,
       subSystemFrameContext.reference,
-      UIState.Active
+      UIState.Active,
+      magnification
     )
 
 enum UIState:

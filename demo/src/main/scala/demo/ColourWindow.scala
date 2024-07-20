@@ -13,6 +13,7 @@ import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
 import roguelikestarterkit.ui.components.group.BoundsMode
 import roguelikestarterkit.ui.components.group.ComponentGroup
+import roguelikestarterkit.ui.components.group.ScrollPane
 import roguelikestarterkit.ui.window.Space
 import roguelikestarterkit.ui.window.TerminalWindow
 
@@ -62,7 +63,13 @@ object ColourWindow:
     ComponentGroup()
       .withBoundsMode(BoundsMode.inherit)
       .withLayout(ComponentLayout.Vertical(Padding(4, 1, 1, 1)))
-      .add(content)
+      .anchor(
+        ScrollPane(
+          BoundsMode.offset(-2, -5),
+          content
+        ),
+        Anchor.TopLeft.withPadding(Padding(4, 1, 1, 1))
+      )
       .anchor(
         TerminalButton(
           "Colour palette",
@@ -159,7 +166,7 @@ object ColourWindow:
           )
         )
       )
-      .withBackground { bounds =>
+      .withBackground { bounds => // TODO: Something wrong here...
         Layer(
           Shape.Box(
             Rectangle(

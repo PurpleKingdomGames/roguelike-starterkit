@@ -35,7 +35,6 @@ final case class Window[A, ReferenceData](
     maxSize: Option[Dimensions],
     state: WindowState,
     background: WindowContext => Outcome[Layer],
-    mask: Padding,
     mode: WindowMode
 ):
 
@@ -102,9 +101,6 @@ final case class Window[A, ReferenceData](
   def isClosed: Boolean =
     state == WindowState.Closed
 
-  def withMaskPadding(value: Padding): Window[A, ReferenceData] =
-    this.copy(mask = value)
-
   def refresh(reference: ReferenceData): Window[A, ReferenceData] =
     this.copy(content =
       component.refresh(
@@ -143,7 +139,6 @@ object Window:
       None,
       WindowState.Closed,
       _ => Outcome(Layer.empty),
-      Padding.zero,
       WindowMode.Standard
     )
 
@@ -166,7 +161,6 @@ object Window:
       None,
       WindowState.Closed,
       background,
-      Padding.zero,
       WindowMode.Standard
     )
 

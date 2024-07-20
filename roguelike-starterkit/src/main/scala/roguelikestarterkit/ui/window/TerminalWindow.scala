@@ -22,7 +22,6 @@ object TerminalWindow:
       content: A
   )(using Component[A, ReferenceData]): Window[A, ReferenceData] =
     Window(id, charSheet.size, Dimensions(3), content)
-      .withMaskPadding(Padding.bottom(1).withRight(1))
       .withBackground(present(charSheet))
 
   private val graphic: Graphic[TerminalMaterial] =

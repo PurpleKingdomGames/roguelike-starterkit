@@ -33,7 +33,7 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
       model: Model
   ): GlobalEvent => Outcome[Model] =
     case e =>
-      val ctx = UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1))
+      val ctx = UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1), 1)
       summon[Component[ComponentGroup[Int], Int]].updateModel(ctx, model.components)(e).map { cl =>
         model.copy(components = cl)
       }
@@ -54,7 +54,7 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
     val rendered =
       summon[Component[ComponentGroup[Int], Int]]
         .present(
-          UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1)),
+          UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1), 1),
           model.components
         )
 

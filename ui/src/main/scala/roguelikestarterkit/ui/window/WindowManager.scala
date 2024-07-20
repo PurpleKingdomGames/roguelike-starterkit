@@ -38,13 +38,13 @@ final case class WindowManager[StartUpData, Model, RefData](
     e =>
       for {
         updatedModel <- WindowManager.updateModel[ReferenceData](
-          UIContext(context, snapGrid),
+          UIContext(context, snapGrid, model.viewModel.magnification),
           model.model
         )(e)
 
         updatedViewModel <-
           WindowManager.updateViewModel[ReferenceData](
-            UIContext(context, snapGrid),
+            UIContext(context, snapGrid, model.viewModel.magnification),
             updatedModel,
             model.viewModel
           )(e)
@@ -56,7 +56,7 @@ final case class WindowManager[StartUpData, Model, RefData](
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(
       layerKey,
-      UIContext(context, snapGrid),
+      UIContext(context, snapGrid, model.viewModel.magnification),
       model.model,
       model.viewModel
     )

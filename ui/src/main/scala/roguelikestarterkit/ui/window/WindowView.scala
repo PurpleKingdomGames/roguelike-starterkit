@@ -26,39 +26,12 @@ object WindowView:
           model.background(WindowContext.from(model, viewModel)).map { windowChrome =>
             Layer.Stack(
               windowChrome,
-              l.withBlendMaterial(
-                LayerMask(
-                  (model.bounds + Bounds(
-                    model.mask.left,
-                    model.mask.top,
-                    -model.mask.right,
-                    -model.mask.bottom
-                  ))
-                    .toScreenSpace(context.snapGrid * viewModel.magnification)
-                )
-              )
+              l
             )
           }
 
         case l: Layer.Stack =>
-          val masked =
-            l.toBatch.map { l =>
-              l.withBlendMaterial(
-                LayerMask(
-                  (model.bounds + Bounds(
-                    model.mask.left,
-                    model.mask.top,
-                    -model.mask.right,
-                    -model.mask.bottom
-                  ))
-                    .toScreenSpace(context.snapGrid * viewModel.magnification)
-                )
-              )
-            }
-
           model.background(WindowContext.from(model, viewModel)).map { windowChrome =>
-            Layer.Stack(
-              windowChrome :: masked
-            )
+            l.prepend(windowChrome)
           }
       }

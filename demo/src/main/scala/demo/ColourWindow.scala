@@ -138,7 +138,6 @@ object ColourWindow:
 
   def content(charSheet: CharSheet): ComponentGroup[Unit] =
     ComponentGroup()
-      .withBoundsMode(BoundsMode.offset(-2, -5))
       .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))
       .add(
         ComponentGroup()
@@ -166,13 +165,10 @@ object ColourWindow:
           )
         )
       )
-      .withBackground { bounds => // TODO: Something wrong here...
+      .withBackground { bounds =>
         Layer(
           Shape.Box(
-            Rectangle(
-              bounds.coords.toScreenSpace(charSheet.size),
-              bounds.dimensions.toScreenSpace(charSheet.size)
-            ),
+            bounds.toScreenSpace(charSheet.size),
             Fill.Color(RGBA.Cyan.withAlpha(0.5))
           )
         )

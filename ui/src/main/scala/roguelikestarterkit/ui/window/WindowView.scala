@@ -7,7 +7,6 @@ import roguelikestarterkit.ui.datatypes.Bounds.dimensions
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
-import roguelikestarterkit.ui.shaders.LayerMask
 
 object WindowView:
 

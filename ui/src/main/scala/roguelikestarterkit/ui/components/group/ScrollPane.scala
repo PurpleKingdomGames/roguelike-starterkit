@@ -132,6 +132,7 @@ object ScrollPane:
       ContainerLikeFunctions
         .present(
           context.moveBoundsBy(scrollOffset),
+          model.dimensions,
           Batch(model.component)
         )
         .map {

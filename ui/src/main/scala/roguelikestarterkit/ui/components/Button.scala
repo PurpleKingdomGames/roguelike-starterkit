@@ -3,6 +3,7 @@ package roguelikestarterkit.ui.components
 import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.ui.component.Component
+import roguelikestarterkit.ui.components.common.ComponentLayout.Horizontal
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
@@ -79,11 +80,33 @@ final case class Button[ReferenceData](
   def withDragOptions(value: DragOptions): Button[ReferenceData] =
     this.copy(dragOptions = value)
   def makeDraggable: Button[ReferenceData] =
-    withDragOptions(DragOptions.Drag)
+    withDragOptions(dragOptions.withMode(DragMode.Drag))
   def reportDrag: Button[ReferenceData] =
-    withDragOptions(DragOptions.ReportDrag)
+    withDragOptions(dragOptions.withMode(DragMode.ReportDrag))
   def notDraggable: Button[ReferenceData] =
-    withDragOptions(DragOptions.None)
+    withDragOptions(dragOptions.withMode(DragMode.None))
+
+  def withDragConstrain(value: DragConstrain): Button[ReferenceData] =
+    this.copy(dragOptions = dragOptions.withConstraints(value))
+  def constrainDragTo(bounds: Bounds): Button[ReferenceData] =
+    withDragConstrain(DragConstrain.To(bounds))
+  def constrainDragVertically: Button[ReferenceData] =
+    withDragConstrain(DragConstrain.Vertical)
+  def constrainDragVertically(from: Int, to: Int, x: Int): Button[ReferenceData] =
+    withDragConstrain(DragConstrain.vertical(from, to, x))
+  def constrainDragHorizontally: Button[ReferenceData] =
+    withDragConstrain(DragConstrain.Horizontal)
+  def constrainDragHorizontally(from: Int, to: Int, y: Int): Button[ReferenceData] =
+    withDragConstrain(DragConstrain.horizontal(from, to, y))
+
+  def withDragArea(value: DragArea): Button[ReferenceData] =
+    this.copy(dragOptions = dragOptions.withArea(value))
+  def noDragArea: Button[ReferenceData] =
+    withDragArea(DragArea.None)
+  def fixedDragArea(bounds: Bounds): Button[ReferenceData] =
+    withDragArea(DragArea.Fixed(bounds))
+  def inheritDragArea: Button[ReferenceData] =
+    withDragArea(DragArea.Inherit)
 
   def withBoundsType(value: BoundsType[ReferenceData, Unit]): Button[ReferenceData] =
     this.copy(boundsType = value)
@@ -107,7 +130,7 @@ object Button:
       (_, _) => Batch.empty,
       boundsType,
       isDown = false,
-      dragOptions = DragOptions.None,
+      dragOptions = DragOptions.default,
       dragStart = None
     )
 
@@ -128,7 +151,7 @@ object Button:
       (_, _) => Batch.empty,
       BoundsType.Fixed(bounds),
       isDown = false,
-      dragOptions = DragOptions.None,
+      dragOptions = DragOptions.default,
       dragStart = None
     )
 
@@ -149,7 +172,7 @@ object Button:
       (_, _) => Batch.empty,
       BoundsType.Calculated(calculateBounds),
       isDown = false,
-      dragOptions = DragOptions.None,
+      dragOptions = DragOptions.default,
       dragStart = None
     )
 
@@ -216,11 +239,14 @@ object Button:
 
       case _: MouseEvent.Move
           if (context.isActive || model.isDragged) && model.isDown && model.dragOptions.isDraggable =>
+        val dragToCoords =
+          model.dragOptions.constrainCoords(context.mouseCoords, context.bounds)
+
         def makeDragData =
           DragData(
-            start = context.mouseCoords,
-            position = context.mouseCoords,
-            offset = context.mouseCoords - context.bounds.coords,
+            start = dragToCoords,
+            position = dragToCoords,
+            offset = dragToCoords - context.bounds.coords,
             delta = Coords.zero
           )
 
@@ -230,8 +256,8 @@ object Button:
 
         val updatedDragData =
           newDragStart.copy(
-            position = context.mouseCoords,
-            delta = context.mouseCoords - newDragStart.start
+            position = dragToCoords,
+            delta = dragToCoords - newDragStart.start
           )
 
         Outcome(
@@ -249,8 +275,11 @@ object Button:
     ): Outcome[Layer] =
       val b =
         if model.isDragged && model.dragOptions.followMouse then
+          val dragCoords =
+            model.dragOptions.constrainCoords(context.mouseCoords, context.bounds)
+
           model.bounds.moveBy(
-            model.dragStart.map(dd => context.mouseCoords - dd.start).getOrElse(Coords.zero)
+            model.dragStart.map(dd => dragCoords - dd.start).getOrElse(Coords.zero)
           )
         else model.bounds
 
@@ -323,9 +352,82 @@ enum ButtonState:
       case Down => true
       case _    => false
 
+final case class DragOptions(mode: DragMode, contraints: DragConstrain, area: DragArea):
+  def withConstraints(constrain: DragConstrain): DragOptions =
+    this.copy(contraints = constrain)
+
+  def isDraggable: Boolean =
+    mode.isDraggable
+
+  def followMouse: Boolean =
+    mode.followMouse
+
+  def withArea(value: DragArea): DragOptions =
+    this.copy(area = value)
+  def noDragArea: DragOptions =
+    withArea(DragArea.None)
+  def fixedDragArea(bounds: Bounds): DragOptions =
+    this.copy(area = DragArea.Fixed(bounds))
+  def inheritDragArea: DragOptions =
+    this.copy(area = DragArea.Inherit)
+
+  def withMode(mode: DragMode): DragOptions =
+    this.copy(mode = mode)
+
+  def constrainCoords(coords: Coords, parentBounds: Bounds): Coords =
+    val areaConstrained =
+      area match
+        case DragArea.None =>
+          coords
+
+        case DragArea.Fixed(bounds) =>
+          Coords(
+            if coords.x < bounds.left then bounds.left
+            else if coords.x > bounds.right then bounds.right
+            else coords.x,
+            if coords.y < bounds.top then bounds.top
+            else if coords.y > parentBounds.bottom - 1 then parentBounds.bottom - 1
+            else coords.y
+          )
+
+        case DragArea.Inherit =>
+          Coords(
+            if coords.x < parentBounds.left then parentBounds.left
+            else if coords.x > parentBounds.right then parentBounds.right
+            else coords.x,
+            if coords.y < parentBounds.top then parentBounds.top
+            else if coords.y > parentBounds.bottom - 1 then parentBounds.bottom - 1
+            else coords.y
+          )
+
+    contraints match
+      case DragConstrain.To(bounds) =>
+        Coords(
+          if areaConstrained.x < bounds.left then bounds.left
+          else if areaConstrained.x > bounds.right then bounds.right
+          else areaConstrained.x,
+          if areaConstrained.y < bounds.top then bounds.top
+          else if areaConstrained.y > parentBounds.bottom - 1 then parentBounds.bottom - 1
+          else areaConstrained.y
+        )
+
+      case DragConstrain.Horizontal =>
+        Coords(areaConstrained.x, 0)
+
+      case DragConstrain.Vertical =>
+        Coords(0, areaConstrained.y)
+
+      case DragConstrain.None =>
+        areaConstrained
+
+object DragOptions:
+
+  val default: DragOptions =
+    DragOptions(DragMode.None, DragConstrain.None, DragArea.None)
+
 /** Describes the drag behaviour of the component
   */
-enum DragOptions:
+enum DragMode:
 
   /** Cannot be dragged
     */
@@ -369,3 +471,28 @@ final case class DragData(
     offset: Coords,
     delta: Coords
 )
+
+enum DragConstrain:
+  case None
+  case Horizontal
+  case Vertical
+  case To(bounds: Bounds)
+
+object DragConstrain:
+
+  def none: DragConstrain =
+    DragConstrain.None
+
+  def to(bounds: Bounds): DragConstrain =
+    DragConstrain.To(bounds)
+
+  def vertical(from: Int, to: Int, x: Int): DragConstrain =
+    DragConstrain.To(Bounds(x, from, 0, to))
+
+  def horizontal(from: Int, to: Int, y: Int): DragConstrain =
+    DragConstrain.To(Bounds(from, y, to, 0))
+
+enum DragArea:
+  case None
+  case Fixed(bounds: Bounds)
+  case Inherit

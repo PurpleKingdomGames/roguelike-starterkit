@@ -197,6 +197,7 @@ object ComponentList:
       ContainerLikeFunctions
         .present(
           context,
+          model.dimensions,
           contentReflow(context.reference, model.dimensions, model.layout, entries)
         )
         .map { components =>

@@ -56,11 +56,15 @@ object ContainerLikeFunctions:
 
   def present[ReferenceData](
       context: UIContext[ReferenceData],
+      dimensions: Dimensions,
       components: Batch[ComponentEntry[?, ReferenceData]]
   ): Outcome[Layer] =
     components
       .map { c =>
-        c.component.present(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)
+        c.component.present(
+          context.copy(bounds = Bounds(context.bounds.moveBy(c.offset).coords, dimensions)),
+          c.model
+        )
       }
       .sequence
       .map(_.foldLeft(Layer.Stack.empty)(_ :+ _))

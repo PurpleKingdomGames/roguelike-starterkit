@@ -13,6 +13,7 @@ import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
 import roguelikestarterkit.ui.components.group.BoundsMode
 import roguelikestarterkit.ui.components.group.ComponentGroup
+import roguelikestarterkit.ui.components.group.FitMode
 import roguelikestarterkit.ui.components.group.ScrollPane
 import roguelikestarterkit.ui.window.Space
 import roguelikestarterkit.ui.window.TerminalWindow
@@ -92,6 +93,46 @@ object ColourWindow:
         }.reportDrag
           .withBoundsType(BoundsType.FillWidth(3, Padding(1))),
         Anchor.TopLeft.withPadding(Padding(1))
+      )
+      .anchor(
+        ComponentGroup()
+          .withLayout(ComponentLayout.Vertical())
+          .withBoundsMode(BoundsMode(FitMode.Fixed(1), FitMode.Offset(-6)))
+          .withBackground(bounds =>
+            Layer.Content(
+              Shape.Box(
+                bounds.toScreenSpace(charSheet.size),
+                Fill.Color(RGBA.Green)
+              )
+            )
+          )
+          .add(
+            TerminalButton
+              .fromTile(
+                Tile.`#`,
+                TerminalButton.Theme(
+                  charSheet,
+                  RGBA.Black -> RGBA.Silver,
+                  RGBA.Black -> RGBA.White,
+                  RGBA.White -> RGBA.Black,
+                  hasBorder = false
+                )
+              )
+              // .onDrag { (_: Unit, dragData) =>
+              //   Batch(
+              //     WindowEvent
+              //       .Resize(
+              //         windowId,
+              //         dragData.position.toDimensions + Dimensions(1),
+              //         Space.Screen
+              //       )
+              //   )
+              // }
+              .makeDraggable
+              .inheritDragArea
+              .constrainDragVertically
+          ),
+        Anchor.TopRight.withPadding(Padding(4, 1, 2, 0))
       )
       .anchor(
         TerminalButton

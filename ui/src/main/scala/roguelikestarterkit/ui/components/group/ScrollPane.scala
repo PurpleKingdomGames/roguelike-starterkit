@@ -176,12 +176,19 @@ object ScrollPane:
         for {
           updatedContent <- model.content.component.updateModel(ctx, model.content.model)(e)
           updatedScrollBar <- c.updateModel(
-            unitContext.moveBoundsBy(
-              Coords(
-                model.dimensions.width - model.scrollBar.bounds.width,
-                ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
+            unitContext
+              .moveBoundsBy(
+                Coords(
+                  model.dimensions.width - model.scrollBar.bounds.width,
+                  0
+                )
               )
-            ),
+              .withAdditionalOffset(
+                Coords(
+                  0,
+                  ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
+                )
+              ),
             model.scrollBar
           )(e)
         } yield model.copy(

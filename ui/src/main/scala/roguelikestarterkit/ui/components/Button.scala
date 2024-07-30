@@ -198,7 +198,10 @@ object Button:
 
         def decideState: ButtonState =
           if model.isDown then ButtonState.Down
-          else if newBounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
+          else if newBounds
+              .moveBy(context.bounds.coords + context.additionalOffset)
+              .contains(context.mouseCoords)
+          then
             if context.mouse.isLeftDown then ButtonState.Down
             else ButtonState.Over
           else ButtonState.Up
@@ -214,21 +217,21 @@ object Button:
 
       case _: MouseEvent.Click
           if context.isActive && model.bounds
-            .moveBy(context.bounds.coords)
+            .moveBy(context.bounds.coords + context.additionalOffset)
             .contains(context.mouseCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.click(context.reference))
 
       case _: MouseEvent.MouseDown
           if context.isActive && model.bounds
-            .moveBy(context.bounds.coords)
+            .moveBy(context.bounds.coords + context.additionalOffset)
             .contains(context.mouseCoords) =>
         Outcome(model.copy(state = ButtonState.Down, isDown = true, dragStart = None))
           .addGlobalEvents(model.press(context.reference))
 
       case _: MouseEvent.MouseUp
           if context.isActive && model.bounds
-            .moveBy(context.bounds.coords)
+            .moveBy(context.bounds.coords + context.additionalOffset)
             .contains(context.mouseCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.release(context.reference))
@@ -380,13 +383,16 @@ final case class DragOptions(mode: DragMode, contraints: DragConstrain, area: Dr
         case DragArea.None =>
           mouseCoords
 
-        case DragArea.Fixed(bounds) =>
+        case DragArea.Fixed(relativeBounds) =>
+          val bounds =
+            relativeBounds.moveTo(parentBounds.topLeft)
+
           Coords(
             if mouseCoords.x < bounds.left then bounds.left
             else if mouseCoords.x > bounds.right then bounds.right
             else mouseCoords.x,
             if mouseCoords.y < bounds.top then bounds.top
-            else if mouseCoords.y > parentBounds.bottom - 1 then parentBounds.bottom - 1 // TODO!!
+            else if mouseCoords.y > bounds.bottom then bounds.bottom
             else mouseCoords.y
           )
 
@@ -407,7 +413,7 @@ final case class DragOptions(mode: DragMode, contraints: DragConstrain, area: Dr
           else if areaConstrained.x > bounds.right then bounds.right
           else areaConstrained.x,
           if areaConstrained.y < bounds.top then bounds.top
-          else if areaConstrained.y > parentBounds.bottom - 1 then parentBounds.bottom - 1
+          else if areaConstrained.y > bounds.bottom - 1 then bounds.bottom - 1
           else areaConstrained.y
         )
 

@@ -84,7 +84,7 @@ object ColourWindow:
           Layer(
             Shape.Box(
               bounds.toScreenSpace(charSheet.size),
-              Fill.Color(RGBA.Green)
+              Fill.Color(RGBA.SlateGray)
             )
           )
         ),

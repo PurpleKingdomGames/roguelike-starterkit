@@ -13,7 +13,6 @@ import roguelikestarterkit.ui.datatypes.UIContext
 Scrolling TODOs:
 
 - scroll up/down/left/right arrow buttons (use scroll speed in options)
-- ways to describe scrolling: Fixed amount, proportional, etc.
 - scroll button size can be adjusted based on the content size.
 - horizontal scrolling
 

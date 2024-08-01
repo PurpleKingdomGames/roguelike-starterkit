@@ -18,7 +18,7 @@ final case class ScrollOptions(
     scrollMode == ScrollMode.None
 
 object ScrollOptions:
-  val default: ScrollOptions = ScrollOptions(ScrollMode.Vertical, 1)
+  val default: ScrollOptions = ScrollOptions(ScrollMode.Vertical, 4)
 
 enum ScrollMode:
   case None

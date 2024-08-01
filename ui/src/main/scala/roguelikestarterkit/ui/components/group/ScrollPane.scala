@@ -190,7 +190,21 @@ object ScrollPane:
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]
     ): GlobalEvent => Outcome[ScrollPane[A, ReferenceData]] =
-      e =>
+      case MouseEvent.Wheel(pos, deltaY)
+          if model.scrollOptions.isEnabled && Bounds(context.bounds.coords, model.dimensions)
+            .contains(context.mouseCoords) =>
+        val scrollBy =
+          val coords =
+            if deltaY < 0 then -model.scrollOptions.scrollSpeed else model.scrollOptions.scrollSpeed
+          coords.toDouble / model.dimensions.height.toDouble
+
+        Outcome(
+          model.copy(
+            scrollAmount = Math.min(1.0d, Math.max(0.0d, model.scrollAmount + scrollBy))
+          )
+        )
+
+      case e =>
         val scrollingActive =
           model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
         val ctx = context.copy(bounds = Bounds(context.bounds.coords, model.dimensions))

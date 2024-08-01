@@ -29,7 +29,8 @@ final case class ScrollPane[A, ReferenceData] private[group] (
     // Components
     content: ComponentEntry[A, ReferenceData],
     scrollBar: Button[Unit],
-    scrollBarBackground: Bounds => Layer
+    scrollBarBackground: Bounds => Layer,
+    scrollOptions: ScrollOptions
 ):
 
   def withContent[B](component: B)(using
@@ -45,8 +46,26 @@ final case class ScrollPane[A, ReferenceData] private[group] (
   def withBoundsMode(value: BoundsMode): ScrollPane[A, ReferenceData] =
     this.copy(boundsMode = value)
 
+  def withScrollBar(value: Button[Unit]): ScrollPane[A, ReferenceData] =
+    this.copy(scrollBar = value)
+
   def withScrollBackground(value: Bounds => Layer): ScrollPane[A, ReferenceData] =
     this.copy(scrollBarBackground = value)
+
+  def withScrollOptions(value: ScrollOptions): ScrollPane[A, ReferenceData] =
+    this.copy(scrollOptions = value)
+
+  def enableScrolling: ScrollPane[A, ReferenceData] =
+    this.copy(scrollOptions = scrollOptions.withScrollMode(ScrollMode.Vertical))
+
+  def disableScrolling: ScrollPane[A, ReferenceData] =
+    this.copy(scrollOptions = scrollOptions.withScrollMode(ScrollMode.None))
+
+  def withScrollSpeed(value: Int): ScrollPane[A, ReferenceData] =
+    this.copy(scrollOptions = scrollOptions.withScrollSpeed(value))
+
+  def withScrollMode(value: ScrollMode): ScrollPane[A, ReferenceData] =
+    this.copy(scrollOptions = scrollOptions.withScrollMode(value))
 
 object ScrollPane:
 
@@ -84,7 +103,8 @@ object ScrollPane:
       0.0,
       ScrollPane.makeComponentEntry(content),
       setupScrollButton(bindingKey, scrollBar),
-      _ => Layer.empty
+      _ => Layer.empty,
+      ScrollOptions.default
     )
 
   def apply[A, ReferenceData](
@@ -103,7 +123,8 @@ object ScrollPane:
       0.0,
       ScrollPane.makeComponentEntry(content),
       setupScrollButton(bindingKey, scrollBar),
-      _ => Layer.empty
+      _ => Layer.empty,
+      ScrollOptions.default
     )
 
   def apply[A, ReferenceData](
@@ -122,7 +143,8 @@ object ScrollPane:
       0.0,
       ScrollPane.makeComponentEntry(content),
       setupScrollButton(bindingKey, scrollBar),
-      _ => Layer.empty
+      _ => Layer.empty,
+      ScrollOptions.default
     )
 
   def apply[A, ReferenceData](
@@ -169,8 +191,9 @@ object ScrollPane:
         model: ScrollPane[A, ReferenceData]
     ): GlobalEvent => Outcome[ScrollPane[A, ReferenceData]] =
       e =>
-        val scrollingActive = model.contentBounds.height > model.dimensions.height
-        val ctx             = context.copy(bounds = Bounds(context.bounds.coords, model.dimensions))
+        val scrollingActive =
+          model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
+        val ctx = context.copy(bounds = Bounds(context.bounds.coords, model.dimensions))
 
         def updateScrollBar: Outcome[Button[Unit]] =
           val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
@@ -205,9 +228,10 @@ object ScrollPane:
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]
     ): Outcome[Layer] =
-      val scrollingActive = model.contentBounds.height > model.dimensions.height
-      val adjustBounds    = Bounds(context.bounds.coords, model.dimensions)
-      val ctx             = context.copy(bounds = adjustBounds)
+      val scrollingActive =
+        model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
+      val adjustBounds = Bounds(context.bounds.coords, model.dimensions)
+      val ctx          = context.copy(bounds = adjustBounds)
       val scrollOffset: Coords =
         if scrollingActive then
           Coords(

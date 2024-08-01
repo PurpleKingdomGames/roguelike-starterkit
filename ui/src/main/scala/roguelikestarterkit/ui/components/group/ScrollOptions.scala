@@ -11,14 +11,15 @@ final case class ScrollOptions(
   def withScrollSpeed(scrollSpeed: Int): ScrollOptions =
     copy(scrollSpeed = scrollSpeed)
 
-  def isScrollingEnabled: Boolean =
+  def isEnabled: Boolean =
     scrollMode != ScrollMode.None
 
+  def isDisabled: Boolean =
+    scrollMode == ScrollMode.None
+
 object ScrollOptions:
-  val default: ScrollOptions = ScrollOptions(ScrollMode.None, 1)
+  val default: ScrollOptions = ScrollOptions(ScrollMode.Vertical, 1)
 
 enum ScrollMode:
   case None
   case Vertical
-  case Horizontal
-  case Both

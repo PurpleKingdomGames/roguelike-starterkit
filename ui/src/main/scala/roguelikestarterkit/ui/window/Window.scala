@@ -10,16 +10,14 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 /*
 
-Scolling TODOs:
+Scrolling TODOs:
 
-- ScrollOptions is not used.
-- horizontal scrolling
-- scrolling enabled/disabled
-- scroll up/down/left/right arrow buttons
-- mouse wheel events
+- TerminalScrollPane
+- scroll up/down/left/right arrow buttons (use scroll speed in options)
+- mouse wheel events (use scroll speed in options?)
 - ways to describe scrolling: Fixed amount, proportional, etc.
 - scroll button size can be adjusted based on the content size.
-- TerminalScrollPane
+- horizontal scrolling
 
  */
 

@@ -4,10 +4,10 @@ import indigo.*
 import indigo.scenes.*
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
-import roguelikestarterkit.ui.components.common.ComponentId
-import roguelikestarterkit.ui.components.group.BoundsMode
-import roguelikestarterkit.ui.components.group.ComponentGroup
-import roguelikestarterkit.ui.components.list.ComponentList
+import roguelikestarterkit.ui.components.ComponentGroup
+import roguelikestarterkit.ui.components.ComponentList
+import roguelikestarterkit.ui.components.datatypes.BoundsMode
+import roguelikestarterkit.ui.components.datatypes.ComponentId
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 

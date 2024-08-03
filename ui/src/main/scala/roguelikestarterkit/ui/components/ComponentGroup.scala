@@ -1,14 +1,16 @@
-package roguelikestarterkit.ui.components.group
+package roguelikestarterkit.ui.components
 
 import indigo.*
 import roguelikestarterkit.ui.component.*
-import roguelikestarterkit.ui.components.common.Anchor
-import roguelikestarterkit.ui.components.common.ComponentEntry
-import roguelikestarterkit.ui.components.common.ComponentId
-import roguelikestarterkit.ui.components.common.ComponentLayout
-import roguelikestarterkit.ui.components.common.ContainerLikeFunctions
-import roguelikestarterkit.ui.components.common.Overflow
-import roguelikestarterkit.ui.components.common.Padding
+import roguelikestarterkit.ui.components.datatypes.Anchor
+import roguelikestarterkit.ui.components.datatypes.BoundsMode
+import roguelikestarterkit.ui.components.datatypes.ComponentEntry
+import roguelikestarterkit.ui.components.datatypes.ComponentId
+import roguelikestarterkit.ui.components.datatypes.ComponentLayout
+import roguelikestarterkit.ui.components.datatypes.ContainerLikeFunctions
+import roguelikestarterkit.ui.components.datatypes.FitMode
+import roguelikestarterkit.ui.components.datatypes.Overflow
+import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.datatypes.*
 
 import scala.annotation.tailrec
@@ -16,7 +18,7 @@ import scala.annotation.tailrec
 /** Describes a fixed arrangement of components, manages their layout, which may include anchored
   * components.
   */
-final case class ComponentGroup[ReferenceData] private[group] (
+final case class ComponentGroup[ReferenceData] private[components] (
     boundsMode: BoundsMode,
     layout: ComponentLayout,
     components: Batch[ComponentEntry[?, ReferenceData]],
@@ -70,7 +72,7 @@ object ComponentGroup:
 
   def apply[ReferenceData](): ComponentGroup[ReferenceData] =
     ComponentGroup(
-      BoundsMode.default,
+      roguelikestarterkit.ui.components.datatypes.BoundsMode.default,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       _ => Layer.empty,
@@ -92,7 +94,7 @@ object ComponentGroup:
 
   def apply[ReferenceData](dimensions: Dimensions): ComponentGroup[ReferenceData] =
     ComponentGroup(
-      BoundsMode.fixed(dimensions),
+      roguelikestarterkit.ui.components.datatypes.BoundsMode.fixed(dimensions),
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       _ => Layer.empty,

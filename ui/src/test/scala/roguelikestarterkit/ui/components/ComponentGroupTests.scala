@@ -1,8 +1,8 @@
-package roguelikestarterkit.ui.components.group
+package roguelikestarterkit.ui.components
 
 import indigo.*
 import roguelikestarterkit.ui.component.*
-import roguelikestarterkit.ui.components.common.*
+import roguelikestarterkit.ui.components.datatypes.*
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
@@ -38,7 +38,7 @@ class ComponentGroupTests extends munit.FunSuite:
         .withLayout(
           ComponentLayout.Vertical(Padding.zero.withBottom(2))
         )
-        .withBoundsMode(BoundsMode.fixed(100, 100))
+        .withBoundsMode(roguelikestarterkit.ui.components.datatypes.BoundsMode.fixed(100, 100))
         .add("abc", "def")
 
     val instance =
@@ -62,7 +62,7 @@ class ComponentGroupTests extends munit.FunSuite:
         .withLayout(
           ComponentLayout.Horizontal(Padding.zero.withRight(2))
         )
-        .withBoundsMode(BoundsMode.fixed(100, 100))
+        .withBoundsMode(roguelikestarterkit.ui.components.datatypes.BoundsMode.fixed(100, 100))
         .add("abc", "def")
 
     val instance =
@@ -87,7 +87,7 @@ class ComponentGroupTests extends munit.FunSuite:
         .withLayout(
           ComponentLayout.Vertical(Padding.zero.withBottom(2))
         )
-        .withBoundsMode(BoundsMode.fixed(100, 100))
+        .withBoundsMode(roguelikestarterkit.ui.components.datatypes.BoundsMode.fixed(100, 100))
         .add("abc", "def")
 
     val instance =
@@ -104,7 +104,11 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actualDefault =
       val c = summon[Component[ComponentGroup[Unit], Unit]]
-      c.refresh((), group.withBoundsMode(BoundsMode.default), Dimensions(100, 100)).dimensions
+      c.refresh(
+        (),
+        group.withBoundsMode(roguelikestarterkit.ui.components.datatypes.BoundsMode.default),
+        Dimensions(100, 100)
+      ).dimensions
 
     assertEquals(actualDefault, Dimensions(100, 4))
   }
@@ -115,7 +119,7 @@ class ComponentGroupTests extends munit.FunSuite:
         .withLayout(
           ComponentLayout.Horizontal(Padding(5), Overflow.Wrap)
         )
-        .withBoundsMode(BoundsMode.fixed(100, 100))
+        .withBoundsMode(roguelikestarterkit.ui.components.datatypes.BoundsMode.fixed(100, 100))
         .add("abc", "def")
 
     val actual =

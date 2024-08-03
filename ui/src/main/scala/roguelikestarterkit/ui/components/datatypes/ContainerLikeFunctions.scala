@@ -1,4 +1,4 @@
-package roguelikestarterkit.ui.components.common
+package roguelikestarterkit.ui.components.datatypes
 
 import indigo.*
 import roguelikestarterkit.ui.datatypes.Bounds

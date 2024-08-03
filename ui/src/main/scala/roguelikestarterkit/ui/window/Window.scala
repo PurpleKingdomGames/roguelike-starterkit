@@ -2,7 +2,7 @@ package roguelikestarterkit.ui.window
 
 import indigo.*
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.components.common.Padding
+import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
@@ -30,6 +30,7 @@ Missing stuff:
 
 Polishing up:
 - Check for TODOs.
+- Bring back tests.
 - Package aliases.
 - We need a standard window template. Title bar, close button, resize button... scroll bars...
 

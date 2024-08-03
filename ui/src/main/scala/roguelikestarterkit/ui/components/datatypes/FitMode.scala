@@ -1,4 +1,4 @@
-package roguelikestarterkit.ui.components.group
+package roguelikestarterkit.ui.components.datatypes
 
 /** Fit mode describes how dynamic bounds decide to expand and shink based on their contents or the
   * available space, in one dimension, i.e. width or height. This allows us to say "fill the

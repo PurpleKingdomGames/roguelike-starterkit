@@ -11,7 +11,7 @@ import roguelikestarterkit.Tile
 import roguelikestarterkit.UIContext
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.components.common.Padding
+import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.datatypes.Bounds
 
 object TerminalWindow:

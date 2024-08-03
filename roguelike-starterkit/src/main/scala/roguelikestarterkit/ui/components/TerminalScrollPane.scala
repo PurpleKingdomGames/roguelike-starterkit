@@ -3,8 +3,7 @@ package roguelikestarterkit.ui.components
 import indigo.*
 import roguelikestarterkit.tiles.Tile
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.components.group.BoundsMode
-import roguelikestarterkit.ui.components.group.ScrollPane
+import roguelikestarterkit.ui.components.datatypes.BoundsMode
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Dimensions

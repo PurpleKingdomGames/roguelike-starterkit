@@ -2,9 +2,9 @@
 
 // import indigo.*
 // import roguelikestarterkit.ui.component.*
-// import roguelikestarterkit.ui.components.common.ComponentLayout
-// import roguelikestarterkit.ui.components.common.Overflow
-// import roguelikestarterkit.ui.components.common.Padding
+// import roguelikestarterkit.ui.components.datatypes.ComponentLayout
+// import roguelikestarterkit.ui.components.datatypes.Overflow
+// import roguelikestarterkit.ui.components.datatypes.Padding
 // import roguelikestarterkit.ui.components.group.BoundsType
 // import roguelikestarterkit.ui.components.group.ComponentGroup
 // import roguelikestarterkit.ui.datatypes.*

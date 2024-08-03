@@ -5,17 +5,17 @@ import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.components.BoundsType
+import roguelikestarterkit.ui.components.ComponentGroup
+import roguelikestarterkit.ui.components.ScrollPane
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
 import roguelikestarterkit.ui.components.TerminalScrollPane
-import roguelikestarterkit.ui.components.common.Anchor
-import roguelikestarterkit.ui.components.common.ComponentLayout
-import roguelikestarterkit.ui.components.common.Overflow
-import roguelikestarterkit.ui.components.common.Padding
-import roguelikestarterkit.ui.components.group.BoundsMode
-import roguelikestarterkit.ui.components.group.ComponentGroup
-import roguelikestarterkit.ui.components.group.FitMode
-import roguelikestarterkit.ui.components.group.ScrollPane
+import roguelikestarterkit.ui.components.datatypes.Anchor
+import roguelikestarterkit.ui.components.datatypes.BoundsMode
+import roguelikestarterkit.ui.components.datatypes.ComponentLayout
+import roguelikestarterkit.ui.components.datatypes.FitMode
+import roguelikestarterkit.ui.components.datatypes.Overflow
+import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.window.Space
 import roguelikestarterkit.ui.window.TerminalWindow
 

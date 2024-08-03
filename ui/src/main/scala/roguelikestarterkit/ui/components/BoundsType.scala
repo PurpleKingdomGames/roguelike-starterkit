@@ -1,6 +1,6 @@
 package roguelikestarterkit.ui.components
 
-import roguelikestarterkit.ui.components.common.Padding
+import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.datatypes.Bounds
 
 enum BoundsType[ReferenceData, A]:

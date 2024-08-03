@@ -1,16 +1,20 @@
-package roguelikestarterkit.ui.components.group
+package roguelikestarterkit.ui.components
 
 import indigo.*
 import roguelikestarterkit.ui.component.*
 import roguelikestarterkit.ui.components.Button
 import roguelikestarterkit.ui.components.DragData
-import roguelikestarterkit.ui.components.common.Anchor
-import roguelikestarterkit.ui.components.common.ComponentEntry
-import roguelikestarterkit.ui.components.common.ComponentId
-import roguelikestarterkit.ui.components.common.ComponentLayout
-import roguelikestarterkit.ui.components.common.ContainerLikeFunctions
-import roguelikestarterkit.ui.components.common.Overflow
-import roguelikestarterkit.ui.components.common.Padding
+import roguelikestarterkit.ui.components.datatypes.Anchor
+import roguelikestarterkit.ui.components.datatypes.BoundsMode
+import roguelikestarterkit.ui.components.datatypes.ComponentEntry
+import roguelikestarterkit.ui.components.datatypes.ComponentId
+import roguelikestarterkit.ui.components.datatypes.ComponentLayout
+import roguelikestarterkit.ui.components.datatypes.ContainerLikeFunctions
+import roguelikestarterkit.ui.components.datatypes.FitMode
+import roguelikestarterkit.ui.components.datatypes.Overflow
+import roguelikestarterkit.ui.components.datatypes.Padding
+import roguelikestarterkit.ui.components.datatypes.ScrollMode
+import roguelikestarterkit.ui.components.datatypes.ScrollOptions
 import roguelikestarterkit.ui.datatypes.*
 import roguelikestarterkit.ui.shaders.LayerMask
 
@@ -20,7 +24,7 @@ import scala.annotation.tailrec
 /** Describes a fixed arrangement of components, manages their layout, which may include anchored
   * components.
   */
-final case class ScrollPane[A, ReferenceData] private[group] (
+final case class ScrollPane[A, ReferenceData] private[components] (
     bindingKey: BindingKey,
     boundsMode: BoundsMode,
     dimensions: Dimensions, // The actual cached dimensions of the scroll pane
@@ -97,14 +101,14 @@ object ScrollPane:
   )(using c: Component[A, ReferenceData]): ScrollPane[A, ReferenceData] =
     ScrollPane(
       bindingKey,
-      BoundsMode.default,
+      roguelikestarterkit.ui.components.datatypes.BoundsMode.default,
       Dimensions.zero,
       Bounds.zero,
       0.0,
       ScrollPane.makeComponentEntry(content),
       setupScrollButton(bindingKey, scrollBar),
       _ => Layer.empty,
-      ScrollOptions.default
+      roguelikestarterkit.ui.components.datatypes.ScrollOptions.default
     )
 
   def apply[A, ReferenceData](
@@ -124,7 +128,7 @@ object ScrollPane:
       ScrollPane.makeComponentEntry(content),
       setupScrollButton(bindingKey, scrollBar),
       _ => Layer.empty,
-      ScrollOptions.default
+      roguelikestarterkit.ui.components.datatypes.ScrollOptions.default
     )
 
   def apply[A, ReferenceData](
@@ -137,14 +141,14 @@ object ScrollPane:
   ): ScrollPane[A, ReferenceData] =
     ScrollPane(
       bindingKey,
-      BoundsMode.fixed(dimensions),
+      roguelikestarterkit.ui.components.datatypes.BoundsMode.fixed(dimensions),
       dimensions,
       Bounds.zero,
       0.0,
       ScrollPane.makeComponentEntry(content),
       setupScrollButton(bindingKey, scrollBar),
       _ => Layer.empty,
-      ScrollOptions.default
+      roguelikestarterkit.ui.components.datatypes.ScrollOptions.default
     )
 
   def apply[A, ReferenceData](

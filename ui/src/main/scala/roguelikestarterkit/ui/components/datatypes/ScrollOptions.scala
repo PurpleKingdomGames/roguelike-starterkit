@@ -1,4 +1,4 @@
-package roguelikestarterkit.ui.components.group
+package roguelikestarterkit.ui.components.datatypes
 
 final case class ScrollOptions(
     scrollMode: ScrollMode,

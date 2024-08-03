@@ -1,13 +1,13 @@
-package roguelikestarterkit.ui.components.list
+package roguelikestarterkit.ui.components
 
 import indigo.*
 import roguelikestarterkit.ui.component.*
-import roguelikestarterkit.ui.components.common.Anchor
-import roguelikestarterkit.ui.components.common.ComponentEntry
-import roguelikestarterkit.ui.components.common.ComponentId
-import roguelikestarterkit.ui.components.common.ComponentLayout
-import roguelikestarterkit.ui.components.common.ContainerLikeFunctions
-import roguelikestarterkit.ui.components.common.Padding
+import roguelikestarterkit.ui.components.datatypes.Anchor
+import roguelikestarterkit.ui.components.datatypes.ComponentEntry
+import roguelikestarterkit.ui.components.datatypes.ComponentId
+import roguelikestarterkit.ui.components.datatypes.ComponentLayout
+import roguelikestarterkit.ui.components.datatypes.ContainerLikeFunctions
+import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.datatypes.*
 import ultraviolet.syntax.layout
 
@@ -15,7 +15,7 @@ import scala.annotation.tailrec
 
 /** Describes a dynamic list of components, and their realtive layout.
   */
-final case class ComponentList[ReferenceData] private (
+final case class ComponentList[ReferenceData] private[components] (
     content: ReferenceData => Batch[ComponentEntry[?, ReferenceData]],
     stateMap: Map[ComponentId, Any],
     layout: ComponentLayout,

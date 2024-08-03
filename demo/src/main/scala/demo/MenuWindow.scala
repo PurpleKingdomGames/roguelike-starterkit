@@ -2,13 +2,13 @@ package demo
 
 import indigo.*
 import roguelikestarterkit.*
+import roguelikestarterkit.ui.components.ComponentGroup
+import roguelikestarterkit.ui.components.ComponentList
 import roguelikestarterkit.ui.components.TerminalButton
-import roguelikestarterkit.ui.components.common.ComponentId
-import roguelikestarterkit.ui.components.common.ComponentLayout
-import roguelikestarterkit.ui.components.common.Overflow
-import roguelikestarterkit.ui.components.common.Padding
-import roguelikestarterkit.ui.components.group.ComponentGroup
-import roguelikestarterkit.ui.components.list.ComponentList
+import roguelikestarterkit.ui.components.datatypes.ComponentId
+import roguelikestarterkit.ui.components.datatypes.ComponentLayout
+import roguelikestarterkit.ui.components.datatypes.Overflow
+import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.window.TerminalWindow
 
 object MenuWindow:

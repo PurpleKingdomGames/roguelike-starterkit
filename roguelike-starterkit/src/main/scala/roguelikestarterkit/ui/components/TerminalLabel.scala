@@ -1,11 +1,9 @@
 package roguelikestarterkit.ui.components
 
 import indigo.*
-import indigo.syntax.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
-import roguelikestarterkit.ui.components.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords

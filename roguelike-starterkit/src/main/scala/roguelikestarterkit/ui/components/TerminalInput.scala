@@ -1,23 +1,14 @@
 package roguelikestarterkit.ui.components
 
 import indigo.*
-import indigo.syntax.*
 import roguelikestarterkit.Tile
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
-import roguelikestarterkit.tiles.RoguelikeTiles10x10
-import roguelikestarterkit.tiles.RoguelikeTiles5x6
-import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.components.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UIContext
-
-import scala.annotation.tailrec
-import scala.annotation.targetName
 
 object TerminalInput:
 

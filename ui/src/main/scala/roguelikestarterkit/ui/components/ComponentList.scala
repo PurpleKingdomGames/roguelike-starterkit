@@ -9,9 +9,6 @@ import roguelikestarterkit.ui.components.datatypes.ComponentLayout
 import roguelikestarterkit.ui.components.datatypes.ContainerLikeFunctions
 import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.datatypes.*
-import ultraviolet.syntax.layout
-
-import scala.annotation.tailrec
 
 /** Describes a dynamic list of components, and their realtive layout.
   */

@@ -22,6 +22,7 @@
             pkgs.nodejs
             pkgs.yarn
             pkgs.nodePackages_latest.http-server
+            pkgs.bloop
           ];
           shellHook = startupHook;
         };

@@ -2,24 +2,16 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import roguelikestarterkit.ui.component.*
-import roguelikestarterkit.ui.components.Button
-import roguelikestarterkit.ui.components.DragData
 import roguelikestarterkit.ui.components.datatypes.Anchor
 import roguelikestarterkit.ui.components.datatypes.BoundsMode
 import roguelikestarterkit.ui.components.datatypes.ComponentEntry
 import roguelikestarterkit.ui.components.datatypes.ComponentId
-import roguelikestarterkit.ui.components.datatypes.ComponentLayout
 import roguelikestarterkit.ui.components.datatypes.ContainerLikeFunctions
 import roguelikestarterkit.ui.components.datatypes.FitMode
-import roguelikestarterkit.ui.components.datatypes.Overflow
-import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.components.datatypes.ScrollMode
 import roguelikestarterkit.ui.components.datatypes.ScrollOptions
 import roguelikestarterkit.ui.datatypes.*
 import roguelikestarterkit.ui.shaders.LayerMask
-
-import java.lang.ref.Reference
-import scala.annotation.tailrec
 
 /** Describes a fixed arrangement of components, manages their layout, which may include anchored
   * components.

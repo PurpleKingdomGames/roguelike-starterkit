@@ -13,8 +13,6 @@ import roguelikestarterkit.ui.components.datatypes.Overflow
 import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.datatypes.*
 
-import scala.annotation.tailrec
-
 /** Describes a fixed arrangement of components, manages their layout, which may include anchored
   * components.
   */

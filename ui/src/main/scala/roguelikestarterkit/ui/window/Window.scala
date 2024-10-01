@@ -2,7 +2,6 @@ package roguelikestarterkit.ui.window
 
 import indigo.*
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions

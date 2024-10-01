@@ -1,7 +1,5 @@
 package roguelikestarterkit.ui.components.datatypes
 
-import roguelikestarterkit.ui.datatypes.Bounds
-import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 
 /** Describes how a ComponentGroup responds to changes in its parents bounds.

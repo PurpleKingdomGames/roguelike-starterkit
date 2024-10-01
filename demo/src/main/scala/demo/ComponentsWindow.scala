@@ -7,7 +7,6 @@ import roguelikestarterkit.ui.components.ComponentGroup
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
 import roguelikestarterkit.ui.components.datatypes.ComponentLayout
-import roguelikestarterkit.ui.components.datatypes.Overflow
 import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.window.TerminalWindow
 

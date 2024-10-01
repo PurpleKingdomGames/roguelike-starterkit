@@ -3,15 +3,12 @@ package roguelikestarterkit.ui.window
 import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.CharSheet
-import roguelikestarterkit.Coords
 import roguelikestarterkit.Dimensions
 import roguelikestarterkit.MapTile
 import roguelikestarterkit.TerminalMaterial
 import roguelikestarterkit.Tile
-import roguelikestarterkit.UIContext
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.datatypes.Bounds
 
 object TerminalWindow:

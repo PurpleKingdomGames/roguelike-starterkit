@@ -3,7 +3,6 @@ package roguelikestarterkit.ui.components
 import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.components.datatypes.ComponentLayout.Horizontal
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions

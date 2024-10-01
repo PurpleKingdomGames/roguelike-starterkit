@@ -6,7 +6,6 @@ import indigo.shared.subsystems.SubSystemFrameContext.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.components.ComponentGroup
-import roguelikestarterkit.ui.components.ComponentList
 
 object NoTerminalUI extends Scene[Size, Model, ViewModel]:
 

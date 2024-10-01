@@ -3,8 +3,6 @@ package roguelikestarterkit.ui.window
 import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.ui.datatypes.Bounds
-import roguelikestarterkit.ui.datatypes.Coords
-import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
 final case class WindowViewModel[ReferenceData](
@@ -37,10 +35,10 @@ object WindowViewModel:
       viewModel: WindowViewModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowViewModel[ReferenceData]] =
     case FrameTick if model.bounds.hashCode() != viewModel.modelHashCode =>
-      Outcome(redraw(context, model, viewModel))
+      Outcome(redraw(model, viewModel))
 
     case WindowInternalEvent.Redraw =>
-      Outcome(redraw(context, model, viewModel))
+      Outcome(redraw(model, viewModel))
 
     case MouseEvent.Move(pt)
         if viewModel.mouseIsOver && !model.bounds
@@ -59,15 +57,15 @@ object WindowViewModel:
     case _ =>
       Outcome(viewModel)
 
-  private def calculateDragBy(
-      charSize: Size,
-      mousePosition: Point,
-      windowPosition: Coords
-  ): Coords =
-    Coords(mousePosition / charSize.toPoint) - windowPosition
+  // private def calculateDragBy(
+  //     charSize: Size,
+  //     mousePosition: Point,
+  //     windowPosition: Coords
+  // ): Coords =
+  //   Coords(mousePosition / charSize.toPoint) - windowPosition
 
   private def redraw[A, ReferenceData](
-      context: UIContext[ReferenceData],
+      // context: UIContext[ReferenceData],
       model: Window[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): WindowViewModel[ReferenceData] =

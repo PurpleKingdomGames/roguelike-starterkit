@@ -11,7 +11,6 @@ import roguelikestarterkit.ui.components.TerminalLabel
 import roguelikestarterkit.ui.components.TerminalTextArea
 import roguelikestarterkit.ui.components.datatypes.ComponentId
 import roguelikestarterkit.ui.components.datatypes.ComponentLayout
-import roguelikestarterkit.ui.components.datatypes.Overflow
 import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.window.TerminalWindow
 

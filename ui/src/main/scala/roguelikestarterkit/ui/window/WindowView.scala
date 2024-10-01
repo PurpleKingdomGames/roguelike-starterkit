@@ -1,11 +1,6 @@
 package roguelikestarterkit.ui.window
 
 import indigo.*
-import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.datatypes.Bounds
-import roguelikestarterkit.ui.datatypes.Bounds.dimensions
-import roguelikestarterkit.ui.datatypes.Coords
-import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
 object WindowView:

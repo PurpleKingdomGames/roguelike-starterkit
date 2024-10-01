@@ -1,9 +1,7 @@
 package roguelikestarterkit.ui.window
 
 import indigo.*
-import indigo.shared.FrameContext
 import roguelikestarterkit.ui.datatypes.Coords
-import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 import roguelikestarterkit.ui.datatypes.UIState
 

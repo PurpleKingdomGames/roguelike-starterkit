@@ -1,7 +1,5 @@
 package roguelikestarterkit.ui.components.datatypes
 
-import roguelikestarterkit.ui.datatypes.Dimensions
-
 /** `ComponentLayout` instructs a `ComponentGroup` how it should layout the components it contains.
   * They are always placed one after another, optionally with some padding unless the layout type is
   * `None`.
@@ -36,11 +34,8 @@ object ComponentLayout:
       Horizontal(Padding.zero, overflow)
 
     extension (h: Horizontal)
-      def withPadding(value: Padding): Horizontal   = h.copy(padding = value)
       def withOverflow(value: Overflow): Horizontal = h.copy(overflow = value)
 
   object Vertical:
     def apply(): Vertical =
       Vertical(Padding.zero)
-
-    extension (h: Vertical) def withPadding(value: Padding): Vertical = h.copy(padding = value)

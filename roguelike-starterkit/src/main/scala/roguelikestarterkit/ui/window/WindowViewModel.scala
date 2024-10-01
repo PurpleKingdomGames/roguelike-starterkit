@@ -7,7 +7,6 @@ import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalClones
 import roguelikestarterkit.tiles.Tile
 import roguelikestarterkit.ui.datatypes.Bounds
-import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
@@ -91,7 +90,7 @@ object WindowViewModel:
             case Point(0, 2) if model.title.isDefined =>
               // Title bar line left
               val tile = if maxY > 2 then Tile.`├` else Tile.`└`
-              coords -> MapTile(Tile.`│`, RGBA.White, RGBA.Black)
+              coords -> MapTile(tile, RGBA.White, RGBA.Black)
 
             case Point(x, 2) if model.title.isDefined && x == maxX =>
               // Title bar line right

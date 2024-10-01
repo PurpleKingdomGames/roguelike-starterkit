@@ -1,7 +1,6 @@
 package roguelikestarterkit.ui.datatypes
 
 import indigo.*
-import indigo.scenes.SceneContext
 
 final case class UIContext[ReferenceData](
     bounds: Bounds,

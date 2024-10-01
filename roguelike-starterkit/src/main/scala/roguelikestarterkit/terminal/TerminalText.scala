@@ -3,6 +3,8 @@ package roguelikestarterkit.terminal
 import indigo.*
 import indigo.syntax.shaders.*
 
+import scala.annotation.nowarn
+
 /** The original Terminal text material, designed for use with `Text` entities. Supports approximate
   * drop shadows.
   */
@@ -128,6 +130,7 @@ object TerminalText:
     )
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+    @nowarn("msg=unused")
     inline def vert: Shader[VertexEnv, Unit] =
       Shader { env =>
         @out var v_shadowLookupCoord: vec2 = null
@@ -144,6 +147,7 @@ object TerminalText:
       }
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+    @nowarn("msg=unused")
     inline def frag: Shader[Env, Unit] =
       Shader[Env] { env =>
         ubo[RogueLikeTextData]

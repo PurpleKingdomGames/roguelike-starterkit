@@ -113,7 +113,6 @@ final class RogueTerminalEmulator(
           ()
 
         case Some(char) =>
-          startCoords + Point(i, 0) -> MapTile(Tile(char), foregroundColor, backgroundColor)
           updateAt(
             RogueTerminalEmulator.pointToIndex(startCoords + Point(i, 0), size.width),
             Tile(char),

@@ -1,8 +1,6 @@
 package roguelikestarterkit.ui.components.common
 
-import indigo.*
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 
 /** `ComponentEntry`s record a components model, position, and relevant component typeclass instance

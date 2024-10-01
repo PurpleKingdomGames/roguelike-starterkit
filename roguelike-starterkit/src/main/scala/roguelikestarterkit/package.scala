@@ -6,10 +6,6 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
 
-import ui.components.common.ComponentLayout
-import ui.components.common.Overflow
-import ui.components.common.Padding
-
 object syntax:
 
   extension (r: Rectangle)

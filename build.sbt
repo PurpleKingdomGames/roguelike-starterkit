@@ -4,12 +4,11 @@ import scala.language.postfixOps
 import sbtwelcome._
 import indigoplugin._
 
-val scala3Version              = "3.4.1"
+val scala3Version              = "3.5.0"
 val indigoVersion              = "0.17.0"
 val roguelikeStarterKitVersion = "0.5.1-SNAPSHOT"
 
 Global / onChangedBuildSource                              := ReloadOnSourceChanges
-ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(

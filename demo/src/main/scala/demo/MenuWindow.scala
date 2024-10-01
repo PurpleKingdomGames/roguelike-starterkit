@@ -5,8 +5,6 @@ import roguelikestarterkit.*
 
 object MenuWindow:
 
-  private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
-
   val windowId: WindowId = WindowId("MenuWindow")
 
   def window(

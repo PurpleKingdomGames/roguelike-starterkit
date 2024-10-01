@@ -4,6 +4,8 @@ import indigo.*
 import indigo.scenes.*
 import roguelikestarterkit.*
 
+import scala.annotation.nowarn
+
 object TerminalTextScene extends Scene[Size, Model, ViewModel]:
 
   type SceneModel     = Model
@@ -104,6 +106,7 @@ object TerminalTextScene extends Scene[Size, Model, ViewModel]:
         MASK: vec4
     )
 
+    @nowarn("msg=unused")
     inline def frag: Shader[Env, Unit] =
       Shader[Env] { env =>
         ubo[RogueLikeTextData]

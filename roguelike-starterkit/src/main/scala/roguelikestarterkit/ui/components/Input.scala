@@ -5,8 +5,6 @@ import indigo.syntax.*
 import roguelikestarterkit.Tile
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
-import roguelikestarterkit.tiles.RoguelikeTiles10x10
-import roguelikestarterkit.tiles.RoguelikeTiles5x6
 import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.common.TerminalTileColors
@@ -17,7 +15,6 @@ import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
 import scala.annotation.tailrec
-import scala.annotation.targetName
 
 /** Input components allow the user to input text information.
   */

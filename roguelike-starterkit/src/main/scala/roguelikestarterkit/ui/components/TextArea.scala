@@ -2,11 +2,8 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import indigo.syntax.*
-import roguelikestarterkit.shaders.material
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
-import roguelikestarterkit.tiles.RoguelikeTiles10x10
-import roguelikestarterkit.tiles.RoguelikeTiles5x6
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.component.StatelessComponent
 import roguelikestarterkit.ui.components.common.TerminalTileColors

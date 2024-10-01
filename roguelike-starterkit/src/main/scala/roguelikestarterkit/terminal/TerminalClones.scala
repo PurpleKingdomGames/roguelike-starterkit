@@ -1,9 +1,6 @@
 package roguelikestarterkit.terminal
 
 import indigo.*
-import roguelikestarterkit.Tile
-
-import scala.annotation.tailrec
 
 /** Represents the output of converting a Terminal into clones ready for rendering. You must add the
   * clones to you scene and register the clone blanks.

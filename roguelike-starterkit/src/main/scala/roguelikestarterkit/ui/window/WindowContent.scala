@@ -4,9 +4,7 @@ import indigo.shared.Outcome
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
 import roguelikestarterkit.Component
-import roguelikestarterkit.ComponentGroup
 import roguelikestarterkit.Dimensions
-import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.UIContext
 
 /** A typeclass that confirms that some type `A` can be used as a `WindowContent` provides the

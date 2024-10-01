@@ -8,8 +8,6 @@ import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.ContainerLikeFunctions
 import roguelikestarterkit.ui.datatypes.*
 
-import scala.annotation.tailrec
-
 /** Describes a dynamic list of 'stateless' components, their realtive layout, and propagates update
   * and presention calls.
   */

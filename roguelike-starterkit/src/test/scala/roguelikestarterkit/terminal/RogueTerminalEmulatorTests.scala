@@ -3,6 +3,9 @@ package roguelikestarterkit.terminal
 import indigo.*
 import roguelikestarterkit.Tile
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class RogueTerminalEmulatorTests extends munit.FunSuite {
 
   test("should be able to put and get an element at a given position") {
@@ -47,8 +50,6 @@ class RogueTerminalEmulatorTests extends munit.FunSuite {
 
     assert(
       Batch(Point(8, 2), Point(0, 0), Point(9, 9)).forall { v =>
-        clue(v)
-
         val actual =
           console.get(v).get
 

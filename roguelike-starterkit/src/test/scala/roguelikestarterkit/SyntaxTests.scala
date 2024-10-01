@@ -4,9 +4,9 @@ import indigo.*
 import roguelikestarterkit.syntax.toPoints
 
 class SyntaxTests extends munit.FunSuite {
-  
+
   test("Can convert a rectangle to a grid of points") {
-    val actual = Rectangle(0,0,4,3).toPoints
+    val actual = Rectangle(0, 0, 4, 3).toPoints
 
     val expected =
       Batch(
@@ -21,14 +21,14 @@ class SyntaxTests extends munit.FunSuite {
         Point(0, 2),
         Point(1, 2),
         Point(2, 2),
-        Point(3, 2),
+        Point(3, 2)
       )
 
     assertEquals(actual, expected)
   }
-  
+
   test("Can convert a offset rectangle to a grid of points") {
-    val actual = Rectangle(10,20,4,3).toPoints
+    val actual = Rectangle(10, 20, 4, 3).toPoints
 
     val expected =
       Batch(
@@ -43,7 +43,7 @@ class SyntaxTests extends munit.FunSuite {
         Point(10 + 0, 20 + 2),
         Point(10 + 1, 20 + 2),
         Point(10 + 2, 20 + 2),
-        Point(10 + 3, 20 + 2),
+        Point(10 + 3, 20 + 2)
       )
 
     assertEquals(actual, expected)

@@ -2,7 +2,6 @@ package roguelikestarterkit.ui.components.common
 
 import indigo.*
 import roguelikestarterkit.syntax.*
-import roguelikestarterkit.ui.component.*
 import roguelikestarterkit.ui.components.*
 import roguelikestarterkit.ui.components.group.*
 import roguelikestarterkit.ui.datatypes.*
@@ -18,9 +17,6 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
     )
 
   test("calculateNextOffset labels") {
-
-    val c: Component[Label[Unit], Unit] =
-      summon[Component[Label[Unit], Unit]]
 
     val group: ComponentGroup[Unit] =
       ComponentGroup()

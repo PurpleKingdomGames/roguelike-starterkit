@@ -1,7 +1,7 @@
 package roguelikestarterkit.terminal
 
-import indigo.ShaderPrimitive.*
 import indigo.*
+import indigo.ShaderPrimitive.*
 import indigo.shared.datatypes.RGBA
 import roguelikestarterkit.Tile
 

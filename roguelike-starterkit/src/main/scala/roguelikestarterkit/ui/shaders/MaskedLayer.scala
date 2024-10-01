@@ -3,6 +3,8 @@ package roguelikestarterkit.ui.shaders
 import indigo.*
 import indigo.syntax.shaders.*
 
+import scala.annotation.nowarn
+
 final case class LayerMask(mask: Rectangle) extends BlendMaterial:
   lazy val toShaderData: BlendShaderData =
     BlendShaderData(
@@ -41,6 +43,7 @@ object LayerMask:
       MASK_BOUNDS: vec4
   )
 
+  @nowarn("msg=unused")
   inline def fragment =
     Shader[Env] { env =>
 

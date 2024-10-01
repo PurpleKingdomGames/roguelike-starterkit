@@ -3,7 +3,6 @@ package roguelikestarterkit.ui.component
 import indigo.shared.collections.Batch
 import indigo.shared.scenegraph.CloneBlank
 import indigo.shared.scenegraph.Layer
-import indigo.shared.scenegraph.LayerEntry
 import indigo.shared.scenegraph.SceneNode
 import roguelikestarterkit.TerminalClones
 

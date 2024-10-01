@@ -1,7 +1,6 @@
 package roguelikestarterkit.ui.components.group
 
 import indigo.*
-import roguelikestarterkit.tiles.Tile
 import roguelikestarterkit.ui.component.*
 import roguelikestarterkit.ui.components.common.ComponentEntry
 import roguelikestarterkit.ui.components.common.ComponentLayout
@@ -9,8 +8,6 @@ import roguelikestarterkit.ui.components.common.ContainerLikeFunctions
 import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
 import roguelikestarterkit.ui.datatypes.*
-
-import scala.annotation.tailrec
 
 /** Describes a fixed arrangement of components, manages their layout, and propagates updates and
   * presention calls.

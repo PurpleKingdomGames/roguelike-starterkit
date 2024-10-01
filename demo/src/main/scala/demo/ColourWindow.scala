@@ -31,8 +31,6 @@ object ColourWindow:
     )
   )
 
-  private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
-
   val windowId: WindowId = WindowId("Color palette")
 
   def window(

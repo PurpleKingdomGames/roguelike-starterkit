@@ -4,6 +4,8 @@ import indigo.*
 import indigo.shared.shader.library.Lighting
 import indigo.syntax.shaders.*
 
+import scala.annotation.nowarn
+
 /** `TerminalMaterial` is a revised and leaner version of `TerminalText`, aimed at use with
   * `CloneTiles`. It removes the dubious drop shadow functionality, requires less shader data, and
   * has simpler shader logic.
@@ -161,6 +163,7 @@ object TerminalMaterial:
         MASK: vec4
     )
 
+    @nowarn("msg=unused")
     inline def frag: Shader[Env, Unit] =
       Shader[Env] { env =>
         ubo[RogueLikeTextData]

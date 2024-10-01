@@ -1,7 +1,6 @@
 package roguelikestarterkit.ui.window
 
 import indigo.*
-import indigo.shared.FrameContext
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.UIContext
 import roguelikestarterkit.ui.datatypes.UIState

@@ -3,6 +3,19 @@ package demo
 import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
+import roguelikestarterkit.ui.component.Component
+import roguelikestarterkit.ui.components.BoundsType
+import roguelikestarterkit.ui.components.ComponentGroup
+import roguelikestarterkit.ui.components.ScrollPane
+import roguelikestarterkit.ui.components.TerminalButton
+import roguelikestarterkit.ui.components.TerminalScrollPane
+import roguelikestarterkit.ui.components.datatypes.Anchor
+import roguelikestarterkit.ui.components.datatypes.BoundsMode
+import roguelikestarterkit.ui.components.datatypes.ComponentLayout
+import roguelikestarterkit.ui.components.datatypes.Overflow
+import roguelikestarterkit.ui.components.datatypes.Padding
+import roguelikestarterkit.ui.window.Space
+import roguelikestarterkit.ui.window.TerminalWindow
 
 object ColourWindow:
 
@@ -35,56 +48,146 @@ object ColourWindow:
 
   def window(
       charSheet: CharSheet
-  ): WindowModel[ColorPalette, Unit] =
-    WindowModel(
+  ): Window[ColorPalette, Unit] =
+    TerminalWindow(
       windowId,
       charSheet,
       ColorPalette(
-        ComponentGroup()
-          .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))
-          .add(
-            ComponentGroup()
-              .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
-              .add(
-                // Custom rendered buttons for the swatches
-                outrunner16.colors.map { rgba =>
-                  Button(Bounds(0, 0, 3, 3))(presentSwatch(charSheet, rgba, None))
-                    // .onClick(<Emit some event...>)
-                    .presentOver(presentSwatch(charSheet, rgba, Option(RGBA.White)))
-                    .presentDown(presentSwatch(charSheet, rgba, Option(RGBA.Black)))
-                }
-              )
-          )
-          .add(
-            // Default button renderer
-            Button(
-              "Load palette",
-              Button.Theme(
-                charSheet,
-                RGBA.Silver -> RGBA.Black,
-                RGBA.White  -> RGBA.Black,
-                RGBA.Black  -> RGBA.White,
-                hasBorder = true
-              )
-            )
-          )
+        windowChrome(charSheet, content(charSheet))
       )
     )
-      .withTitle("Colour Palette")
-      .moveTo(0, 0)
-      .resizeTo(25, 25)
-      .isDraggable
-      .isResizable
-      .isCloseable
+      .moveTo(5, 5)
+      .resizeTo(20, 20)
+
+  def windowChrome(charSheet: CharSheet, content: ComponentGroup[Unit]): ComponentGroup[Unit] =
+    ComponentGroup()
+      .withBoundsMode(BoundsMode.inherit)
+      .withLayout(ComponentLayout.Vertical(Padding(3, 1, 1, 1)))
+      .anchor(
+        TerminalScrollPane(
+          BindingKey("colour-window-scroll-pane"),
+          BoundsMode.offset(-2, -4),
+          content,
+          charSheet
+        ),
+        Anchor.TopLeft.withPadding(Padding(3, 1, 1, 1))
+      )
+      .anchor(
+        TerminalButton(
+          "Colour palette",
+          TerminalButton
+            .Theme(
+              charSheet,
+              RGBA.White,
+              RGBA.Black
+            )
+            .addBorder
+            .modifyBorderTiles(
+              _.withBottomLeft(Tile.`├`)
+                .withBottomRight(Tile.`┤`)
+            )
+        ).onDrag { (_: Unit, dragData) =>
+          Batch(
+            WindowEvent
+              .Move(
+                windowId,
+                dragData.position - dragData.offset,
+                Space.Screen
+              )
+          )
+        }.reportDrag
+          .withBoundsType(BoundsType.FillWidth(3, Padding(0))),
+        Anchor.TopLeft
+      )
+      .anchor(
+        TerminalButton
+          .fromTile(
+            Tile.BLACK_DOWN_POINTING_TRIANGLE,
+            TerminalButton.Theme(
+              charSheet,
+              RGBA.Black -> RGBA.Silver,
+              RGBA.Black -> RGBA.White,
+              RGBA.White -> RGBA.Black,
+              hasBorder = false
+            )
+          )
+          .onDrag { (_: Unit, dragData) =>
+            Batch(
+              WindowEvent
+                .Resize(
+                  windowId,
+                  dragData.position.toDimensions + Dimensions(1),
+                  Space.Screen
+                )
+            )
+          }
+          .reportDrag,
+        Anchor.BottomRight
+      )
+      .anchor(
+        TerminalButton
+          .fromTile(
+            Tile.x,
+            TerminalButton.Theme(
+              charSheet,
+              RGBA.Black -> RGBA.Silver,
+              RGBA.Black -> RGBA.White,
+              RGBA.White -> RGBA.Black,
+              hasBorder = false
+            )
+          )
+          .onClick(
+            WindowEvent.Close(windowId)
+          ),
+        Anchor.TopRight
+      )
+
+  def content(charSheet: CharSheet): ComponentGroup[Unit] =
+    ComponentGroup()
+      .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))
+      .add(
+        ComponentGroup()
+          .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
+          .add(
+            // Custom rendered buttons for the swatches
+            outrunner16.colors.map { rgba =>
+              Button(Bounds(0, 0, 3, 3))(presentSwatch(charSheet, rgba, None))
+                // .onClick(<Emit some event...>)
+                .presentOver(presentSwatch(charSheet, rgba, Option(RGBA.White)))
+                .presentDown(presentSwatch(charSheet, rgba, Option(RGBA.Black)))
+            }
+          )
+      )
+      .add(
+        // Default button renderer
+        TerminalButton(
+          "Load palette",
+          TerminalButton.Theme(
+            charSheet,
+            RGBA.Silver -> RGBA.Black,
+            RGBA.White  -> RGBA.Black,
+            RGBA.Black  -> RGBA.White,
+            hasBorder = true
+          )
+        )
+      )
+      .withBackground { bounds =>
+        Layer(
+          Shape.Box(
+            bounds.toScreenSpace(charSheet.size),
+            Fill.Color(RGBA.Cyan.withAlpha(0.5))
+          )
+        )
+      }
 
   def presentSwatch(
       charSheet: CharSheet,
       colour: RGBA,
       stroke: Option[RGBA]
-  ): (Coords, Bounds, Unit) => Outcome[ComponentFragment] =
+  ): (Coords, Bounds, Unit) => Outcome[Layer] =
     (offset, bounds, _) =>
       Outcome(
-        ComponentFragment(
+        Layer(
           stroke match
             case None =>
               Shape.Box(
@@ -110,7 +213,10 @@ object ColourWindow:
 final case class ColorPalette(componentGroup: ComponentGroup[Unit])
 object ColorPalette:
 
-  given WindowContent[ColorPalette, Unit] with
+  given Component[ColorPalette, Unit] with
+
+    def bounds(reference: Unit, model: ColorPalette): Bounds =
+      Bounds(model.componentGroup.dimensions)
 
     def updateModel(
         context: UIContext[Unit],
@@ -125,7 +231,7 @@ object ColorPalette:
         context: UIContext[Unit],
         model: ColorPalette
     ): Outcome[Layer] =
-      model.componentGroup.present(context).map(_.toLayer)
+      model.componentGroup.present(context)
 
     def refresh(reference: Unit, model: ColorPalette, contentDimensions: Dimensions): ColorPalette =
       model.copy(

@@ -5,6 +5,8 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
+import indigo.shared.scenegraph.Layer
+import roguelikestarterkit.ui.component.Component
 
 object syntax:
 
@@ -26,7 +28,7 @@ object syntax:
 
     def present[StartupData, ContextData](
         context: UIContext[ReferenceData]
-    ): Outcome[ComponentFragment] =
+    ): Outcome[Layer] =
       c.present(context, component)
 
     def refresh(
@@ -34,6 +36,13 @@ object syntax:
         parentDimensions: Dimensions
     ): A =
       c.refresh(reference, component, parentDimensions)
+
+  extension (c: Layer.Content.type)
+    def fromTerminalClones(terminalClones: TerminalClones): Layer.Content =
+      Layer.Content(terminalClones.clones).addCloneBlanks(terminalClones.blanks)
+
+    def apply(terminalClones: TerminalClones): Layer.Content =
+      fromTerminalClones(terminalClones)
 
 end syntax
 
@@ -117,47 +126,11 @@ val WindowManager: ui.window.WindowManager.type = ui.window.WindowManager
 type WindowId = ui.window.WindowId
 val WindowId: ui.window.WindowId.type = ui.window.WindowId
 
-type WindowModel[A, ReferenceData] = ui.window.WindowModel[A, ReferenceData]
-val WindowModel: ui.window.WindowModel.type = ui.window.WindowModel
+type Window[A, ReferenceData] = ui.window.Window[A, ReferenceData]
+val Window: ui.window.Window.type = ui.window.Window
 
 type WindowEvent = ui.window.WindowEvent
 val WindowEvent: ui.window.WindowEvent.type = ui.window.WindowEvent
-
-type WindowContent[A, ReferenceData] = ui.window.WindowContent[A, ReferenceData]
-val WindowContent: ui.window.WindowContent.type = ui.window.WindowContent
-
-// UI Components
-
-type Component[A, ReferenceData] = ui.component.Component[A, ReferenceData]
-
-type StatelessComponent[A, ReferenceData] = ui.component.StatelessComponent[A, ReferenceData]
-
-type ComponentFragment = ui.component.ComponentFragment
-val ComponentFragment: ui.component.ComponentFragment.type = ui.component.ComponentFragment
-
-// UI Built-in Component Groups
-
-type ComponentGroup[ReferenceData] = ui.components.group.ComponentGroup[ReferenceData]
-val ComponentGroup: ui.components.group.ComponentGroup.type = ui.components.group.ComponentGroup
-
-type ComponentList[ReferenceData] = ui.components.list.ComponentList[ReferenceData]
-val ComponentList: ui.components.list.ComponentList.type = ui.components.list.ComponentList
-
-type ComponentLayout = ui.components.common.ComponentLayout
-val ComponentLayout: ui.components.common.ComponentLayout.type =
-  ui.components.common.ComponentLayout
-
-type Overflow = ui.components.common.Overflow
-val Overflow: ui.components.common.Overflow.type = ui.components.common.Overflow
-
-type Padding = ui.components.common.Padding
-val Padding: ui.components.common.Padding.type = ui.components.common.Padding
-
-type BoundsType = ui.components.group.BoundsType
-val BoundsType: ui.components.group.BoundsType.type = ui.components.group.BoundsType
-
-type FitMode = ui.components.group.FitMode
-val FitMode: ui.components.group.FitMode.type = ui.components.group.FitMode
 
 // UI Built-in components
 
@@ -173,6 +146,5 @@ val Input: ui.components.Input.type = ui.components.Input
 type TextArea[ReferenceData] = ui.components.TextArea[ReferenceData]
 val TextArea: ui.components.TextArea.type = ui.components.TextArea
 
-type TerminalTileColors = ui.components.common.TerminalTileColors
-val TerminalTileColors: ui.components.common.TerminalTileColors.type =
-  ui.components.common.TerminalTileColors
+type TerminalTileColors = ui.components.TerminalTileColors
+val TerminalTileColors: ui.components.TerminalTileColors.type = ui.components.TerminalTileColors

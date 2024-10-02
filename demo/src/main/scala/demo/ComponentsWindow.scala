@@ -2,6 +2,13 @@ package demo
 
 import indigo.*
 import roguelikestarterkit.*
+import roguelikestarterkit.syntax.*
+import roguelikestarterkit.ui.components.ComponentGroup
+import roguelikestarterkit.ui.components.TerminalButton
+import roguelikestarterkit.ui.components.TerminalLabel
+import roguelikestarterkit.ui.components.datatypes.ComponentLayout
+import roguelikestarterkit.ui.components.datatypes.Padding
+import roguelikestarterkit.ui.window.TerminalWindow
 
 object ComponentsWindow:
 
@@ -11,16 +18,16 @@ object ComponentsWindow:
 
   def window(
       charSheet: CharSheet
-  ): WindowModel[ComponentGroup[Int], Int] =
-    WindowModel(
+  ): Window[ComponentGroup[Int], Int] =
+    TerminalWindow(
       windowId,
       charSheet,
       ComponentGroup()
         .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1)))
         .add(
-          Button(
+          TerminalButton(
             "Hello!",
-            Button.Theme(
+            TerminalButton.Theme(
               charSheet,
               RGBA.Silver -> RGBA.Black,
               RGBA.White  -> RGBA.Black,
@@ -30,9 +37,9 @@ object ComponentsWindow:
           )
         )
         .add(
-          Button(
+          TerminalButton(
             "World!",
-            Button.Theme(
+            TerminalButton.Theme(
               charSheet,
               RGBA.Silver -> RGBA.Black,
               RGBA.Green  -> RGBA.Black,
@@ -40,18 +47,18 @@ object ComponentsWindow:
               hasBorder = false
             )
           ),
-          Button("Default!", Button.Theme(charSheet))
+          TerminalButton("Default!", TerminalButton.Theme(charSheet))
         )
         .add {
-          Button(
+          TerminalButton(
             (i: Int) => "Count" + (if i > 0 then s": $i" else ""),
-            Button.Theme(charSheet).addBorder
+            TerminalButton.Theme(charSheet).addBorder
           )
         }
         .add(
           Button[Int](Bounds(0, 0, 5, 2)) { case (coords, bounds, _) =>
             Outcome(
-              ComponentFragment(
+              Layer(
                 Shape.Box(
                   bounds.toScreenSpace(charSheet.size).moveTo(coords.toScreenSpace(charSheet.size)),
                   Fill.LinearGradient(Point.zero, RGBA.Cyan, Point(50, 0), RGBA.Magenta)
@@ -76,18 +83,20 @@ object ComponentsWindow:
                     graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
                   }
 
-              Outcome(ComponentFragment(terminal))
+              Outcome(Layer.Content(terminal))
           }
         )
         .add(
-          Label("Terminal rendered label", Label.Theme(charSheet, RGBA.Magenta, RGBA.Cyan)),
-          Label("Default theme", Label.Theme(charSheet)),
-          Label((count: Int) => "Mouse over windows: " + count, Label.Theme(charSheet))
+          TerminalLabel(
+            "Terminal rendered label",
+            TerminalLabel.Theme(charSheet, RGBA.Magenta, RGBA.Cyan)
+          ),
+          TerminalLabel("Default theme", TerminalLabel.Theme(charSheet)),
+          TerminalLabel(
+            (count: Int) => "Mouse over windows: " + count,
+            TerminalLabel.Theme(charSheet)
+          )
         )
     )
-      .withTitle("Components example")
       .moveTo(0, 3)
       .resizeTo(25, 25)
-      .isDraggable
-      .isResizable
-      .isCloseable

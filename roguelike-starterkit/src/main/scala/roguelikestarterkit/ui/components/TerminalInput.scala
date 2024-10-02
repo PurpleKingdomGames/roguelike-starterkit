@@ -1,7 +1,6 @@
 package roguelikestarterkit.ui.components
 
 import indigo.*
-import roguelikestarterkit.Tile
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
@@ -54,7 +53,8 @@ object TerminalInput:
   private def presentInput[ReferenceData](
       charSheet: CharSheet,
       fgColor: RGBA,
-      bgColor: RGBA
+      bgColor: RGBA,
+      borderTiles: TerminalBorderTiles
   ): (Coords, Bounds, Input, Seconds) => Outcome[Layer] =
     (offset, bounds, input, runningTime) =>
       val correctedLabel =
@@ -62,25 +62,25 @@ object TerminalInput:
         else if input.text.length > bounds.width then input.text.take(bounds.width)
         else input.text + (List.fill(bounds.width - input.text.length)(" ").mkString)
 
-      val hBar = Batch.fill(correctedLabel.length)("─").mkString
+      val hBar = Batch.fill(correctedLabel.length)(borderTiles.horizontal)
       val size = (bounds.dimensions + 2).unsafeToSize
 
       val terminal =
         RogueTerminalEmulator(size)
-          .put(Point(0, 0), Tile.`┌`, fgColor, bgColor)
-          .put(Point(size.width - 1, 0), Tile.`┐`, fgColor, bgColor)
-          .put(Point(0, size.height - 1), Tile.`└`, fgColor, bgColor)
-          .put(Point(size.width - 1, size.height - 1), Tile.`┘`, fgColor, bgColor)
-          .put(Point(0, 1), Tile.`│`, fgColor, bgColor)
-          .put(Point(size.width - 1, 1), Tile.`│`, fgColor, bgColor)
-          .putLine(Point(1, 0), hBar, fgColor, bgColor)
+          .put(Point(0, 0), borderTiles.topLeft, fgColor, bgColor)
+          .put(Point(size.width - 1, 0), borderTiles.topRight, fgColor, bgColor)
+          .put(Point(0, size.height - 1), borderTiles.bottomLeft, fgColor, bgColor)
+          .put(Point(size.width - 1, size.height - 1), borderTiles.bottomRight, fgColor, bgColor)
+          .put(Point(0, 1), borderTiles.vertical, fgColor, bgColor)
+          .put(Point(size.width - 1, 1), borderTiles.vertical, fgColor, bgColor)
+          .putTileLine(Point(1, 0), hBar, fgColor, bgColor)
           .putLine(
             Point(1, 1),
             correctedLabel,
             fgColor,
             bgColor
           )
-          .putLine(Point(1, 2), hBar, fgColor, bgColor)
+          .putTileLine(Point(1, 2), hBar, fgColor, bgColor)
 
       val terminalClones =
         terminal
@@ -123,7 +123,12 @@ object TerminalInput:
     Input(
       "",
       Dimensions(width, 1),
-      presentInput(theme.charSheet, theme.colors.foreground, theme.colors.background),
+      presentInput(
+        theme.charSheet,
+        theme.colors.foreground,
+        theme.colors.background,
+        theme.borderTiles
+      ),
       _ => Batch.empty,
       //
       characterLimit = width,
@@ -135,7 +140,8 @@ object TerminalInput:
 
   final case class Theme(
       charSheet: CharSheet,
-      colors: TerminalTileColors
+      colors: TerminalTileColors,
+      borderTiles: TerminalBorderTiles
   ):
     def withCharSheet(value: CharSheet): Theme =
       this.copy(charSheet = value)
@@ -143,11 +149,17 @@ object TerminalInput:
     def withColors(foreground: RGBA, background: RGBA): Theme =
       this.copy(colors = TerminalTileColors(foreground, background))
 
+    def withBorderTiles(value: TerminalBorderTiles): Theme =
+      this.copy(borderTiles = value)
+    def modifyBorderTiles(f: TerminalBorderTiles => TerminalBorderTiles): Theme =
+      this.copy(borderTiles = f(borderTiles))
+
   object Theme:
     def apply(charSheet: CharSheet, foreground: RGBA, background: RGBA): Theme =
       Theme(
         charSheet,
-        TerminalTileColors(foreground, background)
+        TerminalTileColors(foreground, background),
+        TerminalBorderTiles.default
       )
 
     def apply(charSheet: CharSheet): Theme =

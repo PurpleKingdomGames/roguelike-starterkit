@@ -19,9 +19,10 @@ object TerminalButton:
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet,
-      hasBorder: Boolean
+      hasBorder: Boolean,
+      borderTiles: TerminalBorderTiles
   ): (Coords, Bounds, ReferenceData) => Outcome[Layer] =
-    if hasBorder then presentButtonWithBorder(label, fgColor, bgColor, charSheet)
+    if hasBorder then presentButtonWithBorder(label, fgColor, bgColor, charSheet, borderTiles)
     else presentButtonNoBorder(label, fgColor, bgColor, charSheet)
 
   private def presentButtonNoBorder[ReferenceData](
@@ -53,25 +54,26 @@ object TerminalButton:
       label: ReferenceData => Batch[Tile],
       fgColor: RGBA,
       bgColor: RGBA,
-      charSheet: CharSheet
+      charSheet: CharSheet,
+      borderTiles: TerminalBorderTiles
   ): (Coords, Bounds, ReferenceData) => Outcome[Layer] =
     (offset, bounds, ref) =>
       val txt  = label(ref).take(bounds.width - 2)
-      val hBar = Batch.fill(bounds.width - 2)("─").mkString
+      val hBar = Batch.fill(bounds.width - 2)(borderTiles.horizontal)
       val size = bounds.dimensions.unsafeToSize
 
       val terminal =
         RogueTerminalEmulator(size)
-          .fill(Tile.` `, fgColor, bgColor)
-          .put(Point(0, 0), Tile.`┌`, fgColor, bgColor)
-          .put(Point(size.width - 1, 0), Tile.`┐`, fgColor, bgColor)
-          .put(Point(0, size.height - 1), Tile.`└`, fgColor, bgColor)
-          .put(Point(size.width - 1, size.height - 1), Tile.`┘`, fgColor, bgColor)
-          .put(Point(0, 1), Tile.`│`, fgColor, bgColor)
-          .put(Point(size.width - 1, 1), Tile.`│`, fgColor, bgColor)
-          .putLine(Point(1, 0), hBar, fgColor, bgColor)
+          .fill(borderTiles.fill, fgColor, bgColor)
+          .put(Point(0, 0), borderTiles.topLeft, fgColor, bgColor)
+          .put(Point(size.width - 1, 0), borderTiles.topRight, fgColor, bgColor)
+          .put(Point(0, size.height - 1), borderTiles.bottomLeft, fgColor, bgColor)
+          .put(Point(size.width - 1, size.height - 1), borderTiles.bottomRight, fgColor, bgColor)
+          .put(Point(0, 1), borderTiles.vertical, fgColor, bgColor)
+          .put(Point(size.width - 1, 1), borderTiles.vertical, fgColor, bgColor)
+          .putTileLine(Point(1, 0), hBar, fgColor, bgColor)
           .putTileLine(Point(1, 1), txt, fgColor, bgColor)
-          .putLine(Point(1, 2), hBar, fgColor, bgColor)
+          .putTileLine(Point(1, 2), hBar, fgColor, bgColor)
 
       val terminalClones =
         terminal
@@ -151,7 +153,8 @@ object TerminalButton:
         theme.up.foreground,
         theme.up.background,
         theme.charSheet,
-        theme.hasBorder
+        theme.hasBorder,
+        theme.borderTiles
       )
     }
       .presentOver(
@@ -160,7 +163,8 @@ object TerminalButton:
           theme.over.foreground,
           theme.over.background,
           theme.charSheet,
-          theme.hasBorder
+          theme.hasBorder,
+          theme.borderTiles
         )
       )
       .presentDown(
@@ -169,7 +173,8 @@ object TerminalButton:
           theme.down.foreground,
           theme.down.background,
           theme.charSheet,
-          theme.hasBorder
+          theme.hasBorder,
+          theme.borderTiles
         )
       )
 
@@ -240,7 +245,8 @@ object TerminalButton:
       up: TerminalTileColors,
       over: TerminalTileColors,
       down: TerminalTileColors,
-      hasBorder: Boolean
+      hasBorder: Boolean,
+      borderTiles: TerminalBorderTiles
   ):
     def withCharSheet(value: CharSheet): Theme =
       this.copy(charSheet = value)
@@ -261,6 +267,11 @@ object TerminalButton:
     def noBorder: Theme =
       this.copy(hasBorder = false)
 
+    def withBorderTiles(value: TerminalBorderTiles): Theme =
+      this.copy(borderTiles = value)
+    def modifyBorderTiles(f: TerminalBorderTiles => TerminalBorderTiles): Theme =
+      this.copy(borderTiles = f(borderTiles))
+
   object Theme:
 
     def apply(charSheet: CharSheet, foreground: RGBA, background: RGBA, hasBorder: Boolean): Theme =
@@ -269,7 +280,8 @@ object TerminalButton:
         TerminalTileColors(foreground, background),
         TerminalTileColors(foreground, background),
         TerminalTileColors(foreground, background),
-        hasBorder
+        hasBorder,
+        TerminalBorderTiles.default
       )
     def apply(charSheet: CharSheet, foreground: RGBA, background: RGBA): Theme =
       Theme(
@@ -294,7 +306,8 @@ object TerminalButton:
         TerminalTileColors(foregroundUp, backgroundUp),
         TerminalTileColors(foregroundOver, backgroundOver),
         TerminalTileColors(foregroundDown, backgroundDown),
-        hasBorder
+        hasBorder,
+        TerminalBorderTiles.default
       )
     def apply(
         charSheet: CharSheet,
@@ -328,7 +341,8 @@ object TerminalButton:
         TerminalTileColors(up._1, up._2),
         TerminalTileColors(over._1, over._2),
         TerminalTileColors(down._1, down._2),
-        hasBorder
+        hasBorder,
+        TerminalBorderTiles.default
       )
     def apply(
         charSheet: CharSheet,
@@ -351,21 +365,3 @@ object TerminalButton:
         RGBA.White  -> RGBA.Black,
         RGBA.Black  -> RGBA.White
       )
-
-enum ButtonState:
-  case Up, Over, Down
-
-  def isUp: Boolean =
-    this match
-      case Up => true
-      case _  => false
-
-  def is: Boolean =
-    this match
-      case Over => true
-      case _    => false
-
-  def isDown: Boolean =
-    this match
-      case Down => true
-      case _    => false

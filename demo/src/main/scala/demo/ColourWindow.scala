@@ -82,6 +82,10 @@ object ColourWindow:
               RGBA.Black
             )
             .addBorder
+            .modifyBorderTiles(
+              _.withBottomLeft(Tile.`├`)
+                .withBottomRight(Tile.`┤`)
+            )
         ).onDrag { (_: Unit, dragData) =>
           Batch(
             WindowEvent

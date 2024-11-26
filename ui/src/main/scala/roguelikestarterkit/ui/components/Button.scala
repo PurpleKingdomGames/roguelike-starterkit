@@ -201,7 +201,7 @@ object Button:
               .moveBy(context.bounds.coords + context.additionalOffset)
               .contains(context.mouseCoords)
           then
-            if context.mouse.isLeftDown then ButtonState.Down
+            if context.frame.input.mouse.isLeftDown then ButtonState.Down
             else ButtonState.Over
           else ButtonState.Up
 

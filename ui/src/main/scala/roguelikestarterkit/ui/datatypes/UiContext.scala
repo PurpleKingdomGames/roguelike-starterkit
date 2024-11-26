@@ -3,32 +3,18 @@ package roguelikestarterkit.ui.datatypes
 import indigo.*
 
 final case class UIContext[ReferenceData](
+    // Specific to UIContext
     bounds: Bounds,
     snapGrid: Size,
     mouseCoords: Coords,
-    gameTime: GameTime,
-    dice: Dice,
-    inputState: InputState,
-    boundaryLocator: BoundaryLocator,
-    reference: ReferenceData,
     state: UIState,
     magnification: Int,
-    additionalOffset: Coords
+    additionalOffset: Coords,
+    // The following are all the same as in SubSystemContext
+    reference: ReferenceData,
+    frame: Context.Frame,
+    services: Context.Services
 ):
-
-  val running: Seconds = gameTime.running
-  val delta: Seconds   = gameTime.delta
-
-  val mouse: Mouse       = inputState.mouse
-  val keyboard: Keyboard = inputState.keyboard
-  val gamepad: Gamepad   = inputState.gamepad
-
-  def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
-    boundaryLocator.findBounds(sceneGraphNode)
-
-  def bounds(sceneGraphNode: SceneNode): Rectangle =
-    boundaryLocator.bounds(sceneGraphNode)
-
   lazy val screenSpaceBounds: Rectangle =
     bounds.toScreenSpace(snapGrid)
 
@@ -47,44 +33,40 @@ final case class UIContext[ReferenceData](
 object UIContext:
 
   def apply[ReferenceData](
-      subSystemFrameContext: SubSystemFrameContext[ReferenceData],
+      subSystemContext: SubSystemContext[ReferenceData],
       snapGrid: Size,
       magnification: Int
   ): UIContext[ReferenceData] =
-    val mouseCoords = Coords(subSystemFrameContext.mouse.position / snapGrid.toPoint)
+    val mouseCoords = Coords(subSystemContext.frame.input.mouse.position / snapGrid.toPoint)
     UIContext(
       Bounds.zero,
       snapGrid,
       mouseCoords,
-      subSystemFrameContext.gameTime,
-      subSystemFrameContext.dice,
-      subSystemFrameContext.inputState,
-      subSystemFrameContext.boundaryLocator,
-      subSystemFrameContext.reference,
       UIState.Active,
       magnification,
-      Coords.zero
+      Coords.zero,
+      subSystemContext.reference,
+      subSystemContext.frame,
+      subSystemContext.services
     )
 
   def apply[ReferenceData](
-      subSystemFrameContext: SubSystemFrameContext[ReferenceData],
+      subSystemContext: SubSystemContext[ReferenceData],
       snapGrid: Size,
       magnification: Int,
       additionalOffset: Coords
   ): UIContext[ReferenceData] =
-    val mouseCoords = Coords(subSystemFrameContext.mouse.position / snapGrid.toPoint)
+    val mouseCoords = Coords(subSystemContext.frame.input.mouse.position / snapGrid.toPoint)
     UIContext(
       Bounds.zero,
       snapGrid,
       mouseCoords,
-      subSystemFrameContext.gameTime,
-      subSystemFrameContext.dice,
-      subSystemFrameContext.inputState,
-      subSystemFrameContext.boundaryLocator,
-      subSystemFrameContext.reference,
       UIState.Active,
       magnification,
-      additionalOffset
+      additionalOffset,
+      subSystemContext.reference,
+      subSystemContext.frame,
+      subSystemContext.services
     )
 
 enum UIState:

@@ -6,6 +6,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
+import indigo.shared.shader.ShaderProgram
 import roguelikestarterkit.ui.component.Component
 
 object syntax:
@@ -48,23 +49,23 @@ end syntax
 
 object shaders:
 
-  val ui: Set[indigo.Shader] =
+  val ui: Set[ShaderProgram] =
     Set(
       roguelikestarterkit.ui.shaders.LayerMask.shader
     )
 
-  val material: Set[indigo.Shader] =
+  val material: Set[ShaderProgram] =
     Set(
       roguelikestarterkit.terminal.TerminalMaterial.standardShader,
       roguelikestarterkit.terminal.TerminalMaterial.standardShaderLit
     )
 
-  val text: Set[indigo.Shader] =
+  val text: Set[ShaderProgram] =
     Set(
       roguelikestarterkit.terminal.TerminalText.standardShader
     )
 
-  val all: Set[indigo.Shader] =
+  val all: Set[ShaderProgram] =
     ui ++ material ++ text
 
 end shaders

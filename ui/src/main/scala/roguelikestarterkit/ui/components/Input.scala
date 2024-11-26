@@ -174,31 +174,31 @@ object Input:
         model.loseFocus
 
       case KeyboardEvent.KeyUp(Key.BACKSPACE) if model.hasFocus =>
-        val next = model.backspace.withLastCursorMove(context.running)
+        val next = model.backspace.withLastCursorMove(context.frame.time.running)
         Outcome(next, model.change(next.text))
 
       case KeyboardEvent.KeyUp(Key.DELETE) if model.hasFocus =>
-        val next = model.delete.withLastCursorMove(context.running)
+        val next = model.delete.withLastCursorMove(context.frame.time.running)
         Outcome(next, model.change(next.text))
 
-      case KeyboardEvent.KeyUp(Key.LEFT_ARROW) if model.hasFocus =>
-        Outcome(model.cursorLeft.withLastCursorMove(context.running))
+      case KeyboardEvent.KeyUp(Key.ARROW_LEFT) if model.hasFocus =>
+        Outcome(model.cursorLeft.withLastCursorMove(context.frame.time.running))
 
-      case KeyboardEvent.KeyUp(Key.RIGHT_ARROW) if model.hasFocus =>
-        Outcome(model.cursorRight.withLastCursorMove(context.running))
+      case KeyboardEvent.KeyUp(Key.ARROW_RIGHT) if model.hasFocus =>
+        Outcome(model.cursorRight.withLastCursorMove(context.frame.time.running))
 
       case KeyboardEvent.KeyUp(Key.HOME) if model.hasFocus =>
-        Outcome(model.cursorHome.withLastCursorMove(context.running))
+        Outcome(model.cursorHome.withLastCursorMove(context.frame.time.running))
 
       case KeyboardEvent.KeyUp(Key.END) if model.hasFocus =>
-        Outcome(model.cursorEnd.withLastCursorMove(context.running))
+        Outcome(model.cursorEnd.withLastCursorMove(context.frame.time.running))
 
       case KeyboardEvent.KeyUp(Key.ENTER) if model.hasFocus =>
         // Enter key is ignored. Single line input fields.
-        Outcome(model.withLastCursorMove(context.running))
+        Outcome(model.withLastCursorMove(context.frame.time.running))
 
       case KeyboardEvent.KeyUp(key) if model.hasFocus && key.isPrintable =>
-        val next = model.addCharacterText(key.key).withLastCursorMove(context.running)
+        val next = model.addCharacterText(key.key).withLastCursorMove(context.frame.time.running)
         Outcome(next, model.change(next.text))
 
       case FrameTick if !context.isActive =>
@@ -215,7 +215,7 @@ object Input:
         context.bounds.coords,
         Bounds(model.dimensions),
         model,
-        context.running
+        context.frame.time.running
       )
 
     def refresh(reference: ReferenceData, model: Input, parentDimensions: Dimensions): Input =

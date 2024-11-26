@@ -58,7 +58,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   def setup(bootData: Size, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Size]] =
     Outcome(Startup.Success(bootData))
 
-  def updateModel(context: FrameContext[Size], model: Model): GlobalEvent => Outcome[Model] =
+  def updateModel(context: Context[Size], model: Model): GlobalEvent => Outcome[Model] =
     case KeyboardEvent.KeyUp(Key.PAGE_UP) =>
       Outcome(model).addGlobalEvents(SceneEvent.LoopPrevious)
 
@@ -76,14 +76,14 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
       Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[Size],
+      context: Context[Size],
       model: Model,
       viewModel: ViewModel
   ): GlobalEvent => Outcome[ViewModel] =
     _ => Outcome(viewModel)
 
   def present(
-      context: FrameContext[Size],
+      context: Context[Size],
       model: Model,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =

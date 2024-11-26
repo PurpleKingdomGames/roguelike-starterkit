@@ -1,18 +1,24 @@
 package roguelikestarterkit.ui.shaders
 
 import indigo.*
-import indigo.syntax.shaders.*
+import indigo.shared.shader.ShaderPrimitive
+import indigo.shared.shader.Uniform
+import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.UniformBlockName
+import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
 
 final case class LayerMask(mask: Rectangle) extends BlendMaterial:
-  lazy val toShaderData: BlendShaderData =
-    BlendShaderData(
+  lazy val toShaderData: ShaderData =
+    ShaderData(
       LayerMask.shader.id,
-      UniformBlock(
-        UniformBlockName("MaskBounds"),
-        Batch(
-          Uniform("MASK_BOUNDS") -> mask.asVec4
+      Batch(
+        UniformBlock(
+          UniformBlockName("MaskBounds"),
+          Batch(
+            Uniform("MASK_BOUNDS") -> ShaderPrimitive.vec4.fromRectangle(mask)
+          )
         )
       )
     )
@@ -26,8 +32,6 @@ object LayerMask:
         Env.ref
       )
     )
-
-  import ultraviolet.syntax.*
 
   final case class Env(
       MASK_BOUNDS: vec4

@@ -30,7 +30,7 @@ final case class WindowManager[StartUpData, Model, RefData](
     )
 
   def update(
-      context: SubSystemFrameContext[ReferenceData],
+      context: SubSystemContext[ReferenceData],
       model: ModelHolder[ReferenceData]
   ): GlobalEvent => Outcome[ModelHolder[ReferenceData]] =
     e =>
@@ -49,7 +49,7 @@ final case class WindowManager[StartUpData, Model, RefData](
       } yield ModelHolder(updatedModel, updatedViewModel)
 
   def present(
-      context: SubSystemFrameContext[ReferenceData],
+      context: SubSystemContext[ReferenceData],
       model: ModelHolder[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(

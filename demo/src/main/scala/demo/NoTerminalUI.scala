@@ -2,7 +2,7 @@ package demo
 
 import indigo.*
 import indigo.scenes.*
-import indigo.shared.subsystems.SubSystemFrameContext.*
+import indigo.shared.subsystems.SubSystemContext.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.components.ComponentGroup
@@ -32,7 +32,7 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
       model: Model
   ): GlobalEvent => Outcome[Model] =
     case e =>
-      val ctx = UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1), 1)
+      val ctx = UIContext(context.toFrameContext.forSubSystems.copy(reference = 0), Size(1), 1)
       summon[Component[ComponentGroup[Int], Int]].updateModel(ctx, model.components)(e).map { cl =>
         model.copy(components = cl)
       }
@@ -53,7 +53,7 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
     val rendered =
       summon[Component[ComponentGroup[Int], Int]]
         .present(
-          UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1), 1),
+          UIContext(context.toFrameContext.forSubSystems.copy(reference = 0), Size(1), 1),
           model.components
         )
 

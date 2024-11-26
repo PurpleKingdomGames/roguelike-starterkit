@@ -9,18 +9,17 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 /*
 
-Missing stuff:
-
-- scroll up/down/left/right arrow buttons - can be done with a component. What we
-  need is a way to position and size the scroll bar area.
-- scroll button size can be adjusted based on the content size.
-- horizontal scrolling?
-- Possible to disable the rest of the UI while holding down on a button?
+Check status against latest Indigo:
 - Support for Pointer events on components and windows(?). (Once the issues with PointerState are resolved.)
 - One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance.
   That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
-- Might need to make ComponentList's adjust their size based on their content, otherwise they'll be hard to use/use with scrolling.
-- a nine slice shader...
+
+High priority:
+
+- Possible to disable the rest of the UI while holding down on a button?
+- Might need to make ComponentList's adjust their size based on their content, otherwise they'll be hard to use with scrolling.
+- A demo of a non-ASCII window.
+- Move to Indigo.
 
 Polishing up:
 - Check for TODOs.
@@ -28,7 +27,11 @@ Polishing up:
 - Package aliases.
 - We need a standard window template. Title bar, close button, resize button... scroll bars...
 
-A demo of a non-ASCII window.
+Low priority / nice to have / non-essential for first release:
+- horizontal scrolling?
+- scroll up/down/left/right arrow buttons - can be done with a component. What we
+  need is a way to position and size the scroll bar area.
+- scroll button size can be adjusted based on the content size.
 
  */
 

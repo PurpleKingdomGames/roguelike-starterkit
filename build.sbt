@@ -146,9 +146,6 @@ lazy val roguelikeStarterKit =
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(
-      code := { "code ." ! }
-    )
-    .settings(
       publish / skip      := true,
       publishLocal / skip := true
     )
@@ -157,8 +154,7 @@ lazy val roguelikeStarterKit =
       logo := rawLogo + "(v" + version.value.toString + ")",
       usefulTasks := Seq(
         UsefulTask("runGame", "Run the game").noAlias,
-        UsefulTask("publishLocal", "Local publish").noAlias,
-        UsefulTask("code", "Launch VSCode").noAlias
+        UsefulTask("publishLocal", "Local publish").noAlias
       ),
       logoColor        := scala.Console.YELLOW,
       aliasColor       := scala.Console.BLUE,
@@ -169,9 +165,6 @@ lazy val roguelikeStarterKit =
 // To use indigoBuild or indigoRun, first comment out the line above that says: `scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }`
 addCommandAlias("runGame", ";demo/compile;demo/fastLinkJS;demo/indigoRun")
 addCommandAlias("buildGame", ";demo/compile;demo/fastLinkJS;demo/indigoBuild")
-
-lazy val code =
-  taskKey[Unit]("Launch VSCode in the current directory")
 
 // format: off
 lazy val rawLogo: String =

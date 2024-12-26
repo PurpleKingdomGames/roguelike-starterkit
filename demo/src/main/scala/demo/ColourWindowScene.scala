@@ -4,13 +4,13 @@ import indigo.*
 import indigo.scenes.*
 import roguelikestarterkit.*
 
-object UIScene extends Scene[Size, Model, ViewModel]:
+object ColourWindowScene extends Scene[Size, Model, ViewModel]:
 
   type SceneModel     = Model
   type SceneViewModel = ViewModel
 
   val name: SceneName =
-    SceneName("UI scene")
+    SceneName("colour window scene")
 
   val modelLens: Lens[Model, Model] =
     Lens.keepLatest
@@ -23,38 +23,31 @@ object UIScene extends Scene[Size, Model, ViewModel]:
 
   val subSystems: Set[SubSystem[Model]] =
     Set(
-      WindowManager[Model, Int](
-        SubSystemId("window manager 2"),
+      WindowManager[Model, Unit](
+        SubSystemId("window manager"),
         RogueLikeGame.magnification,
         Size(Model.defaultCharSheet.charSize),
-        _.pointerOverWindows.length
+        _ => ()
       )
+        .withLayerKey(BindingKey("UI Layer"))
         .register(
-          ComponentsWindow.window(
+          ColourWindow.window(
             Model.defaultCharSheet
           )
         )
-        .register(
-          ComponentsWindow2.window(
-            Model.defaultCharSheet
-          )
-        )
-        .register(
-          MenuWindow.window(
-            Model.defaultCharSheet
-          )
-        )
-        .open(
-          MenuWindow.windowId,
-          ComponentsWindow.windowId,
-          ComponentsWindow2.windowId
-        )
+        .open(ColourWindow.windowId)
     )
 
   def updateModel(
       context: SceneContext[Size],
       model: Model
   ): GlobalEvent => Outcome[Model] =
+    case KeyboardEvent.KeyUp(Key.KEY_O) =>
+      Outcome(model).addGlobalEvents(WindowEvent.OpenAt(ColourWindow.windowId, Coords(1, 1)))
+
+    case KeyboardEvent.KeyUp(Key.KEY_T) =>
+      Outcome(model).addGlobalEvents(WindowEvent.Toggle(ColourWindow.windowId))
+
     case WindowEvent.PointerOver(id) =>
       println("Pointer over window: " + id)
       val ids = id :: model.pointerOverWindows.filterNot(_ == id)
@@ -68,7 +61,7 @@ object UIScene extends Scene[Size, Model, ViewModel]:
       Outcome(model.copy(pointerOverWindows = ids))
 
     case WindowEvent.Closed(id) =>
-      println("Closed window: " + id)
+      println("Window closed: " + id)
       val ids = model.pointerOverWindows.filterNot(_ == id)
 
       Outcome(model.copy(pointerOverWindows = ids))
@@ -89,5 +82,16 @@ object UIScene extends Scene[Size, Model, ViewModel]:
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
+      SceneUpdateFragment(
+        BindingKey("info") ->
+          Layer(
+            TextBox(
+              "Pointer over: " +
+                model.pointerOverWindows.mkString("[", ",", "]")
+            )
+              .withTextStyle(TextStyle.default.withColor(RGBA.White).withSize(Pixels(12)))
+              .moveTo(0, 260)
+          ),
+        BindingKey("UI Layer") -> Layer.Stack.empty
+      )
     )

@@ -59,6 +59,9 @@ final case class WindowManager[StartUpData, Model, RefData](
       model.viewModel
     )
 
+  /** Registers a window with the WindowManager. All Window's must be registered before the scene
+    * starts.
+    */
   def register(
       windowModels: Window[?, ReferenceData]*
   ): WindowManager[StartUpData, Model, ReferenceData] =
@@ -68,10 +71,19 @@ final case class WindowManager[StartUpData, Model, RefData](
   ): WindowManager[StartUpData, Model, ReferenceData] =
     this.copy(windows = windows ++ windowModels)
 
+  /** Sets which windows are initially open. Once the scene is running, opening and closing is
+    * managed by the WindowManagerModel via events.
+    */
   def open(ids: WindowId*): WindowManager[StartUpData, Model, ReferenceData] =
     open(Batch.fromSeq(ids))
   def open(ids: Batch[WindowId]): WindowManager[StartUpData, Model, ReferenceData] =
     this.copy(windows = windows.map(w => if ids.exists(_ == w.id) then w.open else w))
+
+  /** Sets which window is initially focused. Once the scene is running, focusing is managed by the
+    * WindowManagerModel via events.
+    */
+  def focus(id: WindowId): WindowManager[StartUpData, Model, ReferenceData] =
+    this.copy(windows = windows.map(w => if w.id == id then w.focus else w))
 
   def withStartupData[A](newStartupData: A): WindowManager[A, Model, ReferenceData] =
     WindowManager(
@@ -84,6 +96,8 @@ final case class WindowManager[StartUpData, Model, RefData](
       windows
     )
 
+    /** Allows you to set the layer key that the WindowManager will use to present the windows.
+      */
   def withLayerKey(newLayerKey: BindingKey): WindowManager[StartUpData, Model, ReferenceData] =
     this.copy(layerKey = Option(newLayerKey))
 

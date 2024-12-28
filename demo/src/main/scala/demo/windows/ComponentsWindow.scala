@@ -1,4 +1,4 @@
-package demo
+package demo.windows
 
 import indigo.*
 import roguelikestarterkit.*

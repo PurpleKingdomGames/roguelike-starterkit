@@ -1,16 +1,19 @@
-package demo
+package demo.scenes
 
+import demo.Assets
+import demo.models.Model
+import demo.models.ViewModel
 import indigo.*
 import indigo.scenes.*
 import roguelikestarterkit.*
 
-object TerminalEmulatorScene extends Scene[Size, Model, ViewModel]:
+object RogueTerminalEmulatorScene extends Scene[Size, Model, ViewModel]:
 
   type SceneModel     = Model
   type SceneViewModel = ViewModel
 
   val name: SceneName =
-    SceneName("TerminalEmulatorScene")
+    SceneName("RogueTerminalEmulatorScene")
 
   val modelLens: Lens[Model, Model] =
     Lens.keepLatest
@@ -36,19 +39,15 @@ object TerminalEmulatorScene extends Scene[Size, Model, ViewModel]:
     _ => Outcome(viewModel)
 
   // This shouldn't live here really, just keeping it simple for demo purposes.
-  val terminal: TerminalEmulator =
-    TerminalEmulator(Size(3, 3))
-      .put(
-        Point(0, 0) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
-        Point(1, 0) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
-        Point(2, 0) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
-        Point(0, 1) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
-        Point(1, 1) -> MapTile(Tile.`@`, RGBA.Magenta),
-        Point(2, 1) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
-        Point(0, 2) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
-        Point(1, 2) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
-        Point(2, 2) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue)
-      )
+  val terminal: RogueTerminalEmulator =
+    RogueTerminalEmulator(Size(11, 11))
+      .fill(MapTile(Tile.DARK_SHADE, RGBA.Yellow, RGBA.Black))
+      .fillRectangle(Rectangle(1, 1, 9, 9), MapTile(Tile.MEDIUM_SHADE, RGBA.Yellow, RGBA.Black))
+      .fillCircle(Circle(5, 5, 4), MapTile(Tile.LIGHT_SHADE, RGBA.Yellow, RGBA.Black))
+      .mapLine(Point(0, 10), Point(10, 0)) { case (pt, tile) =>
+        tile.withForegroundColor(RGBA.Red)
+      }
+      .put(Point(5, 5), MapTile(Tile.`@`, RGBA.Cyan))
 
   def present(
       context: SceneContext[Size],
@@ -64,7 +63,4 @@ object TerminalEmulatorScene extends Scene[Size, Model, ViewModel]:
         Graphic(10, 10, TerminalMaterial(Assets.assets.AnikkiSquare10x10, fg, bg))
       }
 
-    Outcome(
-      SceneUpdateFragment(tiles.clones)
-        .addCloneBlanks(tiles.blanks)
-    )
+    Outcome(tiles.toSceneUpdateFragment)

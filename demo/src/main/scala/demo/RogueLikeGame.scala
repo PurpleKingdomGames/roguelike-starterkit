@@ -1,13 +1,11 @@
 package demo
 
+import demo.models.*
+import demo.scenes.*
 import indigo.*
 import indigo.scenes.*
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
-import roguelikestarterkit.ui.components.ComponentGroup
-import roguelikestarterkit.ui.components.ComponentList
-import roguelikestarterkit.ui.components.datatypes.BoundsMode
-import roguelikestarterkit.ui.components.datatypes.ComponentId
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -88,64 +86,3 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
-
-final case class Model(pointerOverWindows: Batch[WindowId], components: ComponentGroup[Int])
-
-object Model:
-
-  import indigo.syntax.*
-
-  val defaultCharSheet: CharSheet =
-    CharSheet(
-      Assets.assets.AnikkiSquare10x10,
-      Size(10),
-      RoguelikeTiles.Size10x10.charCrops,
-      RoguelikeTiles.Size10x10.Fonts.fontKey
-    )
-
-  val initial: Model =
-    Model(
-      Batch.empty,
-      ComponentGroup(BoundsMode.fixed(200, 200))
-        .add(
-          ComponentList(Dimensions(200, 40)) { (_: Int) =>
-            (1 to 3).toBatch.map { i =>
-              ComponentId("lbl" + i) -> Label[Int](
-                "Custom rendered label " + i,
-                (_, label) => Bounds(0, 0, 150, 10)
-              ) { case (offset, label, dimensions) =>
-                Outcome(
-                  Layer(
-                    TextBox(label)
-                      .withColor(RGBA.Red)
-                      .moveTo(offset.unsafeToPoint)
-                      .withSize(dimensions.unsafeToSize)
-                  )
-                )
-              }
-            }
-          }
-        )
-        .add(
-          Label[Int](
-            "Another label",
-            (_, label) => Bounds(0, 0, 150, 10)
-          ) { case (offset, label, dimensions) =>
-            Outcome(
-              Layer(
-                TextBox(label)
-                  .withColor(RGBA.White)
-                  .moveTo(offset.unsafeToPoint)
-                  .withSize(dimensions.unsafeToSize)
-              )
-            )
-          }
-        )
-    )
-
-final case class ViewModel()
-object ViewModel:
-  def initial: ViewModel =
-    ViewModel()
-
-final case class Log(msg: String) extends GlobalEvent

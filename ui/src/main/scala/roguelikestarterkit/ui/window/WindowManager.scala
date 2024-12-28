@@ -83,7 +83,15 @@ final case class WindowManager[StartUpData, Model, RefData](
     * WindowManagerModel via events.
     */
   def focus(id: WindowId): WindowManager[StartUpData, Model, ReferenceData] =
-    this.copy(windows = windows.map(w => if w.id == id then w.focus else w))
+    val reordered =
+      windows.find(_.id == id) match
+        case None =>
+          windows
+
+        case Some(w) =>
+          windows.filterNot(_.id == w.id).map(_.blur) :+ w.focus
+
+    this.copy(windows = reordered)
 
   def withStartupData[A](newStartupData: A): WindowManager[A, Model, ReferenceData] =
     WindowManager(

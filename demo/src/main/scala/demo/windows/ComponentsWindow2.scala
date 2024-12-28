@@ -1,5 +1,6 @@
-package demo
+package demo.windows
 
+import demo.models.Log
 import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.*

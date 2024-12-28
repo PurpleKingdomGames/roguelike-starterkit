@@ -1,5 +1,7 @@
-package demo
+package demo.scenes
 
+import demo.models.Model
+import demo.models.ViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.shared.subsystems.SubSystemContext.*

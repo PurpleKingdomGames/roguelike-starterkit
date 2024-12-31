@@ -19,12 +19,13 @@ High priority:
 - Might need to make ComponentList's adjust their size based on their content, otherwise they'll be hard to use with scrolling.
 - A demo of a non-ASCII window.
 - Move to Indigo.
+- Checkboxes
+- Radio buttons
 
 Polishing up:
 - Check for TODOs.
 - Bring back tests.
 - Package aliases.
-- We need a standard window template. Title bar, close button, resize button... scroll bars...
 
 Low priority / nice to have / non-essential for first release:
 - horizontal scrolling?

@@ -4,19 +4,20 @@ import demo.Assets
 import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
-import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.components.ComponentGroup
+import roguelikestarterkit.ui.components.HitArea
+import roguelikestarterkit.ui.components.datatypes.Anchor
 
 object DemoWindow:
 
   val windowId: WindowId = WindowId("demo window")
 
-  def window: Window[Unit, Unit] =
+  def window: Window[ComponentGroup[Unit], Unit] =
     Window(
       windowId,
       Size(1),
       Dimensions(128, 64),
-      ()
+      content
     )
       .withBackground { ctx =>
         Outcome(
@@ -33,5 +34,14 @@ object DemoWindow:
         )
       }
 
-  def content(charSheet: CharSheet): ComponentGroup[Unit] =
+  def content: ComponentGroup[Unit] =
     ComponentGroup()
+      .anchor(
+        HitArea(Bounds(0, 0, 16, 16))
+          .onClick(
+            WindowEvent.Close(windowId)
+          )
+          .withFill(RGBA.Green.withAlpha(0.5))
+          .withStroke(Stroke(1, RGBA.Green.withAlpha(0.75))),
+        Anchor.TopRight
+      )

@@ -27,11 +27,9 @@ object WindowDemoScene extends Scene[Size, Model, ViewModel]:
 
   val subSystems: Set[SubSystem[Model]] =
     Set(
-      WindowManager[Model, Unit](
+      WindowManager[Model](
         SubSystemId("demo window manager"),
-        RogueLikeGame.magnification,
-        Size(Model.defaultCharSheet.charSize),
-        _ => ()
+        RogueLikeGame.magnification
       )
         .withLayerKey(BindingKey("UI Layer"))
         .register(

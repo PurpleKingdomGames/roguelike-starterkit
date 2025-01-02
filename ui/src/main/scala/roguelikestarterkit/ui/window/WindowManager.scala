@@ -111,6 +111,28 @@ final case class WindowManager[StartUpData, Model, RefData](
 
 object WindowManager:
 
+  /** Creates a WindowManager instance with no snap grid, that respects the magnification specified.
+    */
+  def apply[Model](id: SubSystemId): WindowManager[Unit, Model, Unit] =
+    WindowManager(id, 1, Size(1), _ => (), (), None, Batch.empty)
+
+  /** Creates a WindowManager instance with no snap grid, that respects the magnification specified.
+    */
+  def apply[Model](
+      id: SubSystemId,
+      magnification: Int
+  ): WindowManager[Unit, Model, Unit] =
+    WindowManager(id, magnification, Size(1), _ => (), (), None, Batch.empty)
+
+  /** Creates a WindowManager instance with no snap grid, that respects the magnification specified.
+    */
+  def apply[Model](
+      id: SubSystemId,
+      magnification: Int,
+      snapGrid: Size
+  ): WindowManager[Unit, Model, Unit] =
+    WindowManager(id, magnification, Size(1), _ => (), (), None, Batch.empty)
+
   def apply[Model, ReferenceData](
       id: SubSystemId,
       magnification: Int,

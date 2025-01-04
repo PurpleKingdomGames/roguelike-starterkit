@@ -15,12 +15,10 @@ Check status against latest Indigo:
 
 High priority:
 
-- Possible to disable the rest of the UI while holding down on a button?
+- Possible to disable the rest of the UI while holding down on a button? What is ctx.isActive again?
 - Might need to make ComponentList's adjust their size based on their content, otherwise they'll be hard to use with scrolling.
 - A demo of a non-ASCII window.
 - Move to Indigo + aliases
-- Checkboxes
-- Radio buttons
 
 Low priority / nice to have / non-essential for first release:
 - horizontal scrolling?

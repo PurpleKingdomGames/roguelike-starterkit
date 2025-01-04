@@ -1,5 +1,6 @@
 package demo.scenes
 
+import demo.models.ChangeValue
 import demo.models.Model
 import demo.models.ViewModel
 import indigo.*
@@ -34,8 +35,12 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
       context: SceneContext[Size],
       model: Model
   ): GlobalEvent => Outcome[Model] =
+    case ChangeValue(value) =>
+      Outcome(model.copy(num = value))
+
     case e =>
-      val ctx = UIContext(context.toFrameContext.forSubSystems.copy(reference = 0), Size(1), 1)
+      val ctx =
+        UIContext(context.toFrameContext.forSubSystems.copy(reference = model.num), Size(1), 1)
       summon[Component[ComponentGroup[Int], Int]].updateModel(ctx, model.components)(e).map { cl =>
         model.copy(components = cl)
       }

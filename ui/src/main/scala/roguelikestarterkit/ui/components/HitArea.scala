@@ -7,7 +7,7 @@ import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
-/** HitAreas `Component` s allow you to create invisible buttons for your UI.
+/** The HitArea `Component` allows you to create invisible buttons for your UI.
   *
   * Functionally, a hit area is identical to a button that does not render anything. In fact a
   * HitArea is isomorphic to a Button that renders nothing, and its component instance is mostly

@@ -1,11 +1,14 @@
 package demo.windows
 
+import demo.models.Log
 import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.components.ComponentGroup
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
+import roguelikestarterkit.ui.components.TerminalSwitch
+import roguelikestarterkit.ui.components.TerminalTile
 import roguelikestarterkit.ui.components.datatypes.ComponentLayout
 import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.window.TerminalWindow
@@ -33,6 +36,16 @@ object ComponentsWindow:
   def content(charSheet: CharSheet): ComponentGroup[Int] =
     ComponentGroup()
       .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
+      .add(
+        TerminalSwitch(
+          TerminalSwitch.Theme(
+            charSheet,
+            TerminalTile(Tile.`0`, RGBA.Green, RGBA.Black),
+            TerminalTile(Tile.X, RGBA.Red, RGBA.Black)
+          )
+        ).switchOn // On by default
+          .onSwitch(onOff => Batch(Log(s"Switch is now ${if onOff.isOn then "on" else "off"}")))
+      )
       .add(
         TerminalButton(
           "Hello!",

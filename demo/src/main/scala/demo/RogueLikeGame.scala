@@ -15,7 +15,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   val magnification: Int = 2
 
   def initialScene(bootData: Size): Option[SceneName] =
-    Option(WindowDemoScene.name)
+    Option(NoTerminalUI.name)
 
   def scenes(bootData: Size): NonEmptyList[Scene[Size, Model, ViewModel]] =
     NonEmptyList(

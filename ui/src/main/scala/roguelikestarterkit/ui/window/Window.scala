@@ -7,14 +7,6 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
-/*
-
-High priority:
-
-- Possible to disable the rest of the UI while holding down on a button? What is ctx.isActive again?
-
- */
-
 final case class Window[A, ReferenceData](
     id: WindowId,
     snapGrid: Size,

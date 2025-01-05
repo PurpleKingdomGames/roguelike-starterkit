@@ -41,6 +41,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
         .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)
         .withAssets(Assets.assets.assetSet)
         .withShaders(
+          indigoextras.ui.shaders.all ++
           shaders.all ++ Set(
             TerminalTextScene.customShader(ShaderId("my shader"))
           )

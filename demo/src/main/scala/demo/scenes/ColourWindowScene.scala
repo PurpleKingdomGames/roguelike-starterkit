@@ -6,7 +6,7 @@ import demo.models.ViewModel
 import demo.windows.ColourWindow
 import indigo.*
 import indigo.scenes.*
-import roguelikestarterkit.*
+import indigoextras.ui.*
 
 object ColourWindowScene extends Scene[Size, Model, ViewModel]:
 

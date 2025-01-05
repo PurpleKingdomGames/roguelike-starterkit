@@ -6,7 +6,7 @@ import demo.models.ViewModel
 import demo.windows.DemoWindow
 import indigo.*
 import indigo.scenes.*
-import roguelikestarterkit.*
+import indigoextras.ui.*
 
 object WindowDemoScene extends Scene[Size, Model, ViewModel]:
 

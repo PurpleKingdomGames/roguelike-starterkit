@@ -1,13 +1,11 @@
 package roguelikestarterkit.ui.components
 
 import indigo.*
+import indigoextras.ui.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
-import roguelikestarterkit.ui.datatypes.Bounds
-import roguelikestarterkit.ui.datatypes.CharSheet
-import roguelikestarterkit.ui.datatypes.Coords
-import roguelikestarterkit.ui.datatypes.Dimensions
+import roguelikestarterkit.ui.*
 
 /** TerminalLabel is a simple `Component` s that renders text using a Terminal.
   */

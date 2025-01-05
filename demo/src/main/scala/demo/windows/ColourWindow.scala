@@ -1,16 +1,11 @@
 package demo.windows
 
 import indigo.*
+import indigoextras.ui.*
+import indigoextras.ui.syntax.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
-import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.components.ComponentGroup
-import roguelikestarterkit.ui.components.TerminalButton
-import roguelikestarterkit.ui.components.datatypes.ComponentLayout
-import roguelikestarterkit.ui.components.datatypes.Overflow
-import roguelikestarterkit.ui.components.datatypes.Padding
-import roguelikestarterkit.ui.window.TerminalWindow
-import roguelikestarterkit.ui.window.TerminalWindowChrome
+import roguelikestarterkit.ui.*
 
 object ColourWindow:
 

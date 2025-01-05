@@ -2,14 +2,12 @@ package roguelikestarterkit.ui.window
 
 import indigo.*
 import indigo.syntax.*
-import roguelikestarterkit.CharSheet
-import roguelikestarterkit.Dimensions
+import indigoextras.ui.*
 import roguelikestarterkit.MapTile
 import roguelikestarterkit.TerminalMaterial
 import roguelikestarterkit.Tile
 import roguelikestarterkit.terminal.RogueTerminalEmulator
-import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.datatypes.Bounds
+import roguelikestarterkit.ui.datatypes.CharSheet
 
 object TerminalWindow:
 

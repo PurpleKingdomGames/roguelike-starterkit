@@ -8,7 +8,7 @@ import demo.windows.ComponentsWindow2
 import demo.windows.MenuWindow
 import indigo.*
 import indigo.scenes.*
-import roguelikestarterkit.*
+import indigoextras.ui.*
 
 object MultipleWindowsScene extends Scene[Size, Model, ViewModel]:
 

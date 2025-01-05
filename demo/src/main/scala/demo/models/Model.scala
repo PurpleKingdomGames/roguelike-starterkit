@@ -2,16 +2,9 @@ package demo.models
 
 import demo.Assets
 import indigo.*
+import indigoextras.ui.*
 import roguelikestarterkit.*
-import roguelikestarterkit.ui.components.BoundsType
-import roguelikestarterkit.ui.components.ComponentGroup
-import roguelikestarterkit.ui.components.ComponentList
-import roguelikestarterkit.ui.components.Switch
-import roguelikestarterkit.ui.components.SwitchState
-import roguelikestarterkit.ui.components.datatypes.BoundsMode
-import roguelikestarterkit.ui.components.datatypes.ComponentId
-import roguelikestarterkit.ui.components.datatypes.ComponentLayout
-import roguelikestarterkit.ui.components.datatypes.Padding
+import roguelikestarterkit.ui.*
 
 final case class Model(
     pointerOverWindows: Batch[WindowId],

@@ -8,8 +8,8 @@ val scala3Version              = "3.5.0"
 val indigoVersion              = "0.17.1-SNAPSHOT"
 val roguelikeStarterKitVersion = "0.5.1-SNAPSHOT"
 
-Global / onChangedBuildSource                              := ReloadOnSourceChanges
-ThisBuild / scalaVersion                                   := scala3Version
+Global / onChangedBuildSource := ReloadOnSourceChanges
+ThisBuild / scalaVersion      := scala3Version
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version      := roguelikeStarterKitVersion,
@@ -67,19 +67,6 @@ lazy val roguelike =
             (Compile / sourceManaged).value // Managed sources (output) directory for the generated classes
           )
       }.taskValue
-    )
-    .dependsOn(ui)
-
-lazy val ui =
-  (project in file("ui"))
-    .enablePlugins(ScalaJSPlugin)
-    .settings(commonSettings: _*)
-    // .settings(publishSettings: _*)
-    .settings(
-      name := "ui",
-      libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "indigo"        % indigoVersion
-      )
     )
 
 lazy val demoOptions: IndigoOptions =
@@ -149,7 +136,7 @@ lazy val roguelikeStarterKit =
       publish / skip      := true,
       publishLocal / skip := true
     )
-    .aggregate(ui, roguelike, demo, benchmarks)
+    .aggregate(roguelike, demo, benchmarks)
     .settings(
       logo := rawLogo + "(v" + version.value.toString + ")",
       usefulTasks := Seq(

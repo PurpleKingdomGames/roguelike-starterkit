@@ -2,11 +2,8 @@ package demo.windows
 
 import demo.Assets
 import indigo.*
-import roguelikestarterkit.*
-import roguelikestarterkit.syntax.*
-import roguelikestarterkit.ui.components.ComponentGroup
-import roguelikestarterkit.ui.components.HitArea
-import roguelikestarterkit.ui.components.datatypes.Anchor
+import indigoextras.ui.*
+import indigoextras.ui.syntax.*
 
 object DemoWindow:
 

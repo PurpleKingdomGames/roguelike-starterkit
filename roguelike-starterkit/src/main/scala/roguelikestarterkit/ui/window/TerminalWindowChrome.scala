@@ -3,11 +3,9 @@ package roguelikestarterkit.ui.window
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.RGBA
-import roguelikestarterkit.Dimensions
+import indigoextras.ui.*
 import roguelikestarterkit.Tile
-import roguelikestarterkit.ui.components.*
-import roguelikestarterkit.ui.components.datatypes.*
-import roguelikestarterkit.ui.datatypes.CharSheet
+import roguelikestarterkit.ui.*
 
 /** Provides simple terminal window chrome with a title, close button, resize button, and vertical
   * scroll bar.

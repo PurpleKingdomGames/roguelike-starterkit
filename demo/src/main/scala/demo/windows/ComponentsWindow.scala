@@ -2,17 +2,10 @@ package demo.windows
 
 import demo.models.Log
 import indigo.*
+import indigoextras.ui.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
-import roguelikestarterkit.ui.components.ComponentGroup
-import roguelikestarterkit.ui.components.TerminalButton
-import roguelikestarterkit.ui.components.TerminalLabel
-import roguelikestarterkit.ui.components.TerminalSwitch
-import roguelikestarterkit.ui.components.TerminalTile
-import roguelikestarterkit.ui.components.datatypes.ComponentLayout
-import roguelikestarterkit.ui.components.datatypes.Padding
-import roguelikestarterkit.ui.window.TerminalWindow
-import roguelikestarterkit.ui.window.TerminalWindowChrome
+import roguelikestarterkit.ui.*
 
 object ComponentsWindow:
 

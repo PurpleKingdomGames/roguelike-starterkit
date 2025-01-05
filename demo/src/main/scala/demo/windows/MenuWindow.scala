@@ -2,13 +2,10 @@ package demo.windows
 
 import demo.models.Log
 import indigo.*
+import indigoextras.ui.*
 import roguelikestarterkit.*
-import roguelikestarterkit.ui.components.ComponentList
-import roguelikestarterkit.ui.components.TerminalButton
-import roguelikestarterkit.ui.components.datatypes.ComponentId
-import roguelikestarterkit.ui.components.datatypes.ComponentLayout
-import roguelikestarterkit.ui.components.datatypes.Padding
-import roguelikestarterkit.ui.window.TerminalWindow
+import roguelikestarterkit.syntax.*
+import roguelikestarterkit.ui.*
 
 object MenuWindow:
 

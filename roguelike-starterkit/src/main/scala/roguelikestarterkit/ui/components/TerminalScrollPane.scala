@@ -1,12 +1,9 @@
 package roguelikestarterkit.ui.components
 
 import indigo.*
+import indigoextras.ui.*
 import roguelikestarterkit.tiles.Tile
-import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.components.datatypes.BoundsMode
-import roguelikestarterkit.ui.datatypes.Bounds
-import roguelikestarterkit.ui.datatypes.CharSheet
-import roguelikestarterkit.ui.datatypes.Dimensions
+import roguelikestarterkit.ui.*
 
 object TerminalScrollPane:
 

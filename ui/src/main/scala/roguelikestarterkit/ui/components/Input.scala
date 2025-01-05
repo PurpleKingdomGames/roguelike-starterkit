@@ -161,7 +161,7 @@ object Input:
         context: UIContext[ReferenceData],
         model: Input
     ): GlobalEvent => Outcome[Input] =
-      case _: PointerEvent.PointerClick
+      case _: PointerEvent.Click
           if context.isActive && Bounds(model.dimensions)
             .resizeBy(2, 2)
             .moveBy(context.bounds.coords)
@@ -170,7 +170,7 @@ object Input:
           .moveCursorTo(context.pointerCoords.x - context.bounds.coords.x - 1)
           .giveFocus
 
-      case _: PointerEvent.PointerClick =>
+      case _: PointerEvent.Click =>
         model.loseFocus
 
       case KeyboardEvent.KeyUp(Key.BACKSPACE) if model.hasFocus =>

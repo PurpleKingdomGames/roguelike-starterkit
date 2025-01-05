@@ -225,32 +225,32 @@ object Button:
           )
         )
 
-      case _: PointerEvent.PointerClick
+      case _: PointerEvent.Click
           if context.isActive && model.bounds
             .moveBy(context.bounds.coords + context.additionalOffset)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.click(context.reference))
 
-      case _: PointerEvent.PointerDown
+      case _: PointerEvent.Down
           if context.isActive && model.bounds
             .moveBy(context.bounds.coords + context.additionalOffset)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Down, isDown = true, dragStart = None))
           .addGlobalEvents(model.press(context.reference))
 
-      case _: PointerEvent.PointerUp
+      case _: PointerEvent.Up
           if context.isActive && model.bounds
             .moveBy(context.bounds.coords + context.additionalOffset)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.release(context.reference))
 
-      case _: PointerEvent.PointerUp =>
+      case _: PointerEvent.Up =>
         // Released Outside.
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
 
-      case _: PointerEvent.PointerMove
+      case _: PointerEvent.Move
           if (context.isActive || model.isDragged) && model.isDown && model.dragOptions.isDraggable =>
         val dragToCoords =
           model.dragOptions.constrainCoords(context.pointerCoords, context.bounds)

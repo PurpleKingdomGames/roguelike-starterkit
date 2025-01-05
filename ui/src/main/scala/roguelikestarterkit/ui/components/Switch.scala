@@ -138,13 +138,13 @@ object Switch:
           )
         )
 
-      case _: PointerEvent.PointerDown
+      case _: PointerEvent.Down
           if context.isActive && model.bounds
             .moveBy(context.bounds.coords + context.additionalOffset)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(isDown = true))
 
-      case _: PointerEvent.PointerUp
+      case _: PointerEvent.Up
           if context.isActive && model.isDown && model.bounds
             .moveBy(context.bounds.coords + context.additionalOffset)
             .contains(context.pointerCoords) =>
@@ -152,7 +152,7 @@ object Switch:
         Outcome(model.copy(state = next, isDown = false))
           .addGlobalEvents(model.switch(next, context.reference))
 
-      case _: PointerEvent.PointerUp =>
+      case _: PointerEvent.Up =>
         // Released Outside.
         Outcome(model.copy(isDown = false))
 

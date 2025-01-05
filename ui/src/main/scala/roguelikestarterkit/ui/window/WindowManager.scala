@@ -186,7 +186,7 @@ object WindowManager:
           if modelId == e.windowId then handleWindowEvents(context, model)(e)
           else Outcome(model)
 
-    case e: PointerEvent.PointerClick =>
+    case e: PointerEvent.Click =>
       updateWindows(context, model, modalWindowOpen(model))(e)
         .addGlobalEvents(WindowEvent.GiveFocusAt(context.pointerCoords))
 

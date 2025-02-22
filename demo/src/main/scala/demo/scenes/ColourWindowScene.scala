@@ -1,5 +1,6 @@
 package demo.scenes
 
+import demo.Assets
 import demo.RogueLikeGame
 import demo.models.Model
 import demo.models.ViewModel
@@ -7,6 +8,7 @@ import demo.windows.ColourWindow
 import indigo.*
 import indigo.scenes.*
 import indigoextras.ui.*
+import roguelikestarterkit.*
 
 object ColourWindowScene extends Scene[Size, Model, ViewModel]:
 
@@ -33,7 +35,7 @@ object ColourWindowScene extends Scene[Size, Model, ViewModel]:
         Size(Model.defaultCharSheet.charSize),
         _ => ()
       )
-        .withLayerKey(BindingKey("UI Layer"))
+        .withLayerKey(LayerKey("UI Layer"))
         .register(
           ColourWindow.window(
             Model.defaultCharSheet
@@ -81,6 +83,13 @@ object ColourWindowScene extends Scene[Size, Model, ViewModel]:
   ): GlobalEvent => Outcome[ViewModel] =
     _ => Outcome(viewModel)
 
+  private val text: Text[TerminalMaterial] =
+    Text(
+      "",
+      RoguelikeTiles.Size10x10.Fonts.fontKey,
+      TerminalMaterial(Assets.assets.AnikkiSquare10x10)
+    )
+
   def present(
       context: SceneContext[Size],
       model: Model,
@@ -88,15 +97,15 @@ object ColourWindowScene extends Scene[Size, Model, ViewModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        BindingKey("info") ->
+        LayerKey("info") ->
           Layer(
-            TextBox(
-              "Pointer over: " +
-                model.pointerOverWindows.mkString("[", ",", "]")
-            )
-              .withTextStyle(TextStyle.default.withColor(RGBA.White).withSize(Pixels(12)))
+            text
+              .withText(
+                "Pointer over: " +
+                  model.pointerOverWindows.mkString("[", ",", "]")
+              )
               .moveTo(0, 260)
           ),
-        BindingKey("UI Layer") -> Layer.Stack.empty
+        LayerKey("UI Layer") -> Layer.Stack.empty
       )
     )

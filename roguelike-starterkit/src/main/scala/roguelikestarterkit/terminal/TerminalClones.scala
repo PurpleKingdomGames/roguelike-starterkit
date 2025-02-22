@@ -28,7 +28,6 @@ final case class TerminalClones(blanks: Batch[CloneBlank], clones: Batch[CloneTi
       None,
       None,
       None,
-      None,
       blanks,
       None
     )

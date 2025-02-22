@@ -2,6 +2,7 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import indigoextras.ui.*
+import indigoextras.ui.syntax.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
@@ -9,18 +10,23 @@ import roguelikestarterkit.ui.*
 
 object TerminalInput:
 
-  /** Minimal input constructor with custom rendering function
+  /** Creates a TerminalInput rendered using the RogueTerminalEmulator based on a
+    * `TerminalInput.Theme`, where the bounds are the supplied width, height 1, plus border.
     */
-  def apply(dimensions: Dimensions)(
-      present: (Coords, Bounds, Input, Seconds) => Outcome[Layer]
-  ): Input =
-    Input(
-      "",
-      dimensions,
-      present,
+  def apply[ReferenceData](placeholder: String, width: Int, theme: Theme): Input[ReferenceData] =
+    Input[ReferenceData](
+      placeholder,
+      Dimensions(width, 1),
+      presentInput(
+        theme.charSheet,
+        theme.colors.foreground,
+        theme.colors.background,
+        theme.borderTiles
+      ),
       _ => Batch.empty,
+      (_, label) => label.length,
       //
-      characterLimit = dimensions.width,
+      characterLimit = width,
       cursor = Cursor.default,
       hasFocus = false,
       () => Batch.empty,
@@ -53,8 +59,9 @@ object TerminalInput:
       fgColor: RGBA,
       bgColor: RGBA,
       borderTiles: TerminalBorderTiles
-  ): (Coords, Bounds, Input, Seconds) => Outcome[Layer] =
-    (offset, bounds, input, runningTime) =>
+  ): (UIContext[ReferenceData], Input[ReferenceData]) => Outcome[Layer] =
+    (context, input) =>
+      val bounds = input.bounds(context)
       val correctedLabel =
         if input.text.length == bounds.width then input.text
         else if input.text.length > bounds.width then input.text.take(bounds.width)
@@ -86,7 +93,7 @@ object TerminalInput:
             CloneId(s"input_${charSheet.assetName.toString}"),
             bounds.coords
               .toScreenSpace(charSheet.size)
-              .moveBy(offset.toScreenSpace(charSheet.size)),
+              .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
             charSheet.charCrops
           ) { case (fg, bg) =>
             graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
@@ -96,45 +103,23 @@ object TerminalInput:
         if input.hasFocus then
           input.cursor.blinkRate match
             case None =>
-              drawCursor(offset, input.cursor.position, charSheet, fgColor)
+              drawCursor(context.parent.coords, input.cursor.position, charSheet, fgColor)
 
             case Some(blinkRate) =>
               Signal
                 .Pulse(blinkRate)
-                .map(p => if (runningTime - input.cursor.lastModified < Seconds(0.5)) true else p)
+                .map(p => if (context.frame.time.running - input.cursor.lastModified < Seconds(0.5)) true else p)
                 .map {
                   case false =>
                     Batch.empty
 
                   case true =>
-                    drawCursor(offset, input.cursor.position, charSheet, fgColor)
+                    drawCursor(context.parent.coords, input.cursor.position, charSheet, fgColor)
                 }
-                .at(runningTime)
+                .at(context.frame.time.running)
         else Batch.empty
 
       Outcome(Layer.Content(terminalClones).addNodes(cursor))
-
-  /** Creates a TerminalInput rendered using the RogueTerminalEmulator based on a
-    * `TerminalInput.Theme`, where the bounds are the supplied width, height 1, plus border.
-    */
-  def apply(width: Int, theme: Theme): Input =
-    Input(
-      "",
-      Dimensions(width, 1),
-      presentInput(
-        theme.charSheet,
-        theme.colors.foreground,
-        theme.colors.background,
-        theme.borderTiles
-      ),
-      _ => Batch.empty,
-      //
-      characterLimit = width,
-      cursor = Cursor.default,
-      hasFocus = false,
-      () => Batch.empty,
-      () => Batch.empty
-    )
 
   final case class Theme(
       charSheet: CharSheet,

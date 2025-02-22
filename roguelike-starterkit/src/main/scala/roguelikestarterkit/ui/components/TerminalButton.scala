@@ -2,6 +2,7 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import indigoextras.ui.*
+import indigoextras.ui.syntax.*
 import roguelikestarterkit.TerminalEmulator
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
@@ -14,34 +15,34 @@ object TerminalButton:
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
   private def presentButton[ReferenceData](
-      label: ReferenceData => Batch[Tile],
+      label: UIContext[ReferenceData] => Batch[Tile],
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet,
       hasBorder: Boolean,
       borderTiles: TerminalBorderTiles
-  ): (Coords, Bounds, ReferenceData) => Outcome[Layer] =
+  ): (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer] =
     if hasBorder then presentButtonWithBorder(label, fgColor, bgColor, charSheet, borderTiles)
     else presentButtonNoBorder(label, fgColor, bgColor, charSheet)
 
   private def presentButtonNoBorder[ReferenceData](
-      label: ReferenceData => Batch[Tile],
+      label: UIContext[ReferenceData] => Batch[Tile],
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet
-  ): (Coords, Bounds, ReferenceData) => Outcome[Layer] =
-    (offset, bounds, ref) =>
-      val size = bounds.dimensions.unsafeToSize
+  ): (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer] =
+    (context, button) =>
+      val size = button.bounds.dimensions.unsafeToSize
 
       val terminal =
         RogueTerminalEmulator(size)
           .fill(Tile.` `, fgColor, bgColor)
-          .putTileLine(Point.zero, label(ref), fgColor, bgColor)
+          .putTileLine(Point.zero, label(context), fgColor, bgColor)
           .toCloneTiles(
             CloneId(s"button_${charSheet.assetName.toString}"),
-            bounds.coords
+            button.bounds.coords
               .toScreenSpace(charSheet.size)
-              .moveBy(offset.toScreenSpace(charSheet.size)),
+              .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
             charSheet.charCrops
           ) { case (fg, bg) =>
             graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
@@ -50,16 +51,17 @@ object TerminalButton:
       Outcome(Layer.Content(terminal))
 
   private def presentButtonWithBorder[ReferenceData](
-      label: ReferenceData => Batch[Tile],
+      label: UIContext[ReferenceData] => Batch[Tile],
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet,
       borderTiles: TerminalBorderTiles
-  ): (Coords, Bounds, ReferenceData) => Outcome[Layer] =
-    (offset, bounds, ref) =>
-      val txt  = label(ref).take(bounds.width - 2)
-      val hBar = Batch.fill(bounds.width - 2)(borderTiles.horizontal)
-      val size = bounds.dimensions.unsafeToSize
+  ): (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer] =
+    (context, button) =>
+      val bounds = button.bounds(context)
+      val txt    = label(context).take(bounds.width - 2)
+      val hBar   = Batch.fill(bounds.width - 2)(borderTiles.horizontal)
+      val size   = bounds.dimensions.unsafeToSize
 
       val terminal =
         RogueTerminalEmulator(size)
@@ -80,7 +82,7 @@ object TerminalButton:
             CloneId(s"button_${charSheet.assetName.toString}"),
             bounds.coords
               .toScreenSpace(charSheet.size)
-              .moveBy(offset.toScreenSpace(charSheet.size)),
+              .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
             charSheet.charCrops
           ) { case (fg, bg) =>
             graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
@@ -95,11 +97,12 @@ object TerminalButton:
     * dynamically calculated bounds
     */
   def apply[ReferenceData](
-      label: ReferenceData => String,
+      label: UIContext[ReferenceData] => String,
       theme: Theme,
-      calculateBounds: ReferenceData => Bounds
+      calculateBounds: UIContext[ReferenceData] => Bounds
   ): Button[ReferenceData] =
-    val tileLabel = (ref: ReferenceData) => TerminalEmulator.stringToTileBatch(label(ref))
+    val tileLabel = (ctx: UIContext[ReferenceData]) =>
+      TerminalEmulator.stringToTileBatch(label(ctx))
     fromTiles(tileLabel, theme, calculateBounds)
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
@@ -129,22 +132,22 @@ object TerminalButton:
     * bounds are based on the label size, which is assumed to be a single line of simple text.
     */
   def apply[ReferenceData](
-      label: ReferenceData => String,
+      label: UIContext[ReferenceData] => String,
       theme: Theme
   ): Button[ReferenceData] =
     TerminalButton(
       label,
       theme,
-      (ref: ReferenceData) => findBounds(label(ref).length, theme.hasBorder)
+      (ctx: UIContext[ReferenceData]) => findBounds(label(ctx).length, theme.hasBorder)
     )
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
     * dynamically calculated bounds, where the label is a row of tiles.
     */
   def fromTiles[ReferenceData](
-      tileLabel: ReferenceData => Batch[Tile],
+      tileLabel: UIContext[ReferenceData] => Batch[Tile],
       theme: Theme,
-      calculateBounds: ReferenceData => Bounds
+      calculateBounds: UIContext[ReferenceData] => Bounds
   ): Button[ReferenceData] =
     Button(calculateBounds) {
       presentButton(
@@ -204,13 +207,13 @@ object TerminalButton:
     * bounds are based on the label size, which is assumed to be a single row of tiles.
     */
   def fromTiles[ReferenceData](
-      label: ReferenceData => Batch[Tile],
+      label: UIContext[ReferenceData] => Batch[Tile],
       theme: Theme
   ): Button[ReferenceData] =
     TerminalButton.fromTiles(
       label,
       theme,
-      (ref: ReferenceData) => findBounds(label(ref).length, theme.hasBorder)
+      (ctx: UIContext[ReferenceData]) => findBounds(label(ctx).length, theme.hasBorder)
     )
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
@@ -230,13 +233,13 @@ object TerminalButton:
     * bounds are based on the label size, which is assumed to be a Tile.
     */
   def fromTile[ReferenceData](
-      label: ReferenceData => Tile,
+      label: UIContext[ReferenceData] => Tile,
       theme: Theme
   ): Button[ReferenceData] =
     TerminalButton.fromTiles(
-      (ref: ReferenceData) => Batch(label(ref)),
+      (ctx: UIContext[ReferenceData]) => Batch(label(ctx)),
       theme,
-      (ref: ReferenceData) => findBounds(1, theme.hasBorder)
+      _ => findBounds(1, theme.hasBorder)
     )
 
   final case class Theme(

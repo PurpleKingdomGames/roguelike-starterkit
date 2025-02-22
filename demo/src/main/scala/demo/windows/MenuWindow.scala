@@ -17,7 +17,7 @@ object MenuWindow:
     TerminalWindow(
       windowId,
       charSheet,
-      ComponentList(Dimensions(20, 3)) { (_: Int) =>
+      ComponentList(Dimensions(20, 3)) { (_: UIContext[Int]) =>
         Batch(
           ComponentId("btn1") ->
             TerminalButton[Int](

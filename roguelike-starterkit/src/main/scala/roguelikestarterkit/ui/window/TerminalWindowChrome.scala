@@ -73,7 +73,6 @@ final case class TerminalWindowChrome[ReferenceData](
       )
       .anchorConditional(!isScrollable)(
         MaskedPane(
-          BindingKey(parentWindowId.toString + "-scroll-pane"),
           BoundsMode.offset(-2, if title.isDefined then -4 else -2),
           content
         ),

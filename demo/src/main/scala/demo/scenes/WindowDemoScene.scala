@@ -31,7 +31,7 @@ object WindowDemoScene extends Scene[Size, Model, ViewModel]:
         SubSystemId("demo window manager"),
         RogueLikeGame.magnification
       )
-        .withLayerKey(BindingKey("UI Layer"))
+        .withLayerKey(LayerKey("UI Layer"))
         .register(
           DemoWindow.window
         )
@@ -65,6 +65,6 @@ object WindowDemoScene extends Scene[Size, Model, ViewModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        BindingKey("UI Layer") -> Layer.Stack.empty
+        LayerKey("UI Layer") -> Layer.Stack.empty
       )
     )

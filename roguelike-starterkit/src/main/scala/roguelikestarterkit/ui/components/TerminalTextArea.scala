@@ -2,6 +2,7 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import indigoextras.ui.*
+import indigoextras.ui.syntax.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
@@ -9,28 +10,29 @@ import roguelikestarterkit.ui.*
 
 object TerminalTextArea:
 
-  private def findBounds(text: List[String]): Bounds =
+  private def findBounds(text: String): Bounds =
+    val lines = text.split("\n").toList
     val maxLength =
-      text.foldLeft(0) { (acc, line) =>
+      lines.foldLeft(0) { (acc, line) =>
         if line.length > acc then line.length else acc
       }
     Bounds(0, 0, maxLength, text.length)
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
-  private def presentTextArea(
+  private def presentTextArea[ReferenceData](
       charSheet: CharSheet,
       fgColor: RGBA,
       bgColor: RGBA
-  ): (Coords, List[String], Dimensions) => Outcome[Layer] = { case (offset, label, dimensions) =>
-    val size = dimensions.unsafeToSize
+  ): (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer] = { case (context, textArea) =>
+    val size = textArea.bounds(context).dimensions.unsafeToSize
 
     val terminal =
       RogueTerminalEmulator(size)
-        .putLines(Point.zero, Batch.fromList(label), fgColor, bgColor)
+        .putLines(Point.zero, Batch.fromList(textArea.text(context).split("\n").toList), fgColor, bgColor)
         .toCloneTiles(
           CloneId(s"label_${charSheet.assetName.toString}"),
-          offset.toScreenSpace(charSheet.size),
+          context.parent.coords.toScreenSpace(charSheet.size),
           charSheet.charCrops
         ) { case (fg, bg) =>
           graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
@@ -43,10 +45,8 @@ object TerminalTextArea:
     * `TerminalTextArea.Theme`, with bounds based on the text length
     */
   def apply[ReferenceData](text: String, theme: Theme): TextArea[ReferenceData] =
-    val t = text.split("\n").toList
-
     TextArea(
-      _ => t,
+      _ => text,
       presentTextArea(
         theme.charSheet,
         theme.colors.foreground,
@@ -58,15 +58,15 @@ object TerminalTextArea:
   /** Creates a TerminalTextArea rendered using the RogueTerminalEmulator based on a
     * `TerminalTextArea.Theme`, with custom bounds
     */
-  def apply[ReferenceData](text: ReferenceData => String, theme: Theme): TextArea[ReferenceData] =
+  def apply[ReferenceData](text: UIContext[ReferenceData] => String, theme: Theme): TextArea[ReferenceData] =
     TextArea(
-      (r: ReferenceData) => text(r).split("\n").toList,
+      (ctx: UIContext[ReferenceData]) => text(ctx),
       presentTextArea(
         theme.charSheet,
         theme.colors.foreground,
         theme.colors.background
       ),
-      (r, t) => findBounds(text(r).split("\n").toList)
+      (ctx, _) => findBounds(text(ctx))
     )
 
   final case class Theme(

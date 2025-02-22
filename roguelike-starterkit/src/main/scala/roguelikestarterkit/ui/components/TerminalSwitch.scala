@@ -2,6 +2,7 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import indigoextras.ui.*
+import indigoextras.ui.syntax.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
@@ -15,8 +16,9 @@ object TerminalSwitch:
   private def present[ReferenceData](
       tile: TerminalTile,
       charSheet: CharSheet
-  ): (Coords, Bounds, ReferenceData) => Outcome[Layer] =
-    (offset, bounds, _) =>
+  ): (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer] =
+    (context, switch) =>
+      val bounds = switch.bounds(context)
       val terminal =
         RogueTerminalEmulator(Size(1))
           .put(Point.zero, tile.tile, tile.colors.foreground, tile.colors.background)
@@ -24,7 +26,7 @@ object TerminalSwitch:
             CloneId(s"switch_${charSheet.assetName.toString}"),
             bounds.coords
               .toScreenSpace(charSheet.size)
-              .moveBy(offset.toScreenSpace(charSheet.size)),
+              .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
             charSheet.charCrops
           ) { case (fg, bg) =>
             graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))

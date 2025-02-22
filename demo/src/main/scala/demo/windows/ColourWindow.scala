@@ -96,16 +96,16 @@ object ColourWindow:
       charSheet: CharSheet,
       colour: RGBA,
       stroke: Option[RGBA]
-  ): (Coords, Bounds, Unit) => Outcome[Layer] =
-    (offset, bounds, _) =>
+  ): (UIContext[Unit], Button[Unit]) => Outcome[Layer] =
+    (ctx, btn) =>
       Outcome(
         Layer(
           stroke match
             case None =>
               Shape.Box(
                 Rectangle(
-                  offset.toScreenSpace(charSheet.size),
-                  bounds.dimensions.toScreenSpace(charSheet.size)
+                  ctx.parent.coords.toScreenSpace(charSheet.size),
+                  btn.bounds(ctx).dimensions.toScreenSpace(charSheet.size)
                 ),
                 Fill.Color(colour)
               )
@@ -113,8 +113,8 @@ object ColourWindow:
             case Some(strokeColor) =>
               Shape.Box(
                 Rectangle(
-                  offset.toScreenSpace(charSheet.size),
-                  bounds.dimensions.toScreenSpace(charSheet.size)
+                  ctx.parent.coords.toScreenSpace(charSheet.size),
+                  btn.bounds(ctx).dimensions.toScreenSpace(charSheet.size)
                 ),
                 Fill.Color(colour),
                 Stroke(2, strokeColor)
@@ -127,7 +127,7 @@ object ColorPalette:
 
   given Component[ColorPalette, Unit] with
 
-    def bounds(reference: Unit, model: ColorPalette): Bounds =
+    def bounds(context: UIContext[Unit], model: ColorPalette): Bounds =
       Bounds(model.componentGroup.dimensions)
 
     def updateModel(
@@ -145,7 +145,7 @@ object ColorPalette:
     ): Outcome[Layer] =
       model.componentGroup.present(context)
 
-    def refresh(reference: Unit, model: ColorPalette, contentDimensions: Dimensions): ColorPalette =
+    def refresh(context: UIContext[Unit], model: ColorPalette): ColorPalette =
       model.copy(
-        componentGroup = model.componentGroup.refresh(reference, contentDimensions)
+        componentGroup = model.componentGroup.refresh(context)
       )

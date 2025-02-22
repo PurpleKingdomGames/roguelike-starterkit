@@ -42,11 +42,17 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
         .withAssets(Assets.assets.assetSet)
         .withShaders(
           indigoextras.ui.shaders.all ++
-          shaders.all ++ Set(
-            TerminalTextScene.customShader(ShaderId("my shader"))
+            shaders.all ++ Set(
+              TerminalTextScene.customShader(ShaderId("my shader"))
+            )
+        )
+        .withSubSystems(
+          FPSCounter(
+            Point(10, 350),
+            RoguelikeTiles.Size10x10.Fonts.fontKey,
+            Assets.assets.AnikkiSquare10x10
           )
         )
-        .withSubSystems(FPSCounter(Point(10, 350)))
     )
 
   def initialModel(startupData: Size): Outcome[Model] =

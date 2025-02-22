@@ -5,7 +5,7 @@ import sbtwelcome._
 import indigoplugin._
 
 val scala3Version              = "3.6.2"
-val indigoVersion              = "0.18.0"
+val indigoVersion              = "0.18.1-SNAPSHOT"
 val roguelikeStarterKitVersion = "0.6.1-SNAPSHOT"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges

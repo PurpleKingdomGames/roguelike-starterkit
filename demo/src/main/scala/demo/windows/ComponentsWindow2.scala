@@ -30,7 +30,7 @@ object ComponentsWindow2:
       .resizeTo(25, 25)
 
   def content(charSheet: CharSheet): ComponentGroup[Int] =
-    ComponentGroup()
+    ComponentGroup[Int]()
       .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
       .add(
         ComponentGroup()
@@ -58,14 +58,14 @@ object ComponentsWindow2:
           )
       )
       .add(
-        ComponentList(Dimensions(20, 11)) { (count: Int) =>
+        ComponentList[Int, Label[Int]](Dimensions(20, 11)) { (ctx: UIContext[Int]) =>
           Batch(
             ComponentId("window count") -> TerminalLabel[Int](
               "How many windows: ",
               TerminalLabel.Theme(charSheet)
             )
           ) ++
-            (0 to count).toBatch.map { i =>
+            (0 to ctx.reference).toBatch.map { i =>
               ComponentId("w" + i) -> TerminalLabel("x " + i, TerminalLabel.Theme(charSheet))
             }
         }
@@ -80,16 +80,20 @@ object ComponentsWindow2:
               )
             )
           }
-          .add((_: Int) =>
-            ComponentId("input_dynamic") -> TerminalInput(20, TerminalInput.Theme(charSheet))
+          .add((_: UIContext[Int]) =>
+            ComponentId("input_dynamic") -> TerminalInput[Int](
+              "",
+              20,
+              TerminalInput.Theme(charSheet)
+            )
           )
-          .add((count: Int) =>
-            (0 to count).toBatch.map { i =>
+          .add((ctx: UIContext[Int]) =>
+            (0 to ctx.reference).toBatch.map { i =>
               ComponentId("btn" + i) -> TerminalButton[Int](
                 "Button " + i,
                 TerminalButton.Theme(charSheet)
               ).onClick(
-                Log("count: " + count)
+                Log("count: " + ctx.reference)
               )
             }
               :+ ComponentId("btnX") -> TerminalButton[Int](
@@ -97,14 +101,14 @@ object ComponentsWindow2:
                 TerminalButton.Theme(charSheet)
               ).onClick(Log("test"))
           )
-          .add((i: Int) =>
+          .add((ctx: UIContext[Int]) =>
             ComponentId("textarea") -> TerminalTextArea[Int](
-              "abc.\nde,f\n0123456! " + i,
+              "abc.\nde,f\n0123456! " + ctx.reference,
               TerminalTextArea.Theme(charSheet)
             )
           )
           .withLayout(ComponentLayout.Vertical(Padding.zero))
       )
       .add(
-        TerminalInput(20, TerminalInput.Theme(charSheet))
+        TerminalInput[Int]("", 20, TerminalInput.Theme(charSheet))
       )

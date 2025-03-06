@@ -4,8 +4,8 @@ import scala.language.postfixOps
 import sbtwelcome._
 import indigoplugin._
 
-val scala3Version              = "3.6.2"
-val indigoVersion              = "0.18.1-SNAPSHOT"
+val scala3Version              = "3.6.3"
+val indigoVersion              = "0.19.0"
 val roguelikeStarterKitVersion = "0.6.1-SNAPSHOT"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -16,7 +16,7 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   scalaVersion := scala3Version,
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
-    "org.scalameta" %%% "munit" % "1.0.4" % Test
+    "org.scalameta" %%% "munit" % "1.1.0" % Test
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },

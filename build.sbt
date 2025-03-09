@@ -119,7 +119,7 @@ lazy val benchmarks =
         "com.github.japgolly.scalajs-benchmark" %%% "benchmark" % "0.10.0"
       ),
       jsDependencies ++= Seq(
-        "org.webjars" % "chartjs" % "1.0.2" / "Chart.js" minified "Chart.min.js"
+        "org.webjars" % "chartjs" % "26962ce-1" / "Chart.js" minified "Chart.min.js"
       ),
       packageJSDependencies / skip := false
     )

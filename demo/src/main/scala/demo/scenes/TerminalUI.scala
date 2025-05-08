@@ -40,14 +40,9 @@ object TerminalUI extends Scene[Size, Model, ViewModel]:
       Outcome(model)
 
     case e =>
-      val ctx = UIContext(context.toContext, 1)
+      val ctx = UIContext(context.toContext, context.frame.globalMagnification)
         .withSnapGrid(TerminalUIComponents.charSheet.size)
         .moveParentBy(Coords(5, 5))
-        .withPointerCoords(
-          Coords(
-            context.frame.input.pointers.position / TerminalUIComponents.charSheet.size.toPoint
-          )
-        )
 
       model.button.update(ctx)(e).map { b =>
         model.copy(button = b)
@@ -65,12 +60,9 @@ object TerminalUI extends Scene[Size, Model, ViewModel]:
       model: Model,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
-    val ctx = UIContext(context.toContext, 1)
+    val ctx = UIContext(context.toContext, context.frame.globalMagnification)
       .withSnapGrid(TerminalUIComponents.charSheet.size)
       .moveParentBy(Coords(5, 5))
-      .withPointerCoords(
-        Coords(context.frame.input.pointers.position / TerminalUIComponents.charSheet.size.toPoint)
-      )
 
     model.button
       .present(ctx)

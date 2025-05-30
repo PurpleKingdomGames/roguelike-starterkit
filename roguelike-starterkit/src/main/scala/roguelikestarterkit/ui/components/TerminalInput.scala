@@ -60,7 +60,7 @@ object TerminalInput:
       borderTiles: TerminalBorderTiles
   ): (UIContext[ReferenceData], Input[ReferenceData]) => Outcome[Layer] =
     (context, input) =>
-      val bounds = input.bounds(context)
+      val bounds         = input.bounds(context)
       val correctedLabel =
         if input.text.length == bounds.width then input.text
         else if input.text.length > bounds.width then input.text.take(bounds.width)

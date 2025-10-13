@@ -28,10 +28,10 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
 lazy val publishSettings = {
   import xerial.sbt.Sonatype._
   Seq(
-    publishTo           := sonatypePublishToBundle.value,
-    publishMavenStyle   := true,
-    sonatypeProfileName := "io.indigoengine",
-    licenses            := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
+    publishTo              := sonatypePublishToBundle.value,
+    publishMavenStyle      := true,
+    sonatypeProfileName    := "io.indigoengine",
+    licenses               := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
     sonatypeProjectHosting := Some(
       GitHubHosting("PurpleKingdomGames", "roguelike-starterkit", "indigo@purplekingdomgames.com")
     ),
@@ -138,7 +138,7 @@ lazy val roguelikeStarterKit =
     )
     .aggregate(roguelike, demo, benchmarks)
     .settings(
-      logo := rawLogo + "(v" + version.value.toString + ")",
+      logo        := rawLogo + "(v" + version.value.toString + ")",
       usefulTasks := Seq(
         UsefulTask("runGame", "Run the game").noAlias,
         UsefulTask("publishLocal", "Local publish").noAlias

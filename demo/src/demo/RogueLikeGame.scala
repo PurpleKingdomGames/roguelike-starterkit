@@ -17,8 +17,8 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   def initialScene(bootData: Size): Option[SceneName] =
     Option(TerminalUI.name)
 
-  def scenes(bootData: Size): NonEmptyList[Scene[Size, Model, ViewModel]] =
-    NonEmptyList(
+  def scenes(bootData: Size): NonEmptyBatch[Scene[Size, Model, ViewModel]] =
+    NonEmptyBatch(
       NoTerminalUI,
       ColourWindowScene,
       MultipleWindowsScene,

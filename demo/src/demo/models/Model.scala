@@ -5,7 +5,6 @@ import demo.scenes.NoTerminalUIComponents
 import demo.scenes.TerminalUIComponents
 import indigo.*
 import indigoextras.ui.*
-import indigoextras.ui.syntax.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.*
 
@@ -17,8 +16,6 @@ final case class Model(
 )
 
 object Model:
-
-  import indigo.syntax.*
 
   val defaultCharSheet: CharSheet =
     CharSheet(

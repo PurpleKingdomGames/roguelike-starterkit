@@ -4,7 +4,6 @@ import demo.models.Log
 import indigo.*
 import indigo.syntax.*
 import indigoextras.ui.*
-import roguelikestarterkit.*
 import roguelikestarterkit.ui.*
 
 object ComponentsWindow2:

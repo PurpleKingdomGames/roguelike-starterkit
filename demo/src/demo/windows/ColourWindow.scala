@@ -3,7 +3,6 @@ package demo.windows
 import indigo.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
-import roguelikestarterkit.*
 import roguelikestarterkit.ui.*
 
 object ColourWindow:

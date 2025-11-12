@@ -229,7 +229,7 @@ object NoTerminalUIComponents:
                 .add(
                   Label[Int](
                     "Radio " + i,
-                    (_, label) => Bounds(0, 0, 150, 10)
+                    (_, _) => Bounds(0, 0, 150, 10)
                   ) { case (ctx, label) =>
                     Outcome(
                       Layer(

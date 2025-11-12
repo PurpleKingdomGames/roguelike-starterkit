@@ -7,7 +7,6 @@
       let
         pkgs = import nixpkgs { inherit system; };
         jdkToUse = pkgs.jdk17;
-        sbtWithJRE = pkgs.sbt.override { jre = jdkToUse; };
 
         startupHook = ''
           JAVA_HOME="${jdkToUse}"
@@ -18,11 +17,9 @@
         devShells.default = pkgs.mkShell {
           packages = [
             jdkToUse
-            sbtWithJRE
             pkgs.nodejs
             pkgs.yarn
             pkgs.nodePackages_latest.http-server
-            pkgs.bloop
             pkgs.scala-cli
           ];
           shellHook = startupHook;

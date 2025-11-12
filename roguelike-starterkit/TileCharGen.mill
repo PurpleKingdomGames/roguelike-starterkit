@@ -1,11 +1,8 @@
-import sbt._
-import scala.sys.process._
+package build.`roguelike-starterkit`
 
 object TileCharGen {
 
   def genFont(charWidth: Int, charHeight: Int, chars: List[CharDetail]): String = {
-    val sheetWidth: Int  = charWidth * 16
-    val sheetHeight: Int = charHeight * 16
 
     val charString = chars
       .map(cd => "            " + cd.toFontChar(charWidth, charHeight) + ",")
@@ -18,7 +15,7 @@ object TileCharGen {
         .toString()}")
     |
     |    val fontInfo: FontInfo =
-    |      FontInfo(fontKey, $sheetWidth, $sheetHeight, FontChar(" ", 0, 0, ${charWidth.toString}, ${charHeight.toString})).isCaseSensitive
+    |      FontInfo(fontKey, FontChar(" ", 0, 0, ${charWidth.toString}, ${charHeight.toString})).isCaseSensitive
     |        .addChars(
     |          Batch(
     |$charString
@@ -122,14 +119,14 @@ object TileCharGen {
     """.stripMargin
   }
 
-  def makeTileFile(fullyQualifiedPath: String, sourceManagedDir: File): Seq[File] = {
-    val file: File =
+  def makeTileFile(fullyQualifiedPath: String, sourceManagedDir: os.Path): Seq[os.Path] = {
+    val file: os.Path =
       sourceManagedDir / "Tile.scala"
 
     val newContents: String =
       templateTile(fullyQualifiedPath, CharMap.chars)
 
-    IO.write(file, newContents)
+    os.write(file, newContents)
 
     // println("Written: " + file.getCanonicalPath)
 
@@ -163,17 +160,17 @@ object TileCharGen {
 
   def makeRoguelikeTilesFile(
       fullyQualifiedPath: String,
-      sourceManagedDir: File,
+      sourceManagedDir: os.Path,
       squareSizes: Seq[(Int, Int)],
       nonSquareSizes: Seq[(Int, Int)]
-  ): Seq[File] = {
-    val file: File =
+  ): Seq[os.Path] = {
+    val file: os.Path =
       sourceManagedDir / "RoguelikeTiles.scala"
 
     val newContents: String =
       templateRoguelikeTiles(fullyQualifiedPath, squareSizes, nonSquareSizes)
 
-    IO.write(file, newContents)
+    os.write(file, newContents)
 
     // println("Written: " + file.getCanonicalPath)
 
@@ -183,8 +180,8 @@ object TileCharGen {
   def gen(
       modulePrefix: String,
       fullyQualifiedPath: String,
-      sourceManagedDir: File
-  ): Seq[File] = {
+      sourceManagedDir: os.Path
+  ): Seq[os.Path] = {
 
     println("Generating Tiles & Fonts")
 
@@ -257,13 +254,13 @@ object TileCharGen {
             CharMap.chars
           )
 
-        val file: File =
+        val file: os.Path =
           sourceManagedDir / (moduleName + ".scala")
 
         val newContents: String =
           template(moduleName, fullyQualifiedPath, contents)
 
-        IO.write(file, newContents)
+        os.write(file, newContents)
 
         // println("Written: " + file.getCanonicalPath)
 

@@ -3,8 +3,6 @@ package demo.windows
 import demo.models.Log
 import indigo.*
 import indigoextras.ui.*
-import roguelikestarterkit.*
-import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.*
 
 object MenuWindow:

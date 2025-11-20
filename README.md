@@ -3,6 +3,10 @@
 [![Discord Chat](https://img.shields.io/discord/716435281208672356?color=blue&label=discord)](https://discord.gg/b5CD47g)
 [![CI](https://github.com/PurpleKingdomGames/roguelike-starterkit/actions/workflows/ci.yml/badge.svg)](https://github.com/PurpleKingdomGames/roguelike-starterkit/actions/workflows/ci.yml)
 
+***THE ROGUELIKE-STARTERKIT HAS MOVED HOME!!!***
+
+Please head over to https://github.com/PurpleKingdomGames/indigoengine for the up to date source code.
+
 # Roguelike Starter-Kit for Indigo
 
 A library for use with [Indigo](https://indigoengine.io/) to provide some terminal-like rendering functionality specifically for ASCII art style games, and roguelike games in particular.

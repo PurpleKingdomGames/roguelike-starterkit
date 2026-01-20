@@ -194,7 +194,7 @@ final case class TerminalEmulator(size: Size, charMap: SparseGrid[MapTile]) exte
       foreground: RGBA,
       background: RGBA
   ): TerminalEmulator =
-    mapRectangle(region)((_, mt) => MapTile(tile, foreground, background))
+    mapRectangle(region)((_, _) => MapTile(tile, foreground, background))
 
   def mapCircle(circle: Circle)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
@@ -208,7 +208,7 @@ final case class TerminalEmulator(size: Size, charMap: SparseGrid[MapTile]) exte
   def fillCircle(circle: Circle, tile: Tile, foreground: RGBA): TerminalEmulator =
     mapCircle(circle)((_, mt) => MapTile(tile, foreground, mt.background))
   def fillCircle(circle: Circle, tile: Tile, foreground: RGBA, background: RGBA): TerminalEmulator =
-    mapCircle(circle)((_, mt) => MapTile(tile, foreground, background))
+    mapCircle(circle)((_, _) => MapTile(tile, foreground, background))
 
   def mapLine(from: Point, to: Point)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
@@ -231,7 +231,7 @@ final case class TerminalEmulator(size: Size, charMap: SparseGrid[MapTile]) exte
       foreground: RGBA,
       background: RGBA
   ): TerminalEmulator =
-    mapLine(line.start.toPoint, line.end.toPoint)((_, mt) => MapTile(tile, foreground, background))
+    mapLine(line.start.toPoint, line.end.toPoint)((_, _) => MapTile(tile, foreground, background))
   def fillLine(from: Point, to: Point, mapTile: MapTile): TerminalEmulator =
     mapLine(from, to)((_, _) => mapTile)
   def fillLine(from: Point, to: Point, tile: Tile): TerminalEmulator =
@@ -245,7 +245,7 @@ final case class TerminalEmulator(size: Size, charMap: SparseGrid[MapTile]) exte
       foreground: RGBA,
       background: RGBA
   ): TerminalEmulator =
-    mapLine(from, to)((_, mt) => MapTile(tile, foreground, background))
+    mapLine(from, to)((_, _) => MapTile(tile, foreground, background))
 
   def toASCII(nullReplacement: Tile): String =
     charMap

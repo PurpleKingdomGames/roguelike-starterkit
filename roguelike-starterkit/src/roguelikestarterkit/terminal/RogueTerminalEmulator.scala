@@ -346,7 +346,7 @@ final class RogueTerminalEmulator(
       foreground: RGBA,
       background: RGBA
   ): RogueTerminalEmulator =
-    mapRectangle(region)((_, mt) => MapTile(tile, foreground, background))
+    mapRectangle(region)((_, _) => MapTile(tile, foreground, background))
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def mapCircle(circle: Circle)(modifier: (Point, MapTile) => MapTile): RogueTerminalEmulator =
@@ -379,7 +379,7 @@ final class RogueTerminalEmulator(
       foreground: RGBA,
       background: RGBA
   ): RogueTerminalEmulator =
-    mapCircle(circle)((_, mt) => MapTile(tile, foreground, background))
+    mapCircle(circle)((_, _) => MapTile(tile, foreground, background))
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def mapLine(from: Point, to: Point)(
@@ -419,7 +419,7 @@ final class RogueTerminalEmulator(
       foreground: RGBA,
       background: RGBA
   ): RogueTerminalEmulator =
-    mapLine(line.start.toPoint, line.end.toPoint)((_, mt) => MapTile(tile, foreground, background))
+    mapLine(line.start.toPoint, line.end.toPoint)((_, _) => MapTile(tile, foreground, background))
   def fillLine(from: Point, to: Point, mapTile: MapTile): RogueTerminalEmulator =
     mapLine(from, to)((_, _) => mapTile)
   def fillLine(from: Point, to: Point, tile: Tile): RogueTerminalEmulator =
@@ -433,7 +433,7 @@ final class RogueTerminalEmulator(
       foreground: RGBA,
       background: RGBA
   ): RogueTerminalEmulator =
-    mapLine(from, to)((_, mt) => MapTile(tile, foreground, background))
+    mapLine(from, to)((_, _) => MapTile(tile, foreground, background))
 
   def toASCII(nullReplacement: Char): String =
     _tiles

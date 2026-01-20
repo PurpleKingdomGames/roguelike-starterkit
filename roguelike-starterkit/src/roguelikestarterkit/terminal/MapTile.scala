@@ -1,6 +1,5 @@
 package roguelikestarterkit.terminal
 
-import indigo.*
 import indigo.shared.datatypes.RGBA
 import roguelikestarterkit.Tile
 

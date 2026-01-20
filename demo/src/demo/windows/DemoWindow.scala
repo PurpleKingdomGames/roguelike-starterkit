@@ -3,7 +3,6 @@ package demo.windows
 import demo.Assets
 import indigo.*
 import indigoextras.ui.*
-import indigoextras.ui.syntax.*
 
 object DemoWindow:
 
